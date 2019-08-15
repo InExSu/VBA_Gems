@@ -1,0 +1,428 @@
+Attribute VB_Name = "Портянку_в_Матрёшку"
+Option Explicit
+'Option Compare Text
+
+'@ToDo: 02.04.2019 18:51 _
+ Приделать удаление дублей процедур
+
+Function БуферОбмена_в_Матрёшку_c_Функциями(Optional ByVal msg As String) _
+        As String
+
+' procedure Checked by test
+
+    Dim str As String, sub_Main As String
+    str = Clipboard_2_Text
+    sub_Main = "Squadra_Unita"    'отряд юнитов
+
+    str = "Public Sub " & _
+            sub_Main & _
+            "(Optional ByVal msg As String) _" & _
+            vbCrLf & "'Тестом НЕ покрыта" & vbCrLf & _
+            vbCrLf & _
+            Строку_в_Матрёшку(str) & _
+            vbCrLf & "End Sub" & vbCrLf & vbCrLf & _
+            Строку_в_Функции(str)
+
+    Text_2_Clipboard str
+
+    БуферОбмена_в_Матрёшку_c_Функциями = str
+
+    MsgBoxEx
+
+End Function
+
+Function Строку_в_Матрёшку(ByVal str As String) As String
+' Тестом покрыта
+' str = строка с названиями фукнций, разделённых vbcr
+    Dim Матрёшка As String
+
+    Dim Знак As String, cr_Count As Long
+    Dim x As Long
+
+    str = Отсечь_Слева_Код_Меньше(str, 65)
+
+    For x = 1 To Len(str)
+
+        Знак = Mid$(str, x, 1)
+
+        If Знак = vbCr Then
+
+            If cr_Count < 1 Then
+
+                'первая функция без скобок
+
+                Знак = " _" & Знак
+
+            Else
+
+                ' следующие фукнции со скобками
+
+                Знак = "( _" & Знак
+
+            End If
+
+            cr_Count = cr_Count + 1
+
+        End If
+
+        Матрёшка = Матрёшка + Знак
+
+    Next
+
+    If cr_Count > 1 Then _
+            Матрёшка = Матрёшка & String$(cr_Count - 1, ")")
+
+    Строку_в_Матрёшку = Матрёшка
+
+End Function
+
+Function Строку_в_Функции(ByVal str As String) As String
+' Тестом покрыта
+
+    Dim a1() As String
+    a1 = Split(str, vbCr)
+
+    Dim x As Long
+
+    For x = LBound(a1) To UBound(a1)
+        a1(x) = Application.WorksheetFunction.Clean( _
+                "Function " & a1(x)) & _
+                "(Optional Byval msg as String)" & vbCrLf & "' procedure Checked by test опосредованно" & _
+                vbCr & "'" & vbCr & _
+                "End Function" & vbCrLf & vbCrLf
+    Next
+
+    Строку_в_Функции = Join(a1)
+
+End Function
+
+Function Строку_Цикла_в_Имя_Функции( _
+        Optional ByVal str As String, _
+        Optional ByVal ClipBoardWrite As Boolean) _
+        As String
+' procedure Checked by test
+' строку цикла в имя функции
+' For x = LBound(a1) To UBound(a1)
+' в
+' For_LBound_a1_UBound_a1
+
+    If IsMissing(str) Then _
+            str = Clipboard_2_Text
+
+    If str = vbNullString Then _
+            str = Clipboard_2_Text
+
+    str = Replace(str, ")", vbNullString)
+    str = Replace(str, " to ", "_", Compare:=vbTextCompare)
+
+    Dim Var_Init As String
+    Var_Init = extract_Between(str, "For", "=")
+    str = Replace(str, Var_Init & "=", vbNullString)
+
+    str = Replace(str, "(", "_")
+    str = Trim$(str)
+    str = Replace(str, " ", "_")
+
+    If ClipBoardWrite Then _
+            Text_2_Clipboard str
+
+    Строку_Цикла_в_Имя_Функции = str
+
+End Function
+
+Function Массив_Символы(Optional ByVal msg As String) _
+        As Variant()    ' procedure Checked by test опосредованно
+
+    Массив_Символы = Array("( _", "(", ")", " _")
+
+End Function
+
+Function Юнит_Тест_Шаблон_из_Строки(ByVal str As String) _
+        As String
+
+' procedure Checked by test
+
+' берёт из буфера строку,
+' делает из неё иия процедуры
+' для этого имени создаёт
+' код шаблона юнит-теста и
+' возвращает
+
+    str = Строка_Символы_Убрать(str, 47)
+
+    ''    If Len(str) < 1 Then _
+     Exit Function
+
+    Dim Err_S As String
+    Err_S = "Assert.Fail" & Chr$(34) & "Test error: #" & Chr$(34) & _
+            " & Err.Number & " & Chr$(34) & " - " & Chr$(34) & " & Err.Description"
+
+    Юнит_Тест_Шаблон_из_Строки = _
+            "'@TestMethod" & vbCrLf & _
+            "Public Sub " & str & "_TestMethoa1()" & vbCrLf & _
+            "On Error GoTo TestFail" & vbCrLf & _
+            "bDebug = True" & vbCrLf & _
+            "Settings" & vbCrLf & vbCrLf & _
+            str & vbCrLf & _
+            "TestExit:" & vbCrLf & _
+            "Exit Sub" & vbCrLf & _
+            "TestFail:" & vbCrLf & _
+            Err_S & vbCrLf & _
+            "End Sub" & vbCrLf
+
+End Function
+
+Function Строка_Символы_Убрать( _
+        ByVal str As String, ByVal Код_Символ As Long) _
+        As String
+' procedure Checked by test
+
+' убрать символы меньше кода
+
+    Dim str_New As String, x As Long
+
+    For x = 1 To Len(str)
+
+        If Asc(Mid$(str, x, 1)) > Код_Символ Then _
+                str_New = str_New & Mid$(str, x, 1)
+
+    Next
+
+    Строка_Символы_Убрать = str_New
+End Function
+
+Function Юнит_Тесты_для_Кода_в_Буфере(Optional ByVal str As Variant) _
+        As String   ' procedure Checked by test опосредованно
+' procedure Checked by test опосредованно
+' вернёт из буфера список Sub и Function в буфер
+
+    Dim a1 As Variant, strNew As String, sWord As String
+
+    If IsMissing(str) Then _
+            str = Clipboard_2_Text
+
+    str = Replace(str, "(", " ( ")
+    a1 = Split(str)
+
+    If IsArray(a1) = False Then _
+            Exit Function
+
+    Dim x As Long
+
+    For x = LBound(a1) To UBound(a1)
+
+        '        If x < UBound(a1) - 1 Then
+        '
+        '            sWord = UCase(a1(x))
+        '
+        '            If sWord = "SUB" _
+                     '               Or _
+                     '               sWord = "FUNCTION" Then
+        '
+        '                If a1(x + 3) = "(" Then
+        '
+        '                    strNew = strNew & a1(x + 1) & vbCrLf
+        '
+        '                End If: End If: End If
+
+        Строку_Нарастить strNew, a1, x, _
+                Скобка_на_месте(a1, x, _
+                Признак_Процедуры(a1, x, _
+                x_в_Границе(a1, x)))
+    Next
+
+    Юнит_Тесты_Шаблоны_из_Буфера _
+            strNew
+
+End Function
+
+Function Строку_Нарастить(strNew As String, a1 As Variant, ByVal x As Long, _
+        ByVal Статус As Boolean) _
+        As Boolean   ' procedure Checked by test опосредованно
+    If Статус Then _
+            strNew = strNew & a1(x + 1) & vbCrLf
+
+End Function
+
+Function Скобка_на_месте(a1 As Variant, ByVal x As Long, _
+        ByVal Статус As Boolean) _
+        As Boolean    ' procedure Checked by test опосредованно
+    If Статус Then
+
+        If a1(x + 3) = "(" Then _
+                Скобка_на_месте = True
+
+    End If
+End Function
+
+Function Признак_Процедуры(a1 As Variant, ByVal x As Long, _
+        ByVal Статус As Boolean) _
+        As Boolean    ' procedure Checked by test опосредованно
+    If Статус Then
+
+        Dim sWord As String: sWord = UCase$(a1(x))
+
+        If sWord = "SUB" _
+                Or _
+                sWord = "FUNCTION" Then _
+                Признак_Процедуры = True
+
+    End If
+End Function
+
+Function x_в_Границе(a1 As Variant, ByVal x As Long) _
+        As Boolean    ' procedure Checked by test опосредованно
+
+    If x < UBound(a1) - 2 Then _
+            x_в_Границе = True
+
+End Function
+
+Function Юнит_Тесты_Шаблоны_из_Буфера(Optional ByVal str As String) As Variant
+' procedure Checked by test
+' для царской дороги в буфере
+' из строк в буфере делает юнит-тесты по количеству строк
+    Dim a1 As Variant
+
+    If str = vbNullString Then _
+            str = Trim$(CStr(Clipboard_2_Text))
+
+    a1 = Split(str, vbCrLf)
+    str = vbNullString
+
+    Dim x As Long
+    For x = LBound(a1) To UBound(a1)
+        If Len(a1(x)) > 0 Then _
+                str = str & vbCrLf & _
+                Юнит_Тест_Шаблон_из_Строки( _
+                Символы_Удалить( _
+                Массив_Символы, CStr(a1(x))))
+    Next
+
+    Text_2_Clipboard str
+    Юнит_Тесты_Шаблоны_из_Буфера = str
+End Function
+
+Sub R_Invert_X_ActCell_test()
+
+    R_Invert_X ActiveCell.CurrentRegion
+
+End Sub
+
+Function R_Invert_X( _
+        r As Range)
+' procedure Checked by test
+' диапазон инвертировать
+' X in name - change original object
+
+    If r.Count < 2 _
+            Then Exit Function     '=>
+
+    r.Value2 = a2_Invert_Rows( _
+            r_2_a2(r), 1)
+
+End Function
+
+Function a2_2_r(r As Range, _
+        a2() As Variant) _
+        As String
+' Тестом НЕ покрыто
+'
+    r.Value = a2
+
+End Function
+
+Function a2_Invert_Rows( _
+        a2() As Variant, _
+        lCol As Long) _
+        As Variant()
+' Тестом НЕ покрыто
+'
+    Dim a2_New() As Variant
+    a2_New = Mock.A2_Empty(a2)
+
+    Dim lBound_A2 As Long, uBound_a2 As Long
+    lBound_A2 = LBound(a2)
+    uBound_a2 = UBound(a2)
+
+    Dim lRow As Long, lRow_New As Long
+
+    For lRow = LBound(a2) To uBound_a2
+
+        lRow_New = uBound_a2 - lRow + lBound_A2
+
+        A2_Row_Copy _
+                a2, lRow, _
+                a2_New, lRow_New
+
+    Next
+
+    a2_Invert_Rows = a2_New
+
+End Function
+
+Function A2_Row_Copy( _
+        a2_Sour() As Variant, _
+        lRow_Sour As Long, _
+        a2_Dest() As Variant, _
+        lRow_Dest As Long)
+' procedure Checked by test
+'
+    Dim lCol As Long
+
+    For lCol = LBound(a2_Sour, 2) To UBound(a2_Sour, 2)
+
+        a2_Dest(lRow_Dest, lCol) = _
+                a2_Sour(lRow_Sour, lCol)
+
+    Next
+End Function
+
+Function r_2_a2( _
+        r As Range) _
+        As Variant()
+' procedure Checked by test
+' range to array 2d
+' диапазон в двумерный массив
+' gem
+
+    With r
+
+        If .Count = 1 Then
+
+            r_2_a2 = cell_2_a2(r)
+
+        ElseIf .Count > 1 Then
+
+            r_2_a2 = .Value
+
+        End If
+    End With
+End Function
+
+Function cell_2_a2( _
+        ceLL As Range) _
+        As Variant()
+' Тестом НЕ покрыто
+' ячейку одну в массив
+
+    Dim a2(1, 1) As Variant
+
+    With ceLL.Cells(1, 1)
+
+        If IsError(.Value) Then
+
+            a2(1, 1) = .Formula
+
+        Else
+
+            a2(1, 1) = .Value
+
+        End If
+    End With
+
+    cell_2_a2 = a2
+
+End Function
+
+

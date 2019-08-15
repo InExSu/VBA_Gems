@@ -1,0 +1,3232 @@
+Attribute VB_Name = "a_VBA_Gems"
+Option Explicit
+' Строка 80 символов ==========================================================
+Public AppCalc As Variant, AppScr As Boolean, AppDispAl As Boolean  'для Excel-Speed
+Public Каталог_Цикл As New Каталог_Цикл
+Public Mock As New Mock
+
+'========== не Моё
+Private Type QuickStack
+    Low As Long
+    High As Long
+End Type
+
+Type SaveRange
+    Val As Variant
+    Addr As String
+End Type
+Type SaveRange2
+    Val As Variant
+    Addr As String
+    Clr As Variant
+End Type
+Type SaveRange3
+    Val As Variant
+    Addr As String
+    FillClr As Variant
+    FontClr As Variant
+    FontBold As Variant
+    FontItalic As Variant
+End Type
+Public OldSel() As SaveRange
+Public NewSel() As SaveRange
+Public OldWorkbook As String
+Public OldSheet As String
+Public OldSelection() As SaveRange
+Public OldSelection2() As SaveRange2
+Public OldSelection3() As SaveRange3
+' === КОНЕЦ не Моё
+
+Function GitHub(Optional wb As Workbook)
+    'VB_Components_Export
+    ' procedure Checked by test опосредованно
+    If wb Is Nothing Then _
+       Set wb = ActiveWorkbook
+
+    Dim iTempPath As String, iType As String
+
+    iTempPath = Каталог(wb.Path & "\GitHub\")    'укажите свою папку
+
+    Dim iVBComponent As Object
+
+    For Each iVBComponent In wb.VBProject.VBComponents
+
+        Select Case iVBComponent.Type
+        Case 1: iType = ".txt"
+        Case 3: iType = ".frm"
+        Case 2, 100: iType = ".cls"
+        End Select
+
+        iVBComponent.Export _
+                filename:=iTempPath & iVBComponent.Name & iType
+    Next
+End Function
+
+Function Каталог(Путь As String) As String
+
+    If Каталог_Есть_FSO(Путь) = False Then
+
+        MkDir Путь
+
+    End If
+
+    Каталог = Путь
+
+End Function
+
+Function Путь(подКаталог As String) _
+         As String
+
+    If подКаталог = vbNullString Then подКаталог = "Версии"
+
+    With Application
+
+        Путь = ThisWorkbook.Path & _
+               .PathSeparator & _
+               подКаталог & _
+               .PathSeparator
+
+    End With
+End Function
+
+Function Расширение_без_Имени(str As String) _
+         As String
+    'Возвращает имя файла без расширения
+    ' procedure Checked by test
+
+    Static oFSO As Object
+
+    If oFSO Is Nothing Then
+
+        Set oFSO = CreateObject("Scripting.FileSystemObject")
+
+    End If
+
+    str = oFSO. _
+          GetExtensionName(str)
+
+    Dim iPos As Long
+
+    iPos = Len(str) - InStrRev(str, ".")
+
+    Расширение_без_Имени = Right$(str, iPos)
+
+End Function
+
+Function Имя_без_Расширения(str As String) _
+         As String
+    ' Возвращает расширение без имени файла
+    ' procedure Checked by test
+
+    Static oFSO As Object
+
+    If oFSO Is Nothing Then
+
+        Set oFSO = CreateObject("Scripting.FileSystemObject")
+
+    End If
+
+    str = oFSO. _
+          GetFileName(str)    ' отсекает путь к файлу
+
+    Static iPos As Long
+
+    iPos = InStr(str, ".") - 1
+
+    Имя_без_Расширения = Left$(str, iPos)
+
+End Function
+
+Function КонфиденцПесонал(ON_oFF As String, _
+                          msg As Boolean) As Variant
+    'персональные
+
+    Dim Status As String
+
+    With ActiveWorkbook
+
+        If ON_oFF = "oFF" Then
+            .RemovePersonalInformation = False
+            Status = "отКлючено"
+        End If
+
+        If ON_oFF = "ON" Then
+            .RemovePersonalInformation = True
+            Status = "ВКлючено"
+        End If
+
+        If msg Then _
+           MsgBox "Предупреждение О Конфиденциальной Информации", _
+           vbOKOnly, _
+           Status
+    End With
+End Function
+
+Public Sub RefStyle_Сhange()    'сменить адресацию ячеек
+    With Application
+        .ReferenceStyle = IIf(.ReferenceStyle = xlA1, _
+                              xlR1C1, _
+                              xlA1)
+    End With
+    'Горячая клавиша = добавить в
+    'Private Sub Workbook_Open()
+    '    Application.OnKey "^+{R}", "RefStyle_Сhange"
+End Sub
+
+Function Символы_Удалить(a1() As Variant, _
+                         str As String) _
+                         As String                                                                                   ' procedure Checked by test опосредованно
+
+    Dim x As Long
+
+    For x = LBound(a1) To UBound(a1)
+
+        str = Replace(str, a1(x), vbNullString)
+
+    Next
+
+    Символы_Удалить = str
+
+End Function
+
+Function Символы_Заменить(a1() As Variant, _
+                          str As String, sWhat As String) _
+                          As String                                                                                      ' procedure Checked by test опосредованно
+    ' строка символы заменить по массиву на один символ
+    Dim x As Long
+
+    For x = LBound(a1) To UBound(a1)
+
+        Replace str, a1(x), sWhat
+
+    Next
+
+    Символы_Заменить = str
+
+End Function
+
+Function Array_Find_Row_Col(dX As Variant, str As String) _
+         As Variant  ' Тестом покрыта
+    ' find the value in the array and return
+    ' the row and column numbers
+    ' if no value is found, then the cells of the array
+    ' will be empty, not zeros
+    Dim arr_Dim As Long: arr_Dim = Array_Dimension(dX)
+    If arr_Dim > 2 Then _
+       Exit Function
+    Dim a1_Row_Col(1 To 2) As Variant
+    If arr_Dim = 1 Then
+        Dim x As Long
+        For x = LBound(dX) To UBound(dX)
+            If InStr(dX(x), str) > 0 Then
+                a1_Row_Col(1) = x    ' row
+                a1_Row_Col(2) = 1    ' column
+            End If
+        Next
+    End If
+    If arr_Dim = 2 Then
+        Dim y As Long
+        For y = LBound(dX) To UBound(dX)
+            For x = LBound(dX, 2) To UBound(dX, 2)
+                If InStr(dX(y, x), str) > 0 Then
+                    a1_Row_Col(1) = y    ' row
+                    a1_Row_Col(2) = x    ' column
+                End If
+            Next
+        Next
+    End If
+    Array_Find_Row_Col = a1_Row_Col
+End Function
+
+
+Function Array_Dimension(arr As Variant) As Long   'возвращает количество измерений массива Arr
+    Dim i As Long, x As Long    ' procedure Checked by test опосредованно
+    On Error GoTo eXX
+    Err.Clear
+    ' increase until get an error trying
+    ' to get UBound on this dimension
+    Do: i = i + 1
+        x = UBound(arr, i)
+        If Err.Number > 0 Then Exit Do
+    Loop
+eXX:
+    Array_Dimension = i - 1
+End Function
+
+Function Clipboard_2_Text() As String    ' чтение из буфера обмена
+    '    With GetObject("New:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+    '        .GetFromClipboard
+    '        Clipboard_2_Text = .GetText
+    '    End With
+    ' требуется установка ссылки на библиотеку Microsoft Forms 2.0 Object Library:
+
+    Static clipboard As MSForms.DataObject
+    If clipboard Is Nothing Then
+        Set clipboard = New MSForms.DataObject
+    End If
+    'Application.Wait Now + TimeValue("0:00:01")
+    'Application.Wait (Now + 0.000006)    ' для обхода ClipDairy
+    clipboard.GetFromClipboard
+    Clipboard_2_Text = clipboard.GetText
+End Function
+
+Private Sub iTimer(Optional msg As String)
+    Dim dt1 As Double
+    dt1 = Timer
+    Application.Wait (Now + 0.000006)
+Debug.Print Timer - dt1
+End Sub
+
+Public Function Text_2_Clipboard(txt As String)     ' запись в буфер обмена
+    '     On Error Resume Next
+    '    If txt <> Empty Then
+    With GetObject("New:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .SetText txt$
+        .PutInClipboard
+    End With
+    '    End If
+End Function
+
+Function extract_Between(txt As String, _
+                         sLeft As String, _
+                         sRight As String) As Variant
+    'извлечь между
+    If Len(txt) > 0 And Len(sLeft) > 0 And Len(sRight) > 0 And _
+       InStr(txt, sLeft) > 0 And InStr(txt, sRight) > 0 Then
+
+        Dim a1 As Variant
+
+        a1 = Split(txt, sLeft)
+        a1 = Split(a1(1), sRight)
+
+        extract_Between = a1(0)
+    Else
+        'обработка ошибки
+        ' Err.Raise 567, "extract_Between", "Ошибка"
+    End If
+End Function
+
+Function Symb_Right_Cut(str As String, _
+                        symb As String) _
+                        As Variant
+    ' procedure Checked by test
+    '  справа удалить символ, если он
+    If Right$(str, 1) = symb Then
+        Symb_Right_Cut = Left$(str, Len(str) - 1)
+    Else
+        Symb_Right_Cut = str
+    End If
+End Function
+
+Public Sub Кнопку_Вставить( _
+       sText As String, _
+       sOnAction As String)
+    ' procedure Checked by test опосредованно
+    ' МакроРекродер
+    Dim sh As Shape
+    Set sh = ActiveSheet.Shapes.AddShape(msoShapeRoundedRectangle, 288.75, 8.25, 70, _
+                                         35)
+    With sh
+        .ShapeStyle = msoShapeStylePreset39
+        .TextFrame2.VerticalAnchor = msoAnchorMiddle
+        .TextFrame2.TextRange.Characters.Text = sText
+        .OnAction = sOnAction    '"Squadra_Unita"
+
+        With .TextFrame2.TextRange.Characters(1, 5). _
+             ParagraphFormat
+            .FirstLineIndent = 0
+            .Alignment = msoAlignCenter
+        End With
+        With .TextFrame2.TextRange.Characters(1, 5).Font
+            .Bold = msoTrue
+            .Fill.Visible = msoTrue
+            .Fill.ForeColor.ObjectThemeColor = msoThemeColorLight1
+            .Fill.Solid
+            .Size = 14
+            .Name = "+mn-lt"
+        End With
+    End With
+End Sub
+
+Function TipText(sh As Shape, str As String)
+    ' procedure Checked by test опосредованно
+    ' подсказка всплывающая при наведении курсора мыши на фигуру
+    sh.Parent.Hyperlinks.Add Anchor:=sh, address:="", _
+                             ScreenTip:=str
+
+End Function
+
+Function Отсечь_Слева_Код_Меньше(str As String, _
+                                 iAsc As Long) _
+                                 As String                                                                                                           ' procedure Checked by test опосредованно
+    ' например
+
+    Отсечь_Слева_Код_Меньше = Отсечь_Слева(str, _
+                                           Позиция_Символа_Больше_Слева(str, iAsc) - 1)
+
+End Function
+
+Function Отсечь_Слева(str As String, iPos As Long) _
+         As String  ' procedure Checked by test опосредованно
+    ' отсечь от строки указанное колво символов слева
+    ' вернуть строку начиная с символа после iPos
+
+    Отсечь_Слева = Right$(str, Len(str) - iPos)
+
+End Function
+
+Function Позиция_Символа_Больше_Слева(str As String, _
+                                      symb As Long) _
+                                      As Long                                                                                                                          ' procedure Checked by test опосредованно
+    ' найти c начала строки позицию символа больше указанного кода Asc
+    ' например узнать с какого символа начинаются
+    ' буквы Asc("A") = 65
+
+    Dim x As Long: x = 1
+
+    For x = 1 To Len(str)
+
+        If Asc(Mid$(str, x)) > symb Then
+
+            Exit For
+
+        End If
+    Next
+
+    If x <= Len(str) Then _
+       Позиция_Символа_Больше_Слева = x
+
+End Function
+
+Public Sub Книги_Другие_Закрыть_без_Сохранения()
+    ' Закрыть другие книги без сохранения
+    'Excel_Speed_ON
+
+    Dim wb As Workbook
+
+    For Each wb In Workbooks
+
+        With wb
+
+            If Not wb Is ActiveWorkbook Then    ' .Name <> "PERSONAL.XLSB" Then
+
+                .Close False
+
+            End If
+        End With
+    Next wb
+
+    'Excel_Speed_off
+
+End Sub
+
+Public Sub Листы_Ярлыки_Вкладки_Показать()
+    ' скрытое показать
+    ' show must go on
+    ' показать всё, все
+
+    With Application
+        .DisplayFullScreen = False
+        .DisplayFormulaBar = True
+        .DisplayStatusBar = True
+    End With
+
+    Dim win As Window
+
+    Книга_Листы_Показать ActiveWorkbook
+
+    For Each win In Windows
+        With win
+            .DisplayHeadings = True
+            .DisplayWorkbookTabs = True
+            .TabRatio = 0.5
+        End With
+    Next
+End Sub
+
+Function Книга_Листы_Показать(wb As Workbook)
+    ' procedure Checked by test опосредованно
+
+    Dim ws As Worksheet
+
+    For Each ws In wb.Worksheets
+
+        Лист_Показать ws
+
+    Next
+End Function
+
+Function Лист_Показать(ws As Worksheet)
+    ' procedure Checked by test опосредованно
+
+    ws.Visible = xlSheetVisible
+
+End Function
+
+Function Windows_Vertical(Optional msg As String)
+    ' procedure Checked by test опосредованно
+    ' окна расположить вертикально
+
+    Windows.Arrange ArrangeStyle:=xlVertical
+
+End Function
+
+Function Windows_Horizontal(Optional msg As String)
+    ' procedure Checked by test опосредованно
+    ' окна расположить горизонтально
+
+    Windows.Arrange ArrangeStyle:=xlHorizontal
+
+End Function
+
+Function Листы_Сортировать_по_Алфавиту(wb As Workbook, Optional msg As String)
+
+    Dim i As Long, j As Long, z As Long
+
+    With wb
+
+        For z = 1 To .Sheets.Count
+
+            For i = 1 To .Sheets.Count - 1
+
+                For j = i + 1 To .Sheets.Count
+
+                    If IsNumeric(.Sheets(i).Name) And IsNumeric(.Sheets(j).Name) Then
+
+                        Листы_Имена_Числа_ПереСтавить wb, i, j
+
+                    Else
+
+                        If UCase(.Sheets(i).Name) > UCase(.Sheets(j).Name) Then
+
+                            .Sheets(j).Move before:=.Sheets(i)
+
+                        End If
+                    End If
+                Next j
+            Next i
+        Next z
+    End With
+End Function
+
+Function Листы_Имена_Числа_ПереСтавить(wb As Workbook, _
+                                       ws_Left As Long, ws_Right As Long)
+    ' procedure Checked by test опосредованно
+
+    With wb
+
+        If CLng(.Sheets(ws_Left).Name) > CLng(.Sheets(ws_Right).Name) Then
+
+            .Sheets(ws_Left).Move after:=.Sheets(ws_Right)
+
+        End If
+    End With
+End Function
+
+Function Форматы_Обновить(r As Range, _
+                          Optional msg As String = "General")
+
+    ' procedure Checked by test опосредованно
+
+    ' без активации и без выделения работает непредсказуемо
+
+    With r
+
+        .Parent.Activate
+
+        .Select
+
+    End With
+
+    With Selection
+
+        .NumberFormat = msg
+
+        .FormulaLocal = .FormulaLocal
+
+    End With
+End Function
+
+Function R_Trim_Clean(rng As Range)
+
+    ' Текст улучшить
+
+    ' Evaluate не походит, потому что ей нужно Application.ReferenceStyle = xlA1 и
+    ' символов в ячейке < 256
+
+    ' @ToDo код разделить
+
+    Dim a2() As Variant
+
+    Set rng = Диап_Усечь(rng)
+
+    With rng
+
+        If .Cells.Count > 1 Then
+
+            a2 = .Formula
+
+            Dim y As Long, x As Long
+
+            With WorksheetFunction
+
+                For y = LBound(a2) To UBound(a2)
+
+                    For x = LBound(a2, 2) To UBound(a2, 2)
+
+                        If Left(a2(y, x), 1) <> "=" Then
+
+                            If InStr(a2(y, x), "ERROR") < 1 Then
+
+                                a2(y, x) = Replace$(a2(y, x), Chr(10), " ")
+
+                                a2(y, x) = .Clean( _
+                                           .Trim(a2(y, x)))
+
+                            End If
+                        End If
+                    Next
+
+                    ProgressBar_Turbo _
+                            "R_Trim_Clean. Строка", y, UBound(a2)
+                Next
+
+                .Formula = a2
+
+            End With
+
+        Else
+
+            If Left(.Value, 1) <> "=" Then
+
+                If InStr(.Value, "ERROR") < 1 Then
+
+                    .Value = Replace$(.Value, Chr(10), " ")
+
+                    .Value = WorksheetFunction.Clean( _
+                             WorksheetFunction.Trim(.Value))
+
+                End If
+            End If
+        End If
+    End With
+
+    Application.StatusBar = vbNullString
+
+End Function
+
+
+Function R_Trim(rng As Range)
+
+    ' Evaluate не походит? потому что ей нужно Application.ReferenceStyle = xlA1 и
+    ' символов в ячейке < 256
+    ' @ToDo разделить код
+
+    Dim a2() As Variant
+
+    With rng
+
+        If .Cells.Count > 1 Then
+
+            a2 = rng.Formula
+
+            Dim y As Long, x As Long
+
+            For y = LBound(a2) To UBound(a2)
+
+                For x = LBound(a2, 2) To UBound(a2, 2)
+
+                    If Left(a2(y, x), 1) <> "=" Then
+
+                        If InStr(a2(y, x), "ERROR") < 1 Then
+
+                            a2(y, x) = WorksheetFunction.Trim(a2(y, x))
+
+                        End If
+                    End If
+                Next
+            Next
+
+            .Formula = a2
+
+        Else
+
+            If Left(.Value, 1) <> "=" Then
+
+                If InStr(.Value, "ERROR") < 1 Then
+
+                    .Value = WorksheetFunction.Trim(.Value)
+
+                End If
+            End If
+        End If
+    End With
+End Function
+
+Function R_Clean(rng As Range)
+
+    ' Evaluate не походит? потому что ей нужно Application.ReferenceStyle = xlA1 и
+    ' символов в ячейке < 256
+
+    Dim a2() As Variant
+
+    a2 = rng.Formula
+
+    Dim y As Long, x As Long
+
+    For y = LBound(a2) To UBound(a2)
+
+        For x = LBound(a2, 2) To UBound(a2, 2)
+
+            If Left(a2(y, x), 1) <> "=" Then
+
+                If InStr(a2(y, x), "ERROR") < 1 Then
+
+                    With WorksheetFunction
+
+                        a2(y, x) = .Clean(a2(y, x))
+
+                    End With
+                End If
+            End If
+        Next
+    Next
+
+    rng.Formula = a2
+
+End Function
+
+'сравниватель диапазонов
+Public Sub R_Operator()
+    Application.ReferenceStyle = xlA1
+    Range_Compare.Show
+End Sub
+
+'---------------------------------------------------------------------------------------
+' DateTime  : 05.08.2013 16:56
+' Author    : The_Prist(Щербаков Дмитрий)
+'             WebMoney - R298726502453; Яндекс.Деньги - 41001332272872
+'             http://www.excel-vba.ru
+' Purpose   : http://www.excel-vba.ru/chto-umeet-excel/scepit-mnogo-yacheek-s-ukazannym-razdelitelem/
+' Procedure : СцепитьМного
+'             http://www.excel-vba.ru
+' Purpose   : Функция сцепляет все указанные ячейки в одну с указанным разделителем.
+' Аргументы функции:
+' Диапазон    — диапазон ячеек, значения которых необходимо объединить в строку.
+' Разделитель — необязательный аргумент.
+'               Один или несколько символов, которые будут вставлены между каждым словом.
+'               По умолчанию пробел.
+' БезПовторов — необязательный аргумент.
+'               Если указан как ИСТИНА или 1 — в результирующей строке будут значения без дубликатов.
+'               Для английской локализации данный параметр указывается как TRUE и FALSE соответственно.
+'---------------------------------------------------------------------------------------
+Function СцепитьМного(ДИАПАЗОН As Range, Optional РАЗДЕЛИТЕЛЬ As String = " ", Optional БезПовторов As Boolean = False)
+
+    Dim avData As Variant, lr As Long, lc As Long, sRes As String
+
+    avData = ДИАПАЗОН.Value
+
+    If Not IsArray(avData) Then
+
+        СцепитьМного = avData
+
+        Exit Function
+
+    End If
+
+    For lc = 1 To UBound(avData, 2)
+        For lr = 1 To UBound(avData, 1)
+            If Len(avData(lr, lc)) Then
+                sRes = sRes & РАЗДЕЛИТЕЛЬ & avData(lr, lc)
+            End If
+        Next lr
+    Next lc
+    If Len(sRes) Then
+        sRes = Mid(sRes, Len(РАЗДЕЛИТЕЛЬ) + 1)
+    End If
+
+    If БезПовторов Then
+        Dim oDict As Object, sTmpStr
+        Set oDict = CreateObject("Scripting.Dictionary")
+        sTmpStr = Split(sRes, РАЗДЕЛИТЕЛЬ)
+
+        With oDict
+
+            For lr = LBound(sTmpStr) To UBound(sTmpStr)
+
+                .Add sTmpStr(lr), sTmpStr(lr)
+
+            Next lr
+        End With
+
+        sRes = vbNullString
+
+        sTmpStr = oDict.Keys
+
+        For lr = LBound(sTmpStr) To UBound(sTmpStr)
+
+            sRes = sRes & IIf(sRes <> vbNullString, РАЗДЕЛИТЕЛЬ, "") & sTmpStr(lr)
+        Next lr
+
+    End If
+    СцепитьМного = sRes
+End Function
+
+Function App_Union(rng_Union As Range, _
+                   rng As Range) _
+                   As Range
+    ' procedure Checked by test
+    ' в обычном Application.Union Method At least two Range objects must be specified.
+    ' в нашем и 2, и 1, и 0
+    ' Вызов: Set rng_union = App_Union(rng_union, rng)
+    ' АртеФакт от ' InExSu 2019-06-13 22:38
+
+    If Not rng_Union Is Nothing Then
+
+        If Not rng Is Nothing Then
+
+            Set App_Union = Application.Union( _
+                            rng_Union, rng)
+
+        Else
+
+            Set App_Union = rng_Union
+
+        End If
+    Else
+
+        Set App_Union = rng
+
+    End If
+End Function
+
+Function Строка_Целиком_Пустая(r As Range) _
+         As Boolean
+    ' procedure Checked by test опосредованно
+
+    Строка_Целиком_Пустая = Диап_Пуст(r.EntireRow)
+
+End Function
+
+Function Диап_Пуст(r As Range) _
+         As Boolean
+    ' procedure Checked by test опосредованно
+    ' диапазон пустой ли?
+
+    If r.Text = Empty Then Диап_Пуст = True
+
+End Function
+
+Function Ячейка_НЕПустая_Последняя(ws As Worksheet) _
+         As Range
+    ' procedure Checked by test опосредованно
+
+    Dim row_Last As Long, col_Last As Long
+
+    row_Last = Строка_Крайняя(ws)
+
+    If row_Last > 0 Then
+
+        col_Last = Диап_Столбец_Крайний( _
+                   ws.Rows(row_Last).EntireRow)
+
+        If col_Last > 0 Then
+
+            Set Ячейка_НЕПустая_Последняя = ws.Cells( _
+                                            row_Last, col_Last)
+
+        End If
+    End If
+End Function
+
+Function Диап_Столбец_Крайний(r As Range) As Long     ' procedure Checked by test опосредованно
+    ' Найти последний столбец с данными, непустой
+
+    Диап_Столбец_Крайний = _
+    r.Find(what:="*", SearchOrder:=xlByColumns, _
+           SearchDirection:=xlPrevious).Column
+
+    If Диап_Столбец_Крайний = 0 Then Диап_Столбец_Крайний = 1
+
+End Function
+
+Function Столбец_Крайний(ws As Worksheet) As Long    ' procedure Checked by test опосредованно
+    ' Найти последний столбец с данными, непустой
+    ' InExSu 11.05.2019 08:58
+
+    Dim r As Range
+
+    Set r = ws.Cells.Find(what:="*", SearchOrder:=xlByColumns, _
+                          SearchDirection:=xlPrevious)
+
+    If r Is Nothing Then
+
+        Столбец_Крайний = 1
+
+    Else
+
+        Столбец_Крайний = r.Column
+
+    End If
+End Function
+
+Function Столбец_Свободный(ws As Worksheet) _
+         As Long
+    ' procedure Checked by test опосредованно
+
+    Dim r As Range
+
+    Set r = ws.Cells.Find(what:="*", SearchOrder:=xlByColumns, _
+                          SearchDirection:=xlPrevious)
+
+    If r Is Nothing Then
+
+        Столбец_Свободный = 1
+
+    Else
+
+        Столбец_Свободный = r.Column + 1
+
+    End If
+End Function
+
+Function Строка_Свободная( _
+         ws As Worksheet) _
+         As Long
+    ' procedure Checked by test
+
+    Dim r As Range
+
+    Set r = ws.Cells.Find(what:="*", SearchOrder:=xlByRows, _
+                          SearchDirection:=xlPrevious)
+
+    If r Is Nothing Then
+
+        Строка_Свободная = 1
+
+    Else
+
+        Строка_Свободная = r.Row + 1
+
+    End If
+End Function
+
+Function Строка_Крайняя(ws As Worksheet) _
+         As Long   ' procedure Checked by test опосредованно
+    ' Найти последняя строку  с данными, непустую
+
+    Dim r As Range
+
+    Set r = ws.Cells.Find(what:="*", SearchOrder:=xlByRows, _
+                          SearchDirection:=xlPrevious)
+
+    If r Is Nothing Then
+
+        Строка_Крайняя = 1
+
+    Else
+
+        Строка_Крайняя = r.Row
+
+    End If
+End Function
+
+Function Сколько_раз(iWord As String, str As String) _
+         As Long
+    ' сколько раз слово ( последовательность символов )
+    ' встречается в строке
+    ' АртеФакт
+    ' procedure Checked by test
+
+    Dim iStart As Long, iCount As Long
+    iStart = 1
+
+    Do While InStr(iStart, str, iWord, vbTextCompare) > 0
+
+        iCount = iCount + 1
+
+        iStart = InStr(iStart, str, iWord, vbTextCompare) + Len(iWord)
+
+    Loop
+
+    Сколько_раз = iCount
+
+End Function
+
+Function Строки_Слова_НЕНужные_Удалить(r As Range) _
+         As String
+    ' Тестом покрыта
+    ' удалить строки содержащие в ячейке слово
+
+    Строки_Удалить_по_Массиву_Слов _
+            r, _
+            Массив_Слов_НЕнужных
+
+End Function
+
+Function Массив_Слов_НЕнужных(Optional msg As String) _
+         As Variant()
+    ' Тестом покрыта
+
+    Массив_Слов_НЕнужных = Array("Итого", "Всего")
+
+End Function
+
+Function Строки_Удалить_по_Массиву_Слов(r As Range, a1() As Variant) _
+         As String
+    ' Тестом покрыта
+
+    '    If Mock.isAx(a1) = False Then Exit Function    '=>
+
+    If r Is Nothing Then Exit Function    '=>
+
+    Dim x As Long: For x = LBound(a1) To UBound(a1)
+
+        Строки_Удалить _
+                Слово_Целиком_Ячейки_Найти_Все( _
+                r, CStr(a1(x)))
+
+    Next
+End Function
+
+Function Слово_Целиком_Ячейки_Найти_Все(r As Range, str As String) _
+         As Range
+
+    Dim c As Range, found As Range, firstAddress As String
+
+    With r
+
+        Set c = .Find( _
+                what:=str, lookAt:=xlWhole, MatchCase:=False)
+
+        If Not c Is Nothing Then
+
+            firstAddress = c.address
+
+            Do
+
+                Set found = App_Union(found, c)
+
+                Set c = .FindNext(c)
+
+                If c Is Nothing Then Exit Do
+
+            Loop While c.address <> firstAddress
+        End If
+    End With
+
+    Set Слово_Целиком_Ячейки_Найти_Все = found
+
+End Function
+
+Function Строки_с_Пустыми_Ячейками(r As Range) _
+         As Range
+
+    ' Тестом покрыта
+    ' вернуть строки, если в части строки r есть пустые ячейки
+
+    If r Is Nothing Then Exit Function     '=>
+
+    Dim r_New As Range
+
+    Dim ceLL As Range: For Each ceLL In r
+
+        With ceLL
+
+            If WorksheetFunction.CountBlank( _
+               Application.Intersect(r.CurrentRegion, .EntireRow)) > 0 Then
+
+                Set r_New = App_Union(r_New, .EntireRow)
+
+            End If
+        End With
+    Next
+
+    Set Строки_с_Пустыми_Ячейками = r_New
+
+End Function
+
+
+Function Строки_Удалить(r As Range) _
+         As String
+    ' procedure Checked by test опосредованно
+
+    If r Is Nothing Then Exit Function    '=>
+
+    With r
+
+        .EntireRow.Delete
+
+    End With
+End Function
+
+Function Диап_Ужать_до_Столбца(r As Range) _
+         As Range
+    ' Тестом покрыта
+    ' диапазон ужать до первого столбца
+
+    If r Is Nothing Then Exit Function    '=>
+
+    With r
+
+        Set Диап_Ужать_до_Столбца = Application.Intersect(r, .Columns(1))
+
+    End With
+End Function
+
+Function Столбцы_Пустые_Удалить(rng As Range)
+    ' столбцы пустые удалить ' procedure Checked by test опосредованно
+
+    Dim r As Range, rDel As Range
+
+    For Each r In rng.Columns
+
+        If r.Text = "" Then
+
+            Set rDel = App_Union(rDel, r)
+
+        End If
+    Next r
+
+    If Not rDel Is Nothing Then
+
+        With rDel.EntireColumn
+
+            .Delete Shift:=xlToLeft
+
+        End With
+    End If
+End Function
+
+Function Диап_Усечь(rng As Range) _
+         As Range  ' procedure Checked by test опосредованно
+
+    Set Диап_Усечь = Application.Intersect( _
+                     rng.Parent.UsedRange, rng)
+
+End Function
+
+Function MsgBoxEx(Optional Prompt As String = "Ok!", _
+                  Optional Buttons As VbMsgBoxStyle = 0, _
+                  Optional Title As String = "Win", Optional SecondsToWait As Long = 1) As VbMsgBoxResult
+    '---------------------------------------------------------------------------------------
+    ' Procedure : MsgBoxEx
+    ' Author    : Казанский, exceleved@yandex.ru
+    ' Date      : 07.03.2014
+    ' Purpose   : MsgBox with timeout based on WScript.Shell Popup method. Creates .VBS file
+    '             in temporary folder, runs it, returns result code, deletes the file.
+    ' Arguments : First three are the same as for MsgBox, 4-th is timeout in seconds.
+    '           : If 4-th arg. is omitted or <=0 then waits for user action infinitely.
+    ' Ret.Value : The same as of Msgbox, -1 if timeout occured.
+    ' Errors    : Raises error 735 if temporary folder can't be found.
+    '---------------------------------------------------------------------------------------
+
+    Dim sTmp$, ff%, WshShell As Object
+    Set WshShell = CreateObject("WScript.Shell")
+    sTmp = Environ("temp")
+    If sTmp = "" Then
+        sTmp = Environ("tmp")
+        If sTmp = "" Then
+            sTmp = WshShell.SpecialFolders("MyDocuments")
+            If sTmp = "" Then
+                sTmp = ThisWorkbook.Path
+            End If
+        End If
+    End If
+    sTmp = "c:\Windows"
+    sTmp = sTmp & Format$(Now, """\~MsgBoxEx""YYMMDDHHMMSS"".vbs""")
+    ff = FreeFile
+    Open sTmp For Output As ff
+
+    If IsMissing(Title) Then Title = ""
+
+    'Popup(<Text>,<SecondsToWait>,<Title>,<Type>)
+
+    Print #ff, "WScript.Quit CreateObject(""WScript.Shell"").Popup (""" & Str2Code(Prompt) & _
+               """, " & Int(SecondsToWait) & ", """ & Str2Code(Title) & """, " & Int(Buttons) & ")"
+    Close ff
+
+    WshShell.Run sTmp, 0, True
+
+    Kill sTmp
+End Function
+
+Private Function Str2Code$(s)
+    '---------------------------------------------------------------------------------------
+    ' Procedure : Str2Code
+    ' Author    : Казанский, exceleved@yandex.ru
+    ' Date      : 07.03.2014
+    ' Purpose   : Replaces combinations CR+LF, LF+CR, single chars CR, LF with " & vblf & "
+    '             to be used in VBS code
+    '---------------------------------------------------------------------------------------
+
+    Str2Code = Replace$( _
+               Replace$( _
+               Replace$( _
+               Replace$( _
+               Replace$(s, """", """"""), _
+               vbCrLf, vbLf), _
+               vbLf & vbCr, vbLf), _
+               vbCr, vbLf), _
+               vbLf, """ & vblf & """)
+End Function
+
+
+Function Добавить_в_Столбец(ws As Worksheet, _
+                            lCol As Long, _
+                            var As Variant)
+
+    ws.Cells(Столбец_Ячейка_Свободная(ws, lCol).Row, lCol).Value = var
+
+End Function
+
+Function Столбец_Ячейка_Свободная(ws As Worksheet, _
+                                  lCol As Long) _
+                                  As Range
+
+    Set Столбец_Ячейка_Свободная = Столбец_Ячейка_Последняя( _
+                                   ws, lCol).Offset(1, 0)
+
+End Function
+
+Function Столбец_Ячейка_Последняя(ws As Worksheet, _
+                                  lCol As Long) _
+                                  As Range
+    ' procedure Checked by test опосредованно
+
+    With ws.Columns(lCol)
+
+        Set Столбец_Ячейка_Последняя = .Cells(.Rows.Count, 1).End(xlUp)
+
+    End With
+
+End Function
+
+
+Function A1_Union(a1_Up As Variant, a1_dowN As Variant, _
+                  sep As String) _
+                  As Variant
+    ' procedure Checked by test
+    ' массивы одномерные соединить
+    ' добавив второй к первому
+
+    'Dim a1_Join As Variant
+
+    If IsArray(a1_Up) = False Then
+
+        a1_Up = Array(vbNullString)
+
+    End If
+
+    A1_Union = Split(Join(a1_Up, sep) & _
+                     sep & _
+                     Join(a1_dowN, sep), sep)
+
+End Function
+
+Function a2_на_Лист(a2() As Variant, ceLL As Range) _
+         As Range
+    ' procedure Checked by test опосредованно
+
+    ' массив вставить на лист
+
+    Dim r As Range
+
+    Set r = ceLL.Resize(UBound(a2), UBound(a2, 2))
+
+    r = a2
+
+    Set a2_на_Лист = r
+
+End Function
+
+Public Sub test_a2_Сортировка_по_Возрастанию()
+    ' Тестом НЕ покрыто
+    '
+    Dim a2() As Variant, r As Range
+    Set r = [a1].CurrentRegion
+    a2 = r.Value
+    a2 = a2_Сортировка_по_Возрастанию(a2, 2)
+    r.Value = a2
+End Sub
+
+Function a2_Сортировка_по_Возрастанию(SortArray() As Variant, _
+                                      lCol As Long)                                                                                      '         As Variant()
+    ' procedure Checked by test
+    ' сортировка массива по столбцу (числа текст), массив сортировать
+
+    ' в начало модуля
+    'Private Type QuickStack
+    '    Low As Long
+    '    High As Long
+    'End Type
+    ' Адаптировано из https://www.planetaexcel.ru/forum/index.php?PAGE_NAME=message&FID=8&TID=6998&TITLE_SEO=6998&MID=49046#message49046
+
+    Dim i As Long, j As Long, lb As Long, ub As Long, stackpos As Long, ppos As Long, _
+        pivot As Variant, swp As Variant
+
+    Dim stack() As QuickStack
+    ReDim stack(1 To 64)
+
+    stackpos = 1
+
+    stack(1).Low = LBound(SortArray)
+    stack(1).High = UBound(SortArray)
+
+    Do
+        'Взять границы lb и ub текущего массива из стека.
+        lb = stack(stackpos).Low
+        ub = stack(stackpos).High
+        stackpos = stackpos - 1
+        Do
+            'Шаг 1. Разделение по элементу pivot
+            ppos = (lb + ub) \ 2
+            i = lb
+            j = ub
+            pivot = SortArray(ppos, lCol)
+            Do
+                While SortArray(i, lCol) < pivot
+                    i = i + 1
+                Wend
+                While pivot < SortArray(j, lCol)
+                    j = j - 1
+                Wend
+                If i <= j Then
+                    swp = SortArray(i, lCol)
+                    SortArray(i, lCol) = SortArray(j, lCol)
+                    SortArray(j, lCol) = swp
+                    i = i + 1
+                    j = j - 1
+                End If
+            Loop While i <= j
+
+            'Сейчас указатель i указывает на начало правого подмассива,
+            'j - на конец левого lb ? j ? i ? ub.
+            'Возможен случай, когда указатель i или j выходит за границу массива
+            'Шаги 2, 3. Отправляем большую часть в стек и двигаем lb,ub
+
+            If i < ppos Then    'правая часть больше
+                If i < ub Then
+                    stackpos = stackpos + 1
+                    'If stackpos > UBound(stack) Then ReDim Preserve stack(1 To UBound(stack) + 32)
+                    If stackpos > UBound(stack) Then ReDim Preserve stack(1 To UBound(stack) * 2)
+                    stack(stackpos).Low = i
+                    stack(stackpos).High = ub
+                End If
+                ub = j    'следующая итерация разделения будет работать с левой частью
+            Else
+                If j > lb Then
+                    stackpos = stackpos + 1
+                    If stackpos > UBound(stack) Then ReDim Preserve stack(1 To UBound(stack) * 2)
+                    stack(stackpos).Low = lb
+                    stack(stackpos).High = j
+                End If
+                lb = i
+            End If
+        Loop While lb < ub
+    Loop While stackpos
+
+    'a2_Сортировка_по_Возрастанию = SortArray
+
+End Function
+
+Public Sub test_a2_Сортировка_по_убываниЮ()
+    ' Тестом НЕ покрыто
+    '
+    Dim a2() As Variant
+    Dim r As Range
+    Set r = ActiveCell.CurrentRegion
+
+    a2 = r.Value
+
+    a2_Сортировка_по_убываниЮ a2, 5
+
+    r.Value = a2
+
+End Sub
+
+Function a2_Сортировка_по_убываниЮ(SortArray() As Variant, _
+                                   lCol As Long)                                                                                '         As Variant()
+    ' procedure Checked by test
+    ' сортировка массива по столбцу (числа текст), массив сортировать
+
+    ' в начало модуля
+    'Private Type QuickStack
+    '    Low As Long
+    '    High As Long
+    'End Type
+    ' Адаптировано из https://www.planetaexcel.ru/forum/index.php?PAGE_NAME=message&FID=8&TID=6998&TITLE_SEO=6998&MID=49046#message49046
+
+    Dim i As Long, j As Long, lb As Long, ub As Long, stackpos As Long, ppos As Long, _
+        pivot As Variant, swp As Variant
+
+    Dim stack() As QuickStack
+    ReDim stack(1 To 64)
+
+    stackpos = 1
+
+    stack(1).Low = LBound(SortArray)
+    stack(1).High = UBound(SortArray)
+
+    Do
+        'Взять границы lb и ub текущего массива из стека.
+        lb = stack(stackpos).Low
+        ub = stack(stackpos).High
+        stackpos = stackpos - 1
+        Do
+            'Шаг 1. Разделение по элементу pivot
+            ppos = (lb + ub) \ 2
+            i = lb
+            j = ub
+            pivot = SortArray(ppos, lCol)
+            Do
+                While SortArray(i, lCol) > pivot
+                    i = i + 1
+                Wend
+                While pivot > SortArray(j, lCol)
+                    j = j - 1
+                Wend
+                If i <= j Then
+                    swp = SortArray(i, lCol)
+                    SortArray(i, lCol) = SortArray(j, lCol)
+                    SortArray(j, lCol) = swp
+                    i = i + 1
+                    j = j - 1
+                End If
+            Loop While i <= j
+
+            'Сейчас указатель i указывает на начало правого подмассива,
+            'j - на конец левого lb ? j ? i ? ub.
+            'Возможен случай, когда указатель i или j выходит за границу массива
+            'Шаги 2, 3. Отправляем большую часть в стек и двигаем lb,ub
+
+            If i < ppos Then    'правая часть больше
+                If i < ub Then
+                    stackpos = stackpos + 1
+                    'If stackpos > UBound(stack) Then ReDim Preserve stack(1 To UBound(stack) + 32)
+                    If stackpos > UBound(stack) Then ReDim Preserve stack(1 To UBound(stack) * 2)
+                    stack(stackpos).Low = i
+                    stack(stackpos).High = ub
+                End If
+                ub = j    'следующая итерация разделения будет работать с левой частью
+            Else
+                If j > lb Then
+                    stackpos = stackpos + 1
+                    If stackpos > UBound(stack) Then ReDim Preserve stack(1 To UBound(stack) * 2)
+                    stack(stackpos).Low = lb
+                    stack(stackpos).High = j
+                End If
+                lb = i
+            End If
+        Loop While lb < ub
+    Loop While stackpos
+
+    'a2_Сортировка_по_убываниЮ = SortArray
+
+End Function
+
+Function a1_2_a1Parentheses(a1 As Variant) _
+         As Variant()
+
+    ' procedure Checked by test опосредованно
+    ' преобразовать массив без скобок в массив со скобками ()
+    '
+    ReDim a1_New(LBound(a1) To UBound(a1)) As Variant
+
+    Dim x As Long
+
+    For x = LBound(a1) To UBound(a1)
+
+        a1_New(x) = a1(x)
+
+    Next
+
+    a1_2_a1Parentheses = a1_New
+
+End Function
+
+Public Sub ProgressBar_Turbo(txt As String, _
+                             i As Long, _
+                             max As Long, Optional boost As Long = 3)
+
+    If i * max = 0 Then Exit Sub
+
+    Dim turbo As Long
+    turbo = Len(CStr(max)) * boost  '
+
+    With Application
+
+        If turbo = Int((turbo * Rnd) + 1) Then
+            .StatusBar = txt & " process: " & Format$(i, "# ### ###") & _
+                         " from " & Format$(max, "# ### ###") & ": " & _
+                         Format$(i / max, "Percent")
+
+            If Second(Time) > 5 Then    ' screen fade bypass
+
+                If .ScreenUpdating = False Then .ScreenUpdating = True
+                DoEvents
+
+            Else
+
+                If .ScreenUpdating Then .ScreenUpdating = False
+
+            End If
+        End If
+    End With
+End Sub
+
+Function Excel_Speed_ON(Optional msg As String)                         'ускорить excel
+    ' InExSu 11.05.2019 07:58
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+
+    Static AppCalc As Variant, AppScr As Boolean, AppDispAl As Boolean
+
+    With Application
+        If IsEmpty(AppCalc) Then
+            AppCalc = .Calculation
+            AppScr = .ScreenUpdating
+            AppDispAl = .DisplayAlerts
+        End If
+
+        If .Calculation <> xlCalculationManual Then _
+           .Calculation = xlCalculationManual
+
+        If .ScreenUpdating Then _
+           .ScreenUpdating = False
+
+        If .DisplayAlerts Then _
+           .DisplayAlerts = False
+
+    End With
+End Function
+
+Function Excel_Speed_off(Optional deMand As Boolean = False)     ' ускорение убрать
+    ' Если Demand = True, то  принудительно вернуть
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+    ' InExSu 11.05.2019 07:59
+
+    With Application
+        If deMand Then
+            .Calculation = xlCalculationAutomatic
+            .ScreenUpdating = True
+            .DisplayAlerts = True
+        Else
+            If IsEmpty(AppCalc) = False Then
+                .Calculation = AppCalc
+                .ScreenUpdating = AppScr
+                .DisplayAlerts = AppDispAl
+            End If
+        End If
+
+        .CutCopyMode = False
+        .StatusBar = vbNullString
+
+    End With
+End Function
+
+Function Ссылки_Активными(r As Range)        '7.2.18 19:45:10
+
+    Dim ceLL As Range
+
+    Set r = r.SpecialCells(xlCellTypeConstants, 23)
+
+    For Each ceLL In r.Cells
+
+        With ceLL
+
+            If Left$(.Value, 4) = "http" Then
+
+                .Hyperlinks.Add ceLL, .Value
+
+            Else
+
+                .Hyperlinks.Delete
+
+            End If
+        End With
+    Next ceLL
+End Function
+
+Function Ссылку_01_Открыть(r As Range)
+    ' procedure Checked by test опосредованно
+
+    HTTP_из_Строки Selection, 1
+
+End Function
+
+
+Function HTTP_из_Строки(ceLL As Range, iNumb As Long)
+    ' procedure Checked by test опосредованно
+    ' вернуть строку начинающуюся с http из строки ячейки
+
+    Dim a2() As Variant
+
+    a2 = Диап_Усечь(ceLL.EntireRow).Value
+
+    Dim eL As Variant, iCount As Long
+
+    For Each eL In a2
+
+        If UCase(Left$(eL, 4)) = "HTTP" Then
+
+            iCount = iCount + 1
+
+            If iCount = iNumb Then
+
+                HTTP_из_Строки = eL
+
+                Exit Function
+
+            End If
+        End If
+    Next
+End Function
+
+Function Файл_Есть_FSO(msg As String) _
+         As Boolean
+    ' procedure Checked by test
+    ' АртеФакт
+
+    With CreateObject("Scripting.FileSystemObject")
+
+        If .FileExists(msg) Then
+
+            Файл_Есть_FSO = True
+
+        End If
+    End With
+End Function
+
+Function Файл_Запустить( _
+         s As String) _
+         As String
+    ' procedure checked by test
+    '
+
+    Shell "cmd.exe /c" & _
+          "start /b /MIN /LOW " & Chr(34) & Chr(34) & " " & _
+          s
+
+End Function
+
+Function Файл_Есть_Dir(msg As String) _
+         As Boolean
+    ' procedure Checked by test опосредованно
+
+    If Trim(msg) = vbNullString Or _
+       InStr(msg, Application.PathSeparator) < 1 Then _
+       Exit Function
+
+    If InStr(msg, Dir(msg)) > 0 Then Файл_Есть_Dir = True
+
+End Function
+
+Function Каталог_Есть_FSO(msg As String) _
+         As Boolean
+    ' procedure Checked by test опосредованно
+
+    Static oFSO As Object
+    If oFSO Is Nothing Then
+        Set oFSO = CreateObject("Scripting.FileSystemObject")
+    End If
+
+    With oFSO
+
+        If .FolderExists(msg) Then
+
+            Каталог_Есть_FSO = True
+
+        End If
+    End With
+End Function
+
+Function Лист_Есть(wb As Workbook, sName As String) _
+         As Boolean
+    ' procedure Checked by test опосредованно
+
+    Dim ws As Worksheet
+
+    For Each ws In wb.Worksheets
+
+        If UCase(ws.Name) = UCase(sName) Then
+
+            Лист_Есть = True
+
+            Exit Function
+
+        End If
+    Next
+End Function
+
+Function Окна_Видимые_Есть(Optional msg As String) _
+         As Boolean
+
+    ' procedure Checked by test
+
+    ' АртеФакт
+
+    Dim win As Window
+
+    For Each win In Application.Windows
+
+        If win.Visible Then
+
+            Окна_Видимые_Есть = True
+
+            Exit Function
+
+        End If
+    Next
+End Function
+
+Function Диап_Значения(r As Range)
+    ' procedure Checked by test опосредованно
+    ' для сводных таблиц НЕ подходит
+    With r
+
+        .Value = .Value
+
+    End With
+End Function
+
+Sub Лист_Значения(ws As Worksheet)
+    ' для сводных таблиц подходит
+    ' procedure Checked by test опосредованно
+    With ws.UsedRange
+
+        .Copy
+        .PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+                                                               :=False, Transpose:=False
+
+    End With
+End Sub
+
+Function Словарь_Найти(dic As Object, key As Variant) _
+         As Variant
+
+    ' procedure Checked by test опосредованно
+
+    With dic
+
+        If .exists(key) Then Словарь_Найти = .item(key)
+
+    End With
+End Function
+
+Function Словарь_из_Массива_a2(a2() As Variant, _
+                               col_Key As Long, col_Item As Long) _
+                               As Object
+
+    ' procedure Checked by test опосредованно
+
+    ' словарь = две колонки массива, для быстрого поиска
+    ' Возвращает словарь из двух колонок массива
+    ' Массив в Словарь
+    ' позднее связывание
+
+    Dim dic_Temp As Object
+    Set dic_Temp = CreateObject("Scripting.Dictionary")
+
+    Dim key As Variant, item As Variant, y As Long
+
+    With dic_Temp
+
+        For y = LBound(a2) To UBound(a2)
+
+            key = a2(y, col_Key)
+
+            item = a2(y, col_Item)
+
+            If .exists(key) = False Then
+
+                .Add key, item
+
+            End If
+        Next
+    End With
+
+    Set Словарь_из_Массива_a2 = dic_Temp
+
+End Function
+
+Function Массив_на_Лист(a2() As Variant, ceLL As Range)
+    ' procedure Checked by test опосредованно
+
+    With ceLL
+
+        .Resize(UBound(a2), UBound(a2, 2)).Value = a2
+
+    End With
+End Function
+
+Function Книга_Формула_Обрамить(Optional msg As String, _
+                                Optional preFix_Left As String)
+    ' procedure Checked by test опосредованно
+
+    Dim ws As Worksheet
+
+    For Each ws In ActiveWorkbook.Worksheets
+
+        Лист_Формула_Обрамить ws, preFix_Left
+
+    Next
+End Function
+
+Function Листы_Выбранные_Формула_Обрамить(Optional msg As String, _
+                                          Optional preFix_Left As String)
+    ' procedure Checked by test опосредованно
+    '
+    Dim ws As Worksheet
+
+    For Each ws In ActiveWindow.SelectedSheets
+
+        Лист_Формула_Обрамить ws, preFix_Left
+
+    Next
+End Function
+
+Function Лист_Формула_Обрамить(ws As Worksheet, _
+                               Optional preFix_Left As String)
+    ' procedure Checked by test опосредованно
+
+    Диап_Формула_Обрамить ws.UsedRange, preFix_Left
+
+End Function
+
+Function Диап_Формула_Обрамить(r As Range, _
+                               Optional left_PreFix As String)
+    ' procedure Checked by test опосредованно
+
+    Dim ceLL As Range
+
+    For Each ceLL In r
+
+        Ячейка_Формула_Обрамить ceLL, left_PreFix
+
+    Next
+
+End Function
+
+Function Ячейка_Формула_Обрамить(ceLL As Range, Optional left_PreFix As String)
+    ' procedure Checked by test опосредованно
+
+    If left_PreFix = vbNullString Then left_PreFix = "IFERROR("
+
+    With ceLL
+
+        '.FormulaR1C1 = "=IFERROR(" & _
+         '
+        If .HasFormula Then
+
+            If InStr(.Formula, left_PreFix) < 1 Then
+
+                .Formula = "=" & left_PreFix & _
+                           Без_Символов_Слева(.Formula, 1) & _
+                           ","""")"
+
+            End If
+        End If
+    End With
+End Function
+
+Function Без_Символов_Слева(msg As String, numb_Chars As Long) _
+         As String
+    ' procedure Checked by test опосредованно
+    ' укоротить слева, усечь
+
+    ' АртеФакт
+
+    If msg <> vbNullString Then
+
+        Без_Символов_Слева = Right$(msg, Len(msg) - numb_Chars)
+
+    End If
+End Function
+
+Function Ячейка_Целиком_Снять(Optional msg As String)
+    ' procedure Checked by test опосредованно
+    '   для диалога поиска
+
+    With Cells(1, 1)
+
+        .Find what:="*", LookIn:=xlFormulas, lookAt:=xlPart
+
+    End With
+End Function
+
+Function Столбец_Ширина_по_Ячейкам_Выделенным(r As Range)
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+    Dim eL As Range
+
+    For Each eL In r
+
+        With eL.Columns
+
+            .AutoFit
+
+        End With
+    Next
+End Function
+
+Function Ячейка_Символы_Коды(ceLL As Range)
+    ' procedure Checked by test опосредованно
+    '
+
+End Function
+
+Function Буфер_в_Символы_Коды(Optional msg As String) _
+         As Variant()
+    ' procedure Checked by test опосредованно
+    ' буфер обмена в коды символоов
+
+    Dim str As String
+    str = Clipboard_2_Text
+
+    If Len(str) < 1 Then
+
+        ReDim a2(1 To 1, 1 To 2) As Variant
+
+    Else
+
+        ReDim a2(1 To Len(str), 1 To 2) As Variant
+
+        Dim x As Long
+
+        For x = 1 To Len(str)
+
+            a2(x, 1) = x
+
+            a2(x, 2) = Asc(Mid(str, x, 1))
+
+        Next
+    End If
+
+    Буфер_в_Символы_Коды = a2
+
+End Function
+
+Function UsedR_Без_Пустых(ws As Worksheet) _
+         As Range
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+    ' реальный .UsedRange., без пустых строк и столбцов
+
+    Dim cell_Up_Left As Range
+    Dim cell_dN_Rigt As Range
+
+    With ws
+
+        Set cell_Up_Left = .Cells( _
+                           Строка_НЕПустая_Первая(ws), _
+                           Столбец_НЕПустой_Первый(ws))
+
+        Set cell_dN_Rigt = .Cells( _
+                           Строка_Крайняя(ws), _
+                           Столбец_Крайний(ws))
+
+        Set UsedR_Без_Пустых = _
+        .Range( _
+        cell_Up_Left, cell_dN_Rigt)
+
+    End With
+End Function
+
+Function Строка_НЕПустая_Первая(ws As Worksheet) As Long    ' procedure Checked by test опосредованно
+    ' procedure Checked by test опосредованно
+    '  АртеФакт
+
+    Dim r As Range
+
+    Set r = ws.Cells.Find(what:="*", SearchOrder:=xlByRows, _
+                          SearchDirection:=xlNext)
+
+    If r Is Nothing Then
+
+        Строка_НЕПустая_Первая = 1
+
+    Else
+
+        Строка_НЕПустая_Первая = r.Row
+
+    End If
+End Function
+
+Function Столбец_НЕПустой_Первый(ws As Worksheet) As Long    ' procedure Checked by test опосредованно
+    ' Найти последний столбец с данными, непустой
+
+    Dim r As Range
+
+    Set r = ws.Cells.Find(what:="*", SearchOrder:=xlByColumns, _
+                          SearchDirection:=xlNext)
+
+    If r Is Nothing Then
+
+        Столбец_НЕПустой_Первый = 1
+
+    Else
+
+        Столбец_НЕПустой_Первый = r.Column
+
+    End If
+End Function
+
+Function Строки_Ниже_Слова_Удалить(str As String, _
+                                   ws As Worksheet)
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+
+    Dim row_Up As Long
+    Dim row_dN As Long
+
+    row_Up = Строку_Найти(ws, str) + 1
+    row_dN = Строка_Крайняя(ws)
+
+    ws.Rows(row_Up & ":" & row_dN).EntireRow. _
+            Delete Shift:=xlUp
+
+End Function
+
+Function Лист_Формулы_в_Значения(ws As Worksheet) _
+         As Worksheet
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+
+    ' всё на листе в значения
+
+    With ws.UsedRange
+
+        .Value = .Value
+
+    End With
+
+    Set Лист_Формулы_в_Значения = ws
+
+End Function
+
+Function Листы_нужные_Проверить(Optional msg As String) _
+    ' procedure Checked by test опосредованно
+    ' АртеФакт - ПолуФабрикат
+    Dim a1() As Variant
+    a1 = Array("СМЕТА", "Шаблон Рабочка")
+
+    Dim wb As Workbook
+    Set wb = ActiveWorkbook
+
+    Dim eL As Variant
+
+    For Each eL In a1
+
+        If Лист_Присутствует(wb, eL) = False Then msg = eL
+
+    Next
+
+    If msg <> vbNullString Then
+
+        Выход "Нет листа " & msg
+
+    End If
+End Function
+
+Function Лист_Присутствует(wb As Workbook, _
+                           ws_Name As Variant) _
+                           As Boolean
+    ' procedure Checked by test опосредованно
+
+    ' есть ли лист с таким имененм
+    ' АртеФакт
+
+    Dim ws As Worksheet
+
+    For Each ws In wb.Worksheets
+
+        If UCase(ws.Name) = UCase(ws_Name) Then
+
+            Лист_Присутствует = True
+
+            Exit Function
+
+        End If
+    Next
+End Function
+
+Function Лист_Создать(wb As Workbook, Optional msg As String) _
+         As Worksheet
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+
+    With wb
+
+        .Worksheets.Add _
+                after:=.Worksheets(.Worksheets.Count)
+
+    End With
+
+    If msg <> vbNullString Then ActiveSheet.Name = msg
+
+    Set Лист_Создать = ActiveSheet
+
+End Function
+
+Function Лист_Удалить_по_Имени(wb As Workbook, msg As String) _
+         As String
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+
+    Dim appDispAlert As Boolean
+
+    With Application
+
+        appDispAlert = .DisplayAlerts
+        .DisplayAlerts = False
+
+        wb.Worksheets(msg).Delete
+
+        .DisplayAlerts = appDispAlert
+
+    End With
+
+    Лист_Удалить_по_Имени = msg    ' пригодиться, чтобы создать лист заново
+
+End Function
+
+Function Ячейка_Активная(ws As Worksheet) _
+         As Range
+    ' procedure Checked by test опосредованно
+    ' вернуть range активную ячейку на указанном листе
+    ' АртеФакт
+    Dim ws_Prev As Worksheet
+    Set ws_Prev = ActiveSheet
+
+    Dim appScrUpd As Boolean
+
+    With Application
+
+        appScrUpd = .ScreenUpdating
+
+        If .ScreenUpdating Then .ScreenUpdating = False
+
+        ' основное действие
+        ws.Activate: Set Ячейка_Активная = ActiveCell
+
+        ws_Prev.Activate
+
+        If .ScreenUpdating <> appScrUpd Then
+
+            .ScreenUpdating = appScrUpd
+
+        End If
+    End With
+End Function
+
+Function Строку_Найти(ws As Worksheet, _
+                      str As String) _
+                      As Long
+    ' procedure Checked by test опосредованно
+    '
+    Dim r As Range
+
+    Set r = ws.UsedRange.Find(str, , , xlWhole)
+
+    Ячейка_Целиком_Снять
+
+    If Not r Is Nothing Then Строку_Найти = r.Row
+
+End Function
+
+Function Выход(Optional msg As String)
+    ' procedure Checked by test опосредованно
+
+    MsgBox msg, vbOKOnly, "Выход !"
+
+    End
+
+End Function
+
+Function Столбцы_Заголовки_Только_Удалить(ws As Worksheet, Optional msg As String)
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+
+    Dim r As Range, rDel As Range
+
+    For Each r In ws.UsedRange.Columns
+
+        If r.Cells(1, 1).Value <> vbNullString And _
+           WorksheetFunction.CountA(r) = 1 Then
+
+            Set rDel = App_Union(rDel, r)
+
+        End If
+    Next r
+
+    If Not rDel Is Nothing Then
+
+        rDel.EntireColumn.Delete Shift:=xlToLeft
+
+    End If
+End Function
+
+Function Цифры_Только(msg As String) _
+         As Variant
+    ' АртеФакт
+    ' procedure Checked by test
+    ' вернуть из текста число
+
+    Dim var As Variant
+
+    Dim x As Long
+
+    For x = 1 To Len(msg)
+
+        var = var & Цифра(Mid(msg, x, 1))
+
+    Next
+
+    Цифры_Только = var
+
+End Function
+
+Function Цифра(symb As Variant) _
+         As Variant   ' чтобы обходить возврат нуля
+    ' procedure Checked by test
+    ' АртеФакт
+
+    If Asc(symb) > 47 And Asc(symb) < 58 Then
+
+        Цифра = Left(symb, 1)
+
+    Else
+
+        Цифра = Empty
+
+    End If
+End Function
+
+Function Столб_Дата_Найти(r As Range, d As Date) _
+         As Long
+    ' procedure Checked by test
+    ' Дату найти в диапазоне
+    ' АртеФакт
+
+    Set r = Диап_Усечь(r)
+
+    Dim rFound As Range
+
+    Set rFound = r.Find(CDate(Date))
+
+    If Not rFound Is Nothing Then
+
+        Столб_Дата_Найти = rFound.Column
+
+    End If
+End Function
+
+Function Диап_без_Заголовков(r As Range, _
+                             Optional lRow As Long = 1) _
+                             As Range
+    ' procedure Checked by test
+    ' АртеФакт
+
+    ' вернёт диапазон без lRow строк. Или без заголовков
+
+    With r
+
+        Set Диап_без_Заголовков = _
+        .Resize(.Rows.Count - lRow, .Columns.Count) _
+                                  .Offset(lRow, 0)
+
+    End With
+End Function
+
+Function Строка_без_Дубликатов(msg As String, _
+                               separ As String) _
+                               As String
+    ' procedure Checked by test опосредованно
+    ' некоторые фразы могут быть разорваны = искажены
+
+    Строка_без_Дубликатов = Массив_в_Строку(separ, _
+                                            Словарь_в_Массив_a1( _
+                                            Словарь_из_Массива_a1( _
+                                            Split(msg, separ))))
+
+End Function
+
+'End Function
+
+Function Массив_в_Строку(separ As String, _
+                         a1() As Variant) _
+                         As String
+
+    ' procedure Checked by test опосредованно
+
+    Массив_в_Строку = Join(a1, separ)
+
+End Function
+
+Function Словарь_в_Массив_a1(dic As Object) _
+         As Variant()
+    ' procedure Checked by test опосредованно
+
+    Словарь_в_Массив_a1 = dic.Keys()
+
+End Function
+
+Function Словарь_из_Массива_a1(a1 As Variant) _
+         As Object
+    ' procedure Checked by test опосредованно
+    '
+    Dim dic_Temp As Object
+    Set dic_Temp = CreateObject("Scripting.Dictionary")
+
+    Dim key As Variant, item As Variant, x As Long
+
+    With dic_Temp
+
+        For x = LBound(a1) To UBound(a1)
+
+            key = a1(x)
+
+            item = vbNullString
+
+            If .exists(key) = False Then
+
+                .Add key, item
+
+            End If
+        Next
+    End With
+
+    Set Словарь_из_Массива_a1 = dic_Temp
+
+End Function
+
+
+Function Диап_Столбцы_Массив(a1() As Variant, _
+                             ws As Worksheet) _
+                             As Range
+    ' procedure Checked by test опосредованно
+    ' вернуть диапазон столбцов
+    ' АртеФакт
+
+    Dim r As Range
+
+    Dim x As Long
+
+    With ws
+
+        For x = LBound(a1) To UBound(a1)
+
+            Set r = App_Union(r, .Columns(a1(x)))
+
+        Next
+    End With
+
+    Set Диап_Столбцы_Массив = r
+
+End Function
+
+Function Диап_в_Массив(rng As Range, _
+                       Optional R_Property As String = "Value") _
+                       As Variant()
+    ' procedure Checked by test
+    ' диапазон в массив, даже одну ячейку
+    'одну ячейку в массив, VBA напрямую не принимают
+    ' АртеФакт
+
+    If rng.Cells.Count = 1 Then
+
+        Диап_в_Массив = Ячейку_в_Массив( _
+                        rng, R_Property)
+
+    Else
+
+        With rng
+
+            Select Case R_Property
+            Case "Value"
+                Диап_в_Массив = .Value
+            Case "Formula"
+                Диап_в_Массив = .Formula
+            End Select
+        End With
+    End If
+End Function
+
+Function Ячейку_в_Массив(ceLL As Range, _
+                         R_Property As String) _
+                         As Variant()
+    ' procedure Checked by test
+    '
+    Dim a2() As Variant
+    ReDim a2(1 To 1, 1 To 1)
+
+    With ceLL
+
+        Select Case R_Property
+        Case "Value"
+            a2(1, 1) = .Value
+        Case "Formula"
+            a2(1, 1) = .Formula
+        End Select
+    End With
+
+    Ячейку_в_Массив = a2
+End Function
+
+'функция проверки выделения на адекватность
+Function SelectionCheck(rng As Variant) As Boolean
+
+    'проверяем выделение на тип
+    If TypeName(Selection) <> "Range" Then
+        SelectionCheck = False
+        Exit Function
+    End If
+
+    'проверяем выделение на защиту листа
+    If ActiveSheet.ProtectContents Then
+        SelectionCheck = False
+        Exit Function
+    End If
+
+    'проверяем выделение на пересечение со сводными
+    Dim ceLL As Range
+    Dim pvtTable As String
+    If ActiveSheet.PivotTables.Count > 0 Then
+        For Each ceLL In rng
+            On Error Resume Next
+            pvtTable = ceLL.PivotTable.Name
+            If Len(pvtTable) > 0 Then
+                SelectionCheck = False
+                Exit Function
+            End If
+        Next ceLL
+    End If
+
+    'если с выделением все ОК
+    SelectionCheck = True
+End Function
+
+Sub SaveUndoInfo(r As Range)
+    'сохранение данных для последующего возможного восстановления
+    Dim ceLL As Range
+    Dim i As Long
+
+    OldWorkbook = ActiveWorkbook.Name
+    OldSheet = ActiveSheet.Name
+    i = 0
+    ReDim OldSelection(r.Cells.Count)
+    Dim smallrng As Range
+    For Each smallrng In r.Areas
+        For Each ceLL In smallrng
+            i = i + 1
+            With ceLL
+                OldSelection(i).Addr = .address
+                OldSelection(i).Val = .Formula
+            End With
+        Next ceLL
+    Next smallrng
+End Sub
+
+Sub RestoreUndoInfo()
+    'восстановление из сохраненного бэкапа при откате
+    Dim i As Long
+
+    Excel_Speed_ON
+
+    Application.Workbooks(OldWorkbook).Activate
+    Application.Worksheets(OldSheet).Activate
+    For i = 1 To UBound(OldSelection)
+        Range(OldSelection(i).Addr).Formula = OldSelection(i).Val
+    Next i
+
+    Excel_Speed_off
+
+End Sub
+
+'Генератор случайных данных в заданном диапазоне
+Public Sub Random_Generator()
+    If TypeName(Selection) <> "Range" Then
+        MsgBox "Сначала выделите диапазон ячеек, который хотите заполнить случайными значениями.", vbExclamation, "Неправильное выделение"
+    Else
+        frmRandom.Show
+        Application.OnUndo "Отменить вставку случайных данных", "RestoreUndoInfo"
+    End If
+End Sub
+
+Function Диалог_Каталог(Optional Путь As String) _
+         As String
+    ' Тестом НЕ покрыто
+    Dim oFD As FileDialog
+    Set oFD = Application.FileDialog(msoFileDialogFolderPicker)
+
+    With oFD        'используем короткое обращение к объекту
+
+        .Title = "Каталог"
+        .ButtonName = "Выбрать"
+        .Filters.Clear                'очищаем установленные ранее типы файлов
+        .InitialFileName = Путь        '"назначаем первую папку отображения
+        .InitialView = msoFileDialogViewLargeIcons        'вид диалогового окна(доступно 9 вариантов)
+
+        If .Show = 0 Then _
+           Exit Function         'показывает диалог
+
+        Диалог_Каталог = .SelectedItems(1)        'считываем путь к папке
+
+    End With
+End Function
+
+Sub Кнопка_Вычисления_Переключить()
+    'Переключить вычисления
+    '
+    '
+    Dim ceLL As Range
+    Set ceLL = ActiveCell
+
+    Dim sh As Shape
+    Set sh = ActiveSheet.Shapes("Rounded Rectangle 2")
+
+    With sh.TextFrame2.TextRange.Characters
+        If .Text = "Авто" Then
+            .Text = "Откл"
+            sh.ShapeStyle = msoShapeStylePreset28
+            Application.Calculation = xlManual
+        Else
+            .Text = "Авто"
+            sh.ShapeStyle = msoShapeStylePreset24
+            Application.Calculation = xlAutomatic
+        End If
+    End With
+
+    ceLL.Select
+
+End Sub
+
+Function Фигуры_Удалить(ws As Worksheet)
+    ' procedure Checked by test опосредованно
+    With ws.DrawingObjects
+        .Delete
+    End With
+
+    '    Dim sh As Shape
+    '
+    '    With ws
+    '
+    '        For Each sh In ws.Shapes
+    '
+    '            sh.Delete
+    '
+    '        Next
+    '    End With
+End Function
+
+Function Копии_Сохранять_Интервалы(Optional msg As String)
+    ' Тестом НЕ покрыто
+    '
+
+End Function
+
+Function Интервал_Запросить(Optional msg As String)
+    ' Тестом НЕ покрыто
+    ' через сколько повторять процедуру сохранения открытых файлов
+
+    Интервал_Запросить = Application.InputBox("минут: (0 = отключить регулярные сохранения) ", "Интервал повтора сохранения открытых книг", 15, , , , , 1)
+
+End Function
+
+Private Sub ДубликатыРазнымиЦветами_test()
+    ДубликатыРазнымиЦветами Selection
+End Sub
+
+Public Sub ДубликатыРазнымиЦветами(Optional ByRef rng As Range)
+
+    On Error Resume Next
+
+    If rng Is Nothing Then Set rng = Selection
+
+    Set rng = Application.Intersect(rng, rng.Parent.UsedRange)
+
+    Dim Colors() As Variant
+    ' массив цветов, используемых для заливки ячеек-дубликатов
+    Colors = Array(12900829, 15849925, 14408946, 14610923, 15986394, 14281213, 14277081, _
+                   9944516, 14994616, 12040422, 12379352, 15921906, 14336204, 15261367, 14281213)
+
+    Dim Coll As New Collection, dupes As New Collection, _
+        cols As New Collection, ra As Range, ceLL As Range, n&
+    Err.Clear: Set ra = Intersect(rng, ActiveSheet.UsedRange)
+    If Err Then Exit Sub
+
+    ra.Interior.ColorIndex = xlColorIndexNone: Application.ScreenUpdating = False
+    For Each ceLL In ra.Cells  ' запонимаем значение дубликатов в коллекции dupes
+        Err.Clear
+        If Len(Trim(ceLL)) Then
+            Coll.Add CStr(ceLL.Value), CStr(ceLL.Value)
+        End If
+        If Err Then dupes.Add CStr(ceLL.Value), CStr(ceLL.Value)
+    Next ceLL
+    Dim i01 As Long
+    For i01 = 1 To dupes.Count  ' заполняем коллекцию cols цветами для разных дубликатов
+        n = n Mod (UBound(Colors) + i01): cols.Add Colors(n), dupes(i01): n = n + 1
+    Next
+    For Each ceLL In ra.Cells  ' окрашиваем ячейки, если для её значения назначен цвет
+        ceLL.Interior.Color = cols(CStr(ceLL.Value))
+    Next ceLL
+    Application.ScreenUpdating = True
+End Sub
+
+Function Collection_Add_v( _
+         Coll As Collection, _
+         v As Variant)
+    ' procedure Checked by test опосредованно
+    ' добавить variant в коллекцию
+
+    If Coll_IN_v_q(Coll, v) = False Then
+
+        Coll.Add v, v
+
+    End If
+End Function
+
+Function Coll_IN_v_q(Coll As Collection, v As Variant) _
+         As Boolean
+    ' procedure Checked by test опосредованно
+    ' есть ли элемент в коллекции?
+    ' АртеФакт
+
+    Dim var As Variant
+
+    For Each var In Coll
+
+        If var = v Then
+
+            Coll_IN_v_q = True
+
+            Exit For
+
+        End If
+    Next
+End Function
+
+Function UnMerge_And_Fill_By_Value(r As Range) _
+         As Range
+
+    ' разЪединить / отменить объединение ячеек
+    ' и ячейки каждой бывшей объединённой ячейки
+    ' заполнить значениями из их первых ячеек
+
+    Dim address As String
+    Dim ceLL As Range
+
+    For Each ceLL In r.Cells
+        With ceLL
+            If .MergeCells Then
+                address = .MergeArea.address
+                .UnMerge
+                Range(address).Value = .Value
+            End If
+        End With
+    Next
+
+    Set UnMerge_And_Fill_By_Value = r
+
+End Function
+
+
+Function Диап_Формулы_в_Значения( _
+         r As Range, _
+         interior_Color As Long)
+    ' procedure Checked by test опосредованно
+    '
+    Dim r_Small As Range
+    For Each r_Small In r.Areas
+        With r_Small
+            .Value = .Value
+            .Interior.Color = interior_Color
+        End With
+    Next r_Small
+End Function
+
+Public Sub A2_2_Range( _
+       a2() As Variant, _
+       ceLL As Range)
+    ' Test Covered
+    ceLL.Resize( _
+            UBound(a2), UBound(a2, 2)).Value = _
+            a2
+
+End Sub
+
+Function A2_From_Range( _
+         r As Range) _
+         As Variant()
+    ' Test Covered
+    '
+    A2_From_Range = r.Value
+
+End Function
+
+Function Coll_From_A2_Skip( _
+         a2() As Variant, _
+         sKip As String) _
+         As Collection
+    ' Test Covered
+    '
+    Dim Coll As New Collection
+
+    Dim v As Variant
+
+    For Each v In a2
+        If v <> sKip Then
+            Coll.Add v
+        End If
+    Next
+
+    Set Coll_From_A2_Skip = Coll
+
+End Function
+
+Function A2_From_Coll( _
+         Coll As Collection) _
+         As Variant()
+    ' Test Covered
+    '
+    ReDim a2(1 To Coll.Count, 1 To 1) As Variant
+
+    Dim v As Variant
+    Dim iCount As Long
+    iCount = 1
+
+    For Each v In Coll
+        a2(iCount, 1) = v
+        iCount = iCount + 1
+    Next
+
+    A2_From_Coll = a2
+
+End Function
+
+Function Is_Numeric_Real( _
+         v As Variant) _
+         As Boolean
+    ' procedure Checked by test
+    ' в справке
+
+    ' на https://stackoverflow.com/questions/48101648/excel-vba-testing-for-non-numeric-input-data
+    ' обнаружилось что
+    ' IsNumeric("&6") = True
+
+    ' в справке оп VBA Excel 2010 написано
+    ' IsNumeric returns True if the entire expression is recognized as a number; otherwise, it returns False.
+    ' IsNumeric returns False if expression is a date expression.
+    '
+    ' Смотрим эту же справку по типам:
+    'numeric data type
+    'Any intrinsic numeric data type (Byte, Boolean, Integer, Long, Currency, Single, Double, or Date).
+    '
+    'numeric expression
+    'Any expression that can be evaluated as a number. Elements of an expression can include any combination of keywords, variables, constants, and operators that result in a number.
+    '
+    'numeric type
+    'Any intrinsic numeric data type (Byte, Boolean, Integer, Long, Currency, Single, Double, or Date) or any Variant numeric subtype (Empty, Integer, Long, Single, Double, Currency, Decimal, Date, Error, Boolean, or Byte).
+
+    ' Обычный чоловек думает, что isNumeric это проверка на числов,
+    ' a MicroSoft так не думает, поэтому пишем свой
+
+    Dim decSep As String
+    decSep = Application.DecimalSeparator
+
+    Dim bReturn As Boolean
+    bReturn = True
+
+    Dim str As String
+    str = CStr(v)
+
+    Dim symb As String
+    Dim x As Long
+
+    For x = 1 To Len(str)
+
+        symb = Mid$(str, x, 1)
+
+        If is_Number(symb) = False And _
+           symb <> decSep Then
+
+            bReturn = False
+
+            Exit For
+
+        End If
+    Next x
+
+    Is_Numeric_Real = bReturn
+
+End Function
+
+Function is_Number( _
+         v As Variant) _
+         As Boolean
+    ' procedure Checked by test
+    ' цифра ли
+    If Asc(v) > 47 Then
+        If Asc(v) < 58 Then
+            is_Number = True
+        End If
+    End If
+End Function
+
+
+Function Левое_Отсечь( _
+         sMsg As String, _
+         symb As String, _
+         Optional lTextCompare As Long = 1) _
+         As String
+    ' Тестом НЕ покрыто
+    ' вернуть правую часть после правого символа
+    ' TextCompare = 1 = регистр не учитывать
+
+    Dim iPos As Long
+    iPos = InStr(1, sMsg, symb, lTextCompare)
+
+    If iPos > 0 Then
+
+        Левое_Отсечь = Right$(sMsg, Len(sMsg) - iPos)
+
+    Else
+
+        Левое_Отсечь = sMsg
+
+    End If
+End Function
+
+Function Правое_Отсечь( _
+         sMsg As String, _
+         symb As String, _
+         Optional lTextCompare As Long = 1) _
+         As String
+    ' Тестом НЕ покрыто
+    ' вернуть левую часть слева от символа
+    ' TextCompare = 1 = регистр не учитывать
+
+    Dim iPos As Long
+    iPos = InStrRev(sMsg, symb, , lTextCompare)
+
+    If iPos > 0 Then
+
+        Правое_Отсечь = Left$(sMsg, iPos)
+
+    Else
+
+        Правое_Отсечь = sMsg
+
+    End If
+End Function
+
+
+Function Правое_Отсечь_с_подСтрокой( _
+         sMsg As String, _
+         subString As String, _
+         Optional lTextCompare As Long = 1) _
+         As String
+    ' Тестом НЕ покрыто
+    ' вернуть левую часть слева от символа
+    ' TextCompare = 1 = регистр не учитывать
+
+    Dim iPos As Long
+    iPos = InStrRev(sMsg, subString, , lTextCompare) - Len(subString)
+
+    If iPos > 0 Then
+
+        Правое_Отсечь_с_подСтрокой = Left$(sMsg, iPos)
+
+    Else
+
+        Правое_Отсечь_с_подСтрокой = sMsg
+
+    End If
+End Function
+
+Function Каталог_Создать(Путь$) _
+         As String
+
+    Static fso As Object
+    If fso Is Nothing Then
+        Set fso = CreateObject("Scripting.FileSystemObject")
+    End If
+
+    Dim a As Variant: a = Split(Путь, "\")
+    Dim i As Long
+    Dim aa As String
+
+    With fso
+        For i = 0 To UBound(a)
+            If a(i) <> "" Then
+                aa = aa & a(i) & "\"
+                If .FolderExists(aa) = False Then MkDir aa
+            End If
+        Next
+    End With
+
+    Каталог_Создать = Путь$
+
+End Function
+
+Function R_Cells_Blank(r As Range) _
+         As Range
+    ' Тестом НЕ покрыто
+    ' вернуть диапазон пустых ячеек
+    ' только в границах .UsedRange
+
+    With r
+
+        If WorksheetFunction.CountBlank(r) > 0 Then
+
+            If .Count > 1 Then
+
+                Set R_Cells_Blank = _
+                .SpecialCells(xlCellTypeBlanks)
+
+            Else
+
+                Set R_Cells_Blank = r
+
+            End If
+        End If
+    End With
+End Function
+
+Function R_Cells_NON_Blank( _
+         r As Range) _
+         As Range
+    ' procedure Checked by test
+    ' диапазон непустых ячеек - значения и формулы
+    '
+    Set R_Cells_NON_Blank = App_Union( _
+                            R_Cells_Formulas(r), R_Cells_Value(r))
+
+End Function
+
+Function R_Cells_Value( _
+         r As Range) _
+         As Range
+    ' procedure Checked by test
+    ' ячйки со значениями
+    ' Gem
+
+    With r
+
+        If .Cells.Count > WorksheetFunction.CountBlank(r) + _
+           Cells_Formulas_Count(r) Then
+
+            Set R_Cells_Value = _
+            .SpecialCells( _
+            xlCellTypeConstants, 23)
+
+        End If
+    End With
+End Function
+
+Function R_Cells_Formulas( _
+         r As Range) _
+         As Range
+    ' procedure Checked by test
+    '
+    With r
+
+        If .HasFormula Or _
+           IsNull(.HasFormula) Then
+
+            Set R_Cells_Formulas = _
+            .SpecialCells( _
+            xlCellTypeFormulas, 23)
+
+        End If
+    End With
+End Function
+
+Function Cells_Formulas_Count(r As Range) _
+         As Long
+    ' procedure Checked by test
+    ' количество ячеек с формулами
+
+    If Not R_Cells_Formulas(r) Is Nothing Then _
+       Cells_Formulas_Count = _
+       R_Cells_Formulas(r).Count
+
+End Function
+
+Function Cells_Value_Count( _
+         r As Range) _
+         As Long
+
+    ' procedure Checked by test
+
+    If Not R_Cells_Value(r) Is Nothing Then _
+       Cells_Value_Count = R_Cells_Value(r).Count
+
+End Function
+
+
+Function Process_Terminate( _
+         s As String) _
+         As String
+    ' procedure NOT checked by test
+    '
+    Shell "cmd.exe /c" _
+          & "taskKill /F /im " & _
+          Chr(34) & s & Chr(34)
+
+End Function
+
+Function a1_2_Range( _
+         cell_Start As Range, _
+         a1 As Variant) _
+         As String
+
+    cell_Start.Resize(a1_Len(a1), 1) = _
+    WorksheetFunction.Transpose(a1)
+
+End Function
+
+Function a1_Len( _
+         a1 As Variant) _
+         As Long
+
+    a1_Len = UBound(a1) - LBound(a1) + 1
+
+End Function
+
+Function String_2_a1( _
+         separ As String, _
+         s As String) _
+         As Variant
+
+    String_2_a1 = Split(s, separ)
+
+End Function
+
+Function FIle_Text_Read( _
+         filename As String) _
+         As String
+
+    Static fso As Object
+    If fso Is Nothing Then
+        Set fso = CreateObject("scripting.filesystemobject")
+    End If
+
+    Static ts As Object
+    Set ts = fso.OpenTextFile(filename, 1, True)
+
+    FIle_Text_Read = ts.ReadAll
+    ts.Close
+End Function
+
+Function HoldOn( _
+         lmilliSecond As Long)
+
+    Static dStart As Double
+    dStart = Timer
+
+    Do While Timer < dStart + _
+       lmilliSecond / 1000
+        DoEvents
+    Loop
+End Function
+
+Function WorkBook_SaveAs_UnView() _
+         As Boolean
+    ' procedure NOT checked by test
+    '
+
+    Dim wb As Workbook
+    Set wb = Workbooks.Add
+
+    wb.IsAddin = True
+    wb.SaveAs filename:="c:\_tmp\1", _
+              accessMode:=xlShared, FileFormat:=xlOpenXMLAddIn
+
+    ' Запросить файл и дату окончания
+    ' Файл открыть
+    ' isAddin = false
+    ' записать код в модуль эта книга
+
+End Function
+
+Sub Module_Code_Insert_Test()
+    ' procedure NOT checked by test
+    '
+    Module_Code_Insert ActiveWorkbook, "ЭтаКнига", _
+                       "Private Sub Workbook_AfterSave(ByVal Success As Boolean)" & vbNewLine & _
+                       "ThisWorkbook.IsAddin = True" & vbNewLine & _
+                       "End Sub"
+
+End Sub
+Sub Module_Code_Insert( _
+    wb As Workbook, _
+    sModule As String, _
+    sCode As String)
+    ' procedure NOT checked by test
+    ' вставить код в модуль
+
+    Dim CodePan As VBIDE.CodeModule
+    Dim s As String
+    Set CodePan = wb.VBProject.VBComponents(sModule).CodeModule
+    '    S = _
+         '    "Sub ABC()" & vbNewLine & _
+         '        "    MsgBox ""Hello World"",vbOkOnly" & vbNewLine & _
+         '        "End Sub" & vbNewLine
+    With CodePan
+        .InsertLines .CountOfLines + 1, sCode
+    End With
+End Sub
+
+Sub DeleteProcedureFromModule_Test()
+
+    ' procedure NOT checked by test
+    '
+    DeleteProcedureFromModule ActiveWorkbook, _
+                              "ЭтаКнига", "del2"
+
+End Sub
+
+Sub DeleteProcedureFromModule( _
+    wb As Workbook, _
+    sModule As String, _
+    sProcName As String)
+    ' из модуля удалить процедуру
+
+    Dim VBProj As VBIDE.VBProject
+    Dim VBComp As VBIDE.VBComponent
+    Dim CodeMod As VBIDE.CodeModule
+
+    Dim StartLine As Long
+    Dim NumLines As Long
+
+    Set VBProj = wb.VBProject
+    Set VBComp = VBProj.VBComponents(sModule)
+    Set CodeMod = VBComp.CodeModule
+
+    With CodeMod
+        StartLine = .ProcStartLine(sProcName, vbext_pk_Proc)
+        NumLines = .ProcCountLines(sProcName, vbext_pk_Proc)
+        .DeleteLines StartLine:=StartLine, Count:=NumLines
+    End With
+End Sub
+
+Sub Xlam_UnView_Make_View_Test()
+    ' procedure NOT checked by test
+    '
+    Xlam_UnView_Make_View "o:\Работа\Excel\Надстройки\Plex2018\PLEX.xlam"
+
+End Sub
+
+Function Xlam_UnView_Make_View( _
+         s As String) _
+         As String
+    ' procedure NOT checked by test
+    '
+    Dim secAutomation As MsoAutomationSecurity
+
+    With Application
+
+        secAutomation = .AutomationSecurity
+
+        .AutomationSecurity = msoAutomationSecurityForceDisable
+
+        Dim wb_AddIn As Workbook
+
+        Set wb_AddIn = Xlam_Open(s)
+
+        '  SaveAs parameter FileFormat:
+        '50 = xlExcel12 (Excel Binary Workbook in 2007-2013 with or without macro's, xlsb)
+        '51 = xlOpenXMLWorkbook (without macro's in 2007-2013, xlsx)
+        '52 = xlOpenXMLWorkbookMacroEnabled (with or without macro's in 2007-2013, xlsm)
+        '56 = xlExcel8 (97-2003 format in Excel 2007-2013, xls)
+
+        '.DisplayAlerts = False
+
+        With wb_AddIn
+
+            .IsAddin = False
+
+            If .MultiUserEditing Then
+
+                .ExclusiveAccess
+
+            Else
+
+Stop
+
+            End If
+        End With
+
+        .DisplayAlerts = True
+
+        .AutomationSecurity = secAutomation
+
+    End With
+End Function
+
+
+Function Xlam_Open( _
+         sFileFullName As String) _
+         As Workbook
+
+    ' gem
+    Dim AI As Excel.AddIn
+    Set AI = Application.AddIns.Add( _
+             filename:=sFileFullName)
+    AI.Installed = False
+    AI.Installed = True
+
+    Dim sFileName As String
+    sFileName = Имя_без_Расширения(sFileFullName)
+
+    Set Xlam_Open = Workbooks(AddIns(sFileName).Name)
+
+End Function
+
+Function Open_NO_Macros( _
+         s As String) _
+         As Workbook
+    ' Открыть без запуска макросов
+    '
+    Dim secAutomation As MsoAutomationSecurity
+
+    secAutomation = Application.AutomationSecurity
+
+    If s = vbNullString Then
+
+        Application.FileDialog(msoFileDialogOpen).Show
+
+    Else
+
+        Set Open_NO_Macros = Workbooks.Open(s)
+
+    End If
+
+    Application.AutomationSecurity = secAutomation
+End Function
+
+Function ClipBoard_Quot_2_Chr_Simple( _
+         Optional s As String) _
+         As String
+    ' procedure NOT checked by test
+    ' кавычки в буфере обмена заменить на chr
+    ' простой вариант без двойных кавычек и др.
+
+    Text_2_Clipboard _
+            Quot_2_Chr(Clipboard_2_Text)
+
+End Function
+
+Function Quot_2_Chr( _
+         s As String) _
+         As String
+    ' procedure NOT checked by test
+    ' кавычки в буфере обмена заменить на chr
+
+    Quot_2_Chr = Replace(s, Chr(34), Chr(34) & " & " & Chr(34))
+
+End Function
+

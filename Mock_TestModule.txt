@@ -1,0 +1,802 @@
+Attribute VB_Name = "Mock_TestModule"
+Option Explicit
+
+Option Private Module
+
+'@TestModule
+'@Folder("Tests")
+
+Private Assert As Object
+Private Fakes As Object
+
+'@ModuleInitialize
+Public Sub ModuleInitialize()
+    'this method runs once per module.
+    Set Assert = CreateObject("Rubberduck.AssertClass")
+    Set Fakes = CreateObject("Rubberduck.FakesProvider")
+End Sub
+
+'@ModuleCleanup
+Public Sub ModuleCleanup()
+    'this method runs once per module.
+    Set Assert = Nothing
+    Set Fakes = Nothing
+End Sub
+
+'@TestInitialize
+Public Sub TestInitialize()
+    'this method runs before every test in the module.
+End Sub
+
+
+
+'@TestMethod
+
+Public Sub G_Date_beTween_TestMethod()
+
+    On Error GoTo TestFail
+
+    Dim dMin As Date
+
+    Dim dMax As Date
+
+    With Mock
+
+        dMin = .G_Date
+
+        dMax = dMin + Mock.G_Long
+
+        Dim varReturn As Date
+
+        varReturn = Mock.G_Date_beTween(dMin, dMax)
+
+        If varReturn < dMin Or _
+           varReturn > dMax _
+           Then Err.Raise 567, "G_Date_beTween(dMin,dMax)"
+
+TestExit:
+
+        .wb.Close False
+
+        Exit Sub
+
+TestFail:
+
+        .wb.Close False
+
+
+    End With    'Mock
+    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+
+End Sub
+
+
+'
+''@TestMethod
+'
+' Sub IP_Address_Local_from_External_TestMethod()
+'
+'    'On Error GoTo TestFail
+'
+'    Dim sURL As String
+'
+'    With Mock
+'
+'        sURL = "https://ya.ru/"
+'
+'        Dim varReturn As String
+'
+'        varReturn = IP_Address_Local_from_External(sURL)
+'
+'        'if varReturn <> 0 Then Err.Raise 567, "IP_Address_Local_from_External(sURL)"
+'
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'
+'    End With    'Mock
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+
+
+'
+'
+''@TestMethod
+'
+'Public Sub A2_Empty_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim a2() As Variant
+'
+'    a2 = Mock.G_a2
+'
+'    Dim varReturn() As Variant
+'
+'    varReturn = Mock.A2_Empty(a2())
+'
+'    If UBound(varReturn, 2) <> UBound(a2, 2) _
+     '            Then Err.Raise 567, "A2_Empty(a2())"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+
+
+
+''@TestMethod
+'
+'Public Sub G_Password_Type_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim sType As String
+'
+'    Dim iLen As Long, x As Long
+'
+'    Dim varReturn As String
+'
+'    Dim a1 As Variant
+'    a1 = Array("00-", "09", "9+A-", "AZ", "Z+a-", "az", "z+А-", "АЯ", "ая")
+'
+'    With Mock
+'
+'        For x = LBound(a1) To UBound(a1)
+'
+'            sType = a1(x)
+'
+'            iLen = .G_Long
+'
+'            varReturn = .G_Password_Type(sType, iLen)
+'
+'Debug.Print varReturn
+'
+'            If Len(varReturn) <> iLen Then Err.Raise 567, "G_Password_Type(sType,iLen)"
+'        Next
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'    End With
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub G_Password_R_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim iMin As Long
+'
+'    Dim iMax As Long
+'
+'    Dim iLen As Long
+'
+'    With Mock
+'
+'        iMin = .Rand_Between(0, 127)
+'
+'        iMax = .Rand_Between(128, 255)
+'
+'        iLen = .G_Long
+'
+'        Dim varReturn As String
+'
+'        varReturn = .G_Password_Range(iMin, iMax, iLen)
+'
+'        If Len(varReturn) <> iLen Then Err.Raise 567, "G_Password_Range(iMin,iMax,iLen)"
+'
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'    End With
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+
+'
+'
+'
+''@TestMethod
+'
+'Public Sub G_Symb_Rand_ASCII_R_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim iMin As Long
+'
+'    Dim iMax As Long
+'
+'    With Mock
+'
+'        iMin = .Rand_Between(0, 127)
+'
+'        iMax = .Rand_Between(127, 255)
+'
+'        Dim varReturn As String
+'
+'        varReturn = .G_Symb_Rand_ASCII_Range(iMin, iMax)
+'
+'        If IsEmpty(varReturn) Then Err.Raise 567, "G_Symb_Rand_ASCII_Range(iMin,iMax)"
+'
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'        Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'    End With
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub G_R_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim msg As String
+'
+'    msg = .G_S
+'
+'    Dim varReturn As Range
+'
+'    Set varReturn = .G_Range(msg)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "G_Range(msg)"
+'
+'TestExit:
+'
+'    .wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    .wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+
+'
+''@TestMethod
+'
+'Public Sub G_Массив_Дин_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Long
+'
+'    Dim var_1 As Long
+'
+'    var_0 = 9
+'    var_1 = 9
+'
+'    Dim varReturn As Массив_Дин
+'
+'    Set varReturn = Массив_Дин.G_Массив_Дин(var_0, var_1)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "G_Массив_Дин(var_0,var_1)"
+'
+'TestExit:
+'
+'    .wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    .wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub G_Массив_Дин_Пустой_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Long
+'
+'    Dim var_1 As Long
+'
+'    var_0 = .G_Long
+'
+'    var_1 = .G_Long
+'
+'    Dim varReturn As Массив_Дин
+'
+'    Set varReturn = Массив_Дин.G_Массив_Дин_Пустой(var_0, var_1)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "G_Массив_Дин_Пустой(var_0,var_1)"
+'
+'TestExit:
+'
+'    .wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    .wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Массив_Дин_Заполнить_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Массив_Дин
+'
+'    Set var_0 = Массив_Дин.G_Массив_Дин(9, 9)
+'
+'    Массив_Дин.Массив_Дин_Заполнить var_0
+'
+'TestExit:
+'
+'    .wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    .wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+
+'
+''@TestMethod
+'
+'Public Sub G_S_Latin_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Long
+'
+'    var_0 = .G_Long
+'
+'    Dim varReturn As String
+'
+'    varReturn = .G_S_Latin(var_0)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "G_S_Latin(var_0)"
+'
+'TestExit:
+'
+'    .wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    .wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Symb_Latin_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Variant
+'
+'    var_0 = .G_Variant
+'
+'    Dim varReturn As String
+'
+'    varReturn = .Symb_Latin(var_0)
+'
+'    If varReturn Like "[!A-Z]" _
+     '            And varReturn Like "[!a-z]" Then _
+     '            Err.Raise 567, "Symb_Latin(var_0)"
+'
+'TestExit:
+'
+'    .wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    .wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+
+
+''@TestCleanup
+'Public Sub TestCleanup()
+'    'this method runs after every test in the module.
+'
+'    '    bDebug = False
+'    '
+'    '    .wb.Close False
+'
+'End Sub
+
+' === InExSu
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Лист_Слово_Случайно_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim var_0 As String
+'
+'    Dim var_1 As Long
+'
+'    Dim var_2 As Worksheet
+'
+'    var_0 = "InExSu"
+'
+'    var_1 = .G_Long
+'
+'    Set var_2 = .G_Worksheet
+'
+'    Dim varReturn As Worksheet
+'
+'    Set varReturn = .Лист_Слово_Случайно(var_0, var_1, var_2)
+'
+'    .wb.Close False
+'
+'    Set varReturn = .Лист_Слово_Случайно(var_0)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Лист_Слово_Случайно(var_0,var_1,var_2)"
+'
+'TestExit:
+'
+'    .wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    .wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+
+''@TestMethod
+'Public Sub isWs_TestMethod()
+'    On Error GoTo TestFail
+'    bDebug = True
+'    Settings
+'    Dim var_0 As Worksheet
+'
+'    .isWs var_0
+'
+'    Set var_0 = .G_Worksheet
+'
+'    Dim varReturn As Boolean
+'
+'    varReturn = .isWs(var_0)
+'
+'    If varReturn = False Then Err.Raise 567, "isWs(var_0)"
+'
+'TestExit:
+'    .wb.Close False
+'    Exit Sub
+'TestFail:
+'    .wb.Close False
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+
+
+''@TestMethod
+'Public Sub G_Workbook_TestMethod()
+'    On Error GoTo TestFail
+'    bDebug = True
+'    Settings
+'    Dim var_0 As String
+'
+'    .G_Workbook var_0
+'    var_0 = .G_S
+'
+'    Dim varReturn As Workbook
+'
+'    Set varReturn = .G_Workbook(var_0)
+'
+'    If varReturn Is Nothing Then Err.Raise 567, "G_Workbook(var_0)"
+'TestExit:
+'    .wb.Close False
+'    Exit Sub
+'TestFail:
+'    .wb.Close False
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+
+''@TestMethod
+'Public Sub wb_TestMethod()    ' ok
+'    On Error GoTo TestFail
+'
+'    Dim var_0 As Variant
+'
+'    .wb var_0
+'
+'TestExit:
+'    Exit Sub
+'TestFail:
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+''@TestMethod
+'Public Sub ws_TestMethod()    ' ok
+'    On Error GoTo TestFail
+'
+'
+'    Dim var_0 As Variant
+'
+'    .ws var_0
+'TestExit:
+'    Exit Sub
+'TestFail:
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+''@TestMethod
+'Public Sub Если_Книгу_Мок_Закрыли_Открыть_TestMethod()    ' ok
+'    On Error GoTo TestFail
+'
+'    Dim var_0 As Variant
+'
+'    .Если_Книгу_Мок_Закрыли_Открыть var_0
+'
+'TestExit:
+'    Exit Sub
+'TestFail:
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+''@TestMethod
+'Public Sub ОткрытаЛиКнига_TestMethod()    ' ok
+'    On Error GoTo TestFail
+'
+'    Dim var_0 As String
+'
+'    .ОткрытаЛиКнига var_0
+'
+'    .ОткрытаЛиКнига .wb.Name
+'
+'TestExit:
+'    Exit Sub
+'TestFail:
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+'
+'
+''@TestMethod
+'Public Sub G_Worksheet_TestMethod()
+'    On Error GoTo TestFail
+'    bDebug = True
+'    Settings
+'    Dim var_0 As Worksheet
+'
+'    .G_Worksheet var_0
+'    var_0 = .G_Worksheet
+'
+'    Dim varReturn As Variant
+'    Err.Clear
+'    Set varReturn = .G_Worksheet(var_0)
+'    'if varReturn <> 0 Then Err.Raise 567, "G_Worksheet(var_0)"
+'TestExit:
+'    .wb.Close False
+'    Exit Sub
+'TestFail:
+'    .wb.Close False
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+
+'
+'' === UnitTests
+''@TestMethod
+'Public Sub G_R_TestMethod()
+'    On Error GoTo TestFail
+'    bDebug = True
+'    Settings
+'    Dim var_0 As String
+'
+'    .G_Range var_0
+'    var_0 = .G_S
+'
+'    Dim varReturn As Variant
+'    Err.Clear
+'    varReturn = .G_Range(var_0)
+'    'if varReturn <> 0 Then Err.Raise 567, "G_Range(var_0)"
+'TestExit:
+'    .wb.Close False
+'    Exit Sub
+'TestFail:
+'    .wb.Close False
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+'
+'' === UnitTests
+''@TestMethod
+'Public Sub G_Long_TestMethod()
+'    On Error GoTo TestFail
+'    bDebug = True
+'    Settings
+'    Dim var_0 As String
+'
+'    .G_Long var_0
+'    var_0 = .G_S
+'
+'    Dim varReturn As Variant
+'    Err.Clear
+'    varReturn = .G_Long(var_0)
+'    'if varReturn <> 0 Then Err.Raise 567, "G_Long(var_0)"
+'TestExit:
+'    .wb.Close False
+'    Exit Sub
+'TestFail:
+'    .wb.Close False
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+
+'@TestMethod
+'Public Sub a2msg_TestMethod()
+'    On Error GoTo TestFail
+'    bDebug = True ' чтобы не всплыало msgbox
+'    Settings
+'    Dim var_0a2() As Variant
+'
+'    a2msg var_0a2()
+'    var_0a2 = .G_a2
+'
+'    a2msg var_0a2()
+'TestExit:
+'    .wb.Close False
+'    Exit Sub
+'TestFail:
+'    .wb.Close False
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+
+'
+''@TestMethod
+'Public Sub Workbooks_Worksheet_Name_TestMethod()
+'    On Error GoTo TestFail
+'    bDebug = True
+'    Settings
+'    Dim var_0 As String
+'
+'    .Workbooks_Worksheet_Name var_0
+'    var_0 = .G_S
+'
+'    Dim varReturn As Worksheet
+'
+'    Set varReturn = .Workbooks_Worksheet_Name(var_0)
+'    'if varReturn <> 0 Then Err.Raise 567, "Workbooks_Worksheet_Name(var_0)"
+'TestExit:
+'    .wb.Close False
+'    Exit Sub
+'TestFail:
+'    .wb.Close False
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+'
+'
+''@TestMethod
+'Public Sub ws_Exist_TestMethod()
+'    On Error GoTo TestFail
+'    bDebug = True
+'    Settings
+'    Dim var_0 As Workbook
+'    Dim var_1 As String
+'
+'    .ws_Exist var_0, var_1
+'    Set var_0 = .G_Workbook
+'    var_1 = .G_S
+'
+'    Dim varReturn As Boolean
+'
+'    varReturn = .ws_Exist(var_0, var_1)
+'    'if varReturn <> 0 Then Err.Raise 567, "ws_Exist(var_0,var_1)"
+'TestExit:
+'    .wb.Close False
+'    Exit Sub
+'TestFail:
+'    .wb.Close False
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+'
+

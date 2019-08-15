@@ -1,0 +1,323 @@
+Attribute VB_Name = "ћассив_a2_—ортир_Ѕыстр"
+Option Explicit
+
+Function a2_Sort_Rows_Q_Asc(a2() As Variant, _
+        ByVal lCol As Long)
+' procedure Checked by test
+' массив N-мерный сортировка быстра€ по возрастанию. InExSu
+' InExSu 01.06.2019 08:43 - неоптимизированна€ верси€ начала работаь без ошибок
+' на базе a1_Sort_Q_Asc
+
+' ¬ызывает переполнение стека
+
+    If a2_Len(a2) <= 1 Then
+
+        Exit Function
+
+    End If
+
+    If a2_Len(a2) = 2 Then
+
+        a2_2_Ascending a2, lCol
+
+        Exit Function
+
+    End If
+
+    Dim a2_Less() As Variant
+    Dim a2_More() As Variant
+
+    Dim pivot As Variant
+    pivot = a2_pivot_Rand(a2, lCol)
+
+    Dim y As Long
+
+    For y = LBound(a2) To UBound(a2)
+
+        If a2(y, lCol) <= pivot Then
+
+            a2_Row_Add_from_a2 a2_Less, a2, y
+
+        Else
+
+            a2_Row_Add_from_a2 a2_More, a2, y
+
+        End If
+    Next
+
+    ' Erase a2
+
+    a2_Sort_Rows_Q_Asc a2_Less, lCol
+    a2_Sort_Rows_Q_Asc a2_More, lCol
+
+    a2 = a2_Merge_2( _
+            a2_Less, a2_More)
+    '    a2_Sort_Rows_Q_Asc = a2_Merge_2( _
+         '            a2_Less, a2_More)
+
+End Function
+
+Function a2_2_Ascending(a2() As Variant, _
+        ByVal lCol As Long)
+
+' procedure Checked by test
+' сортировать массив N-мерный двухэлементный по возрастанию
+
+    If a2_Len(a2) <= 1 Then
+        Exit Function
+    End If
+
+    'Print StrComp(1, 9), StrComp(9, 1), StrComp(1, 1)
+    '          -1             1               0
+    '    If StrComp( _
+         '            a2(LBound(a2), lCol), a2(UBound(a2), lCol)) = 1 Then
+
+    If a2(LBound(a2), lCol) > a2(UBound(a2), lCol) Then
+
+        a2_Rows_Swap _
+                a2, LBound(a2), UBound(a2)
+
+    End If
+End Function
+
+Function a2_Rows_Swap(a2() As Variant, _
+        ByVal row_Sour As Long, _
+        ByVal row_Dest As Long)
+' procedure Checked by test
+' помен€ть в массиве n-мерном строки местами
+
+    Dim x As Long, var As Variant
+
+    For x = LBound(a2, 2) To UBound(a2, 2)
+
+        var = a2(row_Dest, x)
+
+        a2(row_Dest, x) = a2(row_Sour, x)
+
+        a2(row_Sour, x) = var
+
+    Next
+End Function
+
+Function a2_Merge_2(a2_1() As Variant, _
+        a2_2() As Variant) _
+        As Variant()
+' procedure Checked by test
+' массивы 2 соединить/объединить/ добавить a2_2 к a2_1
+' јрте‘акт
+
+    If isAx(a2_1) = False Then
+        a2_Merge_2 = a2_2
+        Exit Function
+    End If
+
+    If isAx(a2_2) = False Then
+        a2_Merge_2 = a2_1
+        Exit Function
+    End If
+
+    Dim row_End As Long
+    row_End = UBound(a2_1)
+
+    a2_1 = a2_Rows_Add_Empty _
+            (a2_1, a2_Len(a2_2))
+
+    Dim row_Diff As Long
+    row_Diff = a2_Len(a2_1) - a2_Len(a2_2)
+
+    Dim y As Long, x As Long
+
+    For y = row_End + 1 To UBound(a2_1)
+
+        For x = LBound(a2_1, 2) To UBound(a2_1, 2)
+
+            a2_1(y, x) = a2_2(y - row_Diff, x)
+
+        Next
+    Next
+
+    a2_Merge_2 = a2_1
+
+End Function
+
+Private Function Option_Base() _
+        As Long
+' “естом  покрыто
+'
+    Option_Base = LBound(Array(vbNullString))
+
+End Function
+
+Function a2_Row_Add_from_a2(a2_Dest() As Variant, _
+        a2_Sour() As Variant, _
+        ByVal row_Sour As Long)    ' _
+                                   As Variant()
+' procedure Checked by test
+' добавить строку к концу массива из строки другого массива
+
+    If isAx(a2_Dest) = False Then
+
+        ReDim a2_Dest( _
+                LBound(a2_Sour) To LBound(a2_Sour), _
+                LBound(a2_Sour, 2) To UBound(a2_Sour, 2))
+
+    Else
+
+        a2_Dest() = a2_Rows_Add_Empty(a2_Dest(), 1)
+
+    End If
+
+    a2_Row_Copy_from_a2_2_uBound _
+            a2_Dest(), _
+            a2_Sour(), _
+            row_Sour
+
+End Function
+
+Function a2_Row_Copy_from_a2_2_uBound(a2_Dest() As Variant, _
+        a2_Sour() As Variant, _
+        ByVal row_Sour As Long)
+' procedure Checked by test
+' скопировать строку row_Sour массива a2_Sour в _
+  последнюю строку массива a2_Dest
+
+    Static x As Long
+
+    For x = LBound(a2_Sour, 2) To UBound(a2_Sour, 2)
+
+        a2_Dest(UBound(a2_Dest), x) = a2_Sour(row_Sour, x)
+
+    Next
+End Function
+
+Function a2_Rows_Add_Empty(a2() As Variant, _
+        ByVal lRows As Long) _
+        As Variant()
+
+' procedure Checked by test
+' в конец массива добавить пустую строку
+
+    Static a2_New() As Variant
+
+    ReDim a2_New(LBound(a2) To UBound(a2) + lRows, _
+            LBound(a2, 2) To UBound(a2, 2))
+
+    a2_Copy_to_a2 a2, a2_New
+
+    a2_Rows_Add_Empty = a2_New
+
+End Function
+
+ Function a2_Copy_to_a2(a2_Sour() As Variant, _
+        a2_Dest() As Variant)
+' procedure Checked by test
+' скопировать массив меньший a2_Sour в массив побольше a2_Dest
+'
+    Dim y As Long, x As Long
+
+    For y = LBound(a2_Sour) To UBound(a2_Sour)
+
+        For x = LBound(a2_Sour, 2) To UBound(a2_Sour, 2)
+
+            a2_Dest(y, x) = a2_Sour(y, x)
+
+        Next
+    Next
+End Function
+
+Function a2_Len(a2() As Variant) _
+        As Long
+' procedure Checked by test
+'
+    If isAx(a2) Then
+
+        a2_Len = UBound(a2) - LBound(a2) + 1
+
+    End If
+End Function
+
+Function a2_pivot_Rand(a2() As Variant, _
+        ByVal lCol As Long) _
+        As Variant
+' procedure Checked by test
+' элемент опорный случайный вернуть
+
+    With WorksheetFunction
+
+        a2_pivot_Rand = a2( _
+                .RandBetween( _
+                LBound(a2), UBound(a2)), lCol)
+
+    End With
+End Function
+
+Private Function isAx(d As Variant) _
+        As Boolean   ' “естом покрыта
+' раньше называл isDx
+' isarray массив ли, проверить массив по взрослому, массивли
+
+    With Err
+        .Clear
+
+        On Error Resume Next
+
+        If LBound(d) > -1 Then
+
+            If .Number = 0 Then
+
+                isAx = True
+
+            End If
+        End If
+    End With
+End Function
+
+Function a2_isSorted_Asc(a2() As Variant, _
+        ByVal lCol As Long) _
+        As Boolean
+' procedure Checked by test
+' отсортирован ли массив одномерный по возрастанию ?
+
+    Static Status As Boolean: Status = True
+
+    Dim y As Long
+
+    For y = LBound(a2) To UBound(a2) - 1
+
+        If a2(y, lCol) > a2(y + 1, lCol) Then
+
+            Status = False
+
+            Exit For
+
+        End If
+    Next
+
+    a2_isSorted_Asc = Status
+
+End Function
+
+Function a2_isSorted_desC(a2() As Variant, _
+        ByVal lCol As Long) _
+        As Boolean
+' procedure Checked by test
+' отсортирован ли массив одномерный по возрастанию ?
+
+    Static Status As Boolean: Status = True
+
+    Dim y As Long
+
+    For y = LBound(a2) To UBound(a2) - 1
+
+        If a2(y, lCol) < a2(y + 1, lCol) Then
+
+            Status = False
+
+            Exit For
+
+        End If
+    Next
+
+    a2_isSorted_desC = Status
+
+End Function

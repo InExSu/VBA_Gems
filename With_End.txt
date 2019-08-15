@@ -1,0 +1,813 @@
+Attribute VB_Name = "With_End"
+Option Explicit
+' https://www.youtube.com/channel/UCQMbRhaPEFD1NoZLhRzQzSA/videos?view=0&shelf_id=0&sort=dd
+' https://inexsu.wordpress.com
+
+' @ToDo
+'
+' With 1)
+'   If s = R_Headers(1, .Value Then
+'        ' HeadKey
+'        If R_Headers(1, .Offset(1, 0).Value = vbNullString Then
+'
+'            Row_Esta = R_Headers(1, .Row + 1
+'
+'        Else
+'            Row_Esta = R_Headers(1, .End(xlDown).Row + 1
+'
+'        End If
+'
+'    Else
+'
+'        Row_Esta = R_Headers(1, .End(xlDown).Row
+'
+'End With '1)
+
+Sub With_End_Min_Show()
+' procedure checked by test
+'
+    Dim s As String
+    s = With_End_Min( _
+            a_VBA_Gems.Clipboard_2_Text)
+
+    a_VBA_Gems.Text_2_Clipboard s
+
+    MsgBoxEx s, , "in ClipBoard", 2
+
+End Sub
+
+Function With_End_Min( _
+        s As String) _
+        As String
+' procedure checked by test
+' ждёт минимальный участок кода - без End Sub и без End With
+' НЕ удаляй - это исходник иерархии
+'    s = a_VBA_Gems.Clipboard_2_Text
+'
+'    s = Replace(s, ":", ":" & vbCrLf)
+'
+'    s = S_not_First_Replace(".", "Point2rePlace", s)
+'
+'    s = Wave_First(s)
+'
+'    ' Замены обратные
+'
+'    s = Replace(s, "Point2rePlace", ".")
+'
+'    s = Replace(s, ":" & vbCrLf, ":")
+'
+'    a_VBA_Gems.Text_2_Clipboard s
+'
+'    MsgBoxEx s, , "in ClipBoard", 2
+
+' а теперь иерархия
+
+    With_End_Min = Replace( _
+            Replace(Wave_First( _
+            S_not_First_Replace(".", "Point2rePlace", _
+            Replace( _
+            s, ":", ":" & vbCrLf))), _
+            "Point2rePlace", "."), ":" & vbCrLf, ":")
+
+End Function
+
+Function Wave_pOp( _
+        s As String) _
+        As String
+' procedure NOT checked by test
+' работает с точкаОбъектточка
+' pOp = point Object point
+
+End Function
+
+Function S_not_First_Replace( _
+        subs As String, _
+        sRepl As String, _
+        s As String) _
+        As String
+' procedure checked by test
+' строку, не первую, заменить на susb
+
+' Нарезать на строки по vbCrLf
+    Dim a1 As Variant
+    a1 = Split(s, vbCrLf)
+
+    Dim lCol As Long
+
+    For lCol = LBound(a1) To UBound(a1)
+
+        a1(lCol) = Replace_GOod(CStr(a1(lCol)), subs, sRepl, _
+                Position_02_s(CStr(a1(lCol)), subs))
+
+    Next
+
+    ' собрать массив обратно
+    S_not_First_Replace = Join(a1, vbCrLf)
+
+End Function
+
+Function Replace_GOod( _
+        s As String, _
+        sFind As String, _
+        sRepl As String, _
+        lStart As Long, _
+        Optional lCount As Long = -1, _
+        Optional vbCompare As Long = vbTextCompare) _
+        As String
+' procedure checked by test
+' стандартный Replace при замене НЕ с первого символа,
+' отрезает начало строки
+' а эта нет.
+' gem
+
+    If lStart = 0 Then
+        Replace_GOod = s
+        Exit Function
+    End If
+
+    Dim sLeft As String, sRight As String
+
+    If lStart > 1 Then
+
+        sLeft = Left$(s, lStart - 1)
+
+    End If
+
+    sRight = Replace(s, sFind, sRepl, lStart, lCount, vbCompare)
+
+    Replace_GOod = sLeft & sRight
+
+End Function
+
+Function Position_02_s( _
+        s As String, _
+        subs As String) _
+        As Long
+' procedure checked by test
+' вернуть вторую позицию - номер символа, с которого
+' расположена subs второй раз
+
+    Dim p As Long
+
+    p = InStr(s, subs)
+
+    If p > 0 And p < Len(s) Then
+
+        p = InStr(p + 1, s, subs, vbTextCompare)
+
+    End If
+
+    Position_02_s = p
+
+End Function
+
+Function Wave_First( _
+        s As String) _
+        As String
+'Тестом покрыта
+' волна первая - заменяет объекты с точками,
+' поэтому данные должны быть подготовлены -
+' в строке первые точки оставлены, следующие заменены на неточки
+
+'    Wave_First = (a1_For_Each(s, _
+     '            Dic_2_ArrayD1( _
+     '            Dic_Less_Clear_x(s, 2, _
+     '            ArrayD1_2_Dic( _
+     '            A1_Parts_Left_Cut_off( _
+     '            a1_Border_Left, _
+     '            A1_Add_on_Right(".", _
+     '            A1_reDim(Split(s, "."), -1 _
+     '            ))))))))
+
+    Wave_First = (Wave_First_Action(s, _
+            Hit_Max( _
+            A2_Hit_In_Code(s, _
+            A2_ReDim(1, A1_2_A2( _
+            Dic_2_ArrayD1( _
+            Dic_Less_Clear_x(s, 2, _
+            ArrayD1_2_Dic( _
+            A1_Parts_Left_Cut_off( _
+            a1_Border_Left, _
+            A1_Add_on_Right(".", _
+            A1_reDim(Split(s, "."), -1 _
+            ))))))))))))
+
+End Function
+
+Function A2_ReDim( _
+        lCol As Long, _
+        a2() As Variant) _
+        As Variant()
+' procedure NOT checked by test
+' увеличить масссив на lCol столбцов
+
+    ReDim Preserve a2( _
+            LBound(a2) To UBound(a2), _
+            LBound(a2, 2) To UBound(a2, 2) + lCol)
+
+    A2_ReDim = a2
+
+End Function
+
+Function Hit_Max( _
+        a2() As Variant) _
+        As String
+' procedure NOT checked by test
+' искать строку max в столбце 2 и вернуть значение
+' из столбца 1
+
+    Hit_Max = a2( _
+            A2_Row_w_Max(a2, 2) _
+            , 1)
+
+End Function
+
+Function A2_Row_w_Max( _
+        a2() As Variant, _
+        lCol As Long) _
+        As Long
+' procedure checked by test
+' найти в столбце макс и вернуть номер строки
+' gem
+
+    Dim vMax As Variant, lRow_Max
+    vMax = a2(LBound(a2), 2)
+    lRow_Max = LBound(a2)
+
+    Dim lRow As Long
+    For lRow = LBound(a2) To UBound(a2)
+
+        If vMax < a2(lRow, 2) Then
+
+            vMax = a2(lRow, 2)
+            lRow_Max = lRow
+
+        End If
+    Next     'lRow
+
+    A2_Row_w_Max = lRow_Max
+
+End Function
+
+Function A2_Hit_In_Code( _
+        s As String, _
+        a2() As Variant) _
+        As Variant()
+' procedure checked by test
+' сколько раз элемент массива
+' встречается в коде
+
+    Dim lRow As Long
+
+    For lRow = LBound(a2) To UBound(a2)
+
+        a2(lRow, LBound(a2, 2) + 1) = Сколько_раз(CStr(a2(lRow, LBound(a2, 2))), s)
+
+    Next     'lRow
+
+    A2_Hit_In_Code = a2
+
+End Function
+
+Function ArrayD2_2_ArrayD1( _
+        lCol As Long, _
+        a2() As Variant) _
+        As Variant
+' procedure checked by test
+'
+    Dim a1 As Variant
+    ReDim a1(LBound(a2) To UBound(a2))
+
+    Dim lRow As Long
+    For lRow = LBound(a2) To UBound(a2)
+
+        a1(lRow) = a2(lRow, lCol)
+
+    Next
+
+    ArrayD2_2_ArrayD1 = a1
+
+End Function
+
+Function A1_Add_on_Right( _
+        s As String, _
+        a1 As Variant) _
+        As Variant
+' Тестом НЕ покрыто
+' добавить всем элементам массива справа s
+
+    Dim lCol As Long
+
+    For lCol = LBound(a1) To UBound(a1)
+
+        a1(lCol) = a1(lCol) & s
+
+    Next
+
+    A1_Add_on_Right = a1
+
+End Function
+
+Function A1_reDim( _
+        a1 As Variant, _
+        lCol As Long) _
+        As Variant
+' procedure Checked by test
+
+    If a1_NO_Brack_Len(a1) > 1 Then
+
+        ReDim Preserve a1(LBound(a1) To UBound(a1) + lCol)
+
+    End If
+
+    A1_reDim = a1
+
+End Function
+
+Function a1_NO_Brack_Len( _
+        a1 As Variant) _
+        As Long
+' procedure Checked by test
+' массив длина
+
+    a1_NO_Brack_Len = UBound(a1) - LBound(a1) + 1
+
+End Function
+
+Function Wave_First_Action( _
+        s As String, _
+        subs As String) _
+        As Variant
+' procedure NOT Checked by test опосредованно
+' акция расстановки With End With
+' не должно быть пересечения
+    s = Other_rePlace(subs, _
+            Add_End_With(subs, _
+            Add_With(subs, s)))
+
+    Wave_First_Action = s
+
+End Function
+
+Function Add_With( _
+        subs As String, _
+        s As String) _
+        As String
+' Тестом НЕ покрыто
+' вставить перед subs
+' фразу "With " & Replace(subs, ".", vbNullString) & _
+  vbNewLine
+
+    Dim pos_subs As Long
+    pos_subs = InStr(1, s, subs, vbTextCompare)
+
+    Dim pos As Long
+    pos = Left_Closest(s, pos_subs, A1_Code_S_End) + 1
+
+    Dim sIns As String
+    sIns = "With " & Replace(subs, ".", vbNullString) & _
+            vbNewLine
+
+    s = S_Insert(s, sIns, pos)
+
+    Add_With = s
+
+End Function
+
+Function Left_Closest( _
+        s As String, _
+        lPos As Long, _
+        a1 As Variant) _
+        As Long
+' procedure Checked by test
+' вернуть ближайшую позицию элементов массива a1, слева
+' от lPos
+
+    Left_Closest = WorksheetFunction.max(A1_Pos_s_Rev( _
+            a1, s, lPos))
+
+End Function
+
+Function A1_Pos_s_Rev( _
+        a1 As Variant, _
+        s As String, _
+        lStart As Long) _
+        As Variant
+' procedure Checked by test
+' вернуть массив с позициями a1 в строке s слева,
+' начиная с позиции lStart
+
+    Dim a1_Pos As Variant
+    a1_Pos = A1_Equal_No_Fill(a1)
+
+    Dim lCol As Long, lPos As Long
+
+    For lCol = LBound(a1) To UBound(a1)
+
+        lPos = InStrRev(s, a1(lCol), lStart, vbTextCompare)
+
+        If lPos = 0 Then
+            lPos = 1
+        End If
+
+        a1_Pos(lCol) = lPos
+
+    Next
+
+    A1_Pos_s_Rev = a1_Pos
+
+End Function
+
+Function A1_Code_S_End( _
+        Optional s As String) _
+        As Variant
+' procedure Checked by test
+'
+' A1_Code_S_End = Array(":", vbCrLf)
+    A1_Code_S_End = Array(vbLf)
+
+End Function
+
+Function Other_rePlace( _
+        subs As String, _
+        s As String, _
+        Optional sTemp As String) _
+        As String
+' procedure Checked by test
+'
+    s = Replace(s, subs, ".", 1, , vbTextCompare)
+
+    Other_rePlace = s
+
+End Function
+
+Function Add_End_With( _
+        subs As String, _
+        s As String, _
+        Optional sTemp As String) _
+        As String
+' procedure Checked by test
+' нужно выявить какой ближайший знак после нужного слова
+' vbCrLF ил двоеточие.
+
+    Dim str_Ins As String
+    str_Ins = vbNewLine & "End With '" & Replace(subs, ".", vbNullString)
+
+    Add_End_With = S_Insert(s, str_Ins, _
+            Pos_Near(s, _
+            Pos_Char_last(s, subs)) + 1)
+
+End Function
+
+Function Pos_Char_last( _
+        s As String, _
+        subs As String) _
+        As Long
+' procedure Checked by test
+' позиция последнего символа subs в s
+' last character position
+
+    Pos_Char_last = InStrRev(s, subs) + Len(subs) - 1
+
+End Function
+
+Function Pos_Near( _
+        s As String, _
+        lStart As Long) _
+        As Long
+' procedure Checked by test
+' вернуть позицию ближайшую в строке элемента из массива a1
+
+'@ToDo чтобы a1 передавался параметром как A1_Code_S_End
+    Dim a1 As Variant
+    ' a1 = Array(":", vbCrLf)
+    a1 = Array(vbCrLf)
+
+    Pos_Near = WorksheetFunction.Min(A1_Pos_s( _
+            a1, s, lStart))
+
+End Function
+
+Function A1_Pos_s( _
+        a1 As Variant, _
+        s As String, _
+        lStart As Long) _
+        As Variant
+
+' procedure Checked by test
+' вернуть массив с позициями a1 в строке s,
+' начиная с позиции
+
+    Dim a1_Pos As Variant
+    a1_Pos = A1_Equal_No_Fill(a1)
+
+    Dim lCol As Long, lPos As Long
+
+    For lCol = LBound(a1) To UBound(a1)
+
+        lPos = InStr(lStart, s, a1(lCol), vbTextCompare)
+
+        If lPos = 0 Then
+            lPos = Len(s)
+        End If
+
+        a1_Pos(lCol) = lPos
+
+    Next
+
+    A1_Pos_s = a1_Pos
+
+End Function
+
+Function A1_Equal_No_Fill( _
+        a1 As Variant) _
+        As Variant
+' procedure Checked by test
+' вернуть массив такой же как a1, но пустой, не заполненный
+
+    Dim a1_New As Variant
+    ReDim a1_New(LBound(a1) To UBound(a1))
+
+    A1_Equal_No_Fill = a1_New
+
+End Function
+
+Function S_Insert( _
+        s As String, _
+        subs As String, _
+        lPos As Long) _
+        As String
+' procedure Checked by test
+' вставить в строку в позицию lPos сдвигая вправо
+' gem
+
+    Dim sLeft As String, sRight As String
+
+    If lPos < 2 Then
+
+        S_Insert = subs & s
+
+    Else
+
+        sLeft = Left$(s, lPos - 1)
+
+        sRight = Right$(s, Len(s) - lPos + 1)
+
+        S_Insert = sLeft & subs & sRight
+
+    End If
+End Function
+
+Function Last_In_rePlace( _
+        subs As String, _
+        s As String, _
+        Optional sTemp As String) _
+        As String
+' procedure Checked by test
+' заменить в последнем вхождении
+
+    Dim sRight As String, sLeft As String
+
+    Dim pos_last As Long
+    pos_last = InStrRev(s, subs)
+
+    If pos_last > 0 Then
+
+        sLeft = Left$(s, pos_last - 1)
+
+
+        sRight = Replace(s, subs, ".", _
+                pos_last, 1, vbTextCompare)
+
+    Else
+
+        sLeft = s
+
+    End If
+
+    s = sLeft & sRight
+
+    Last_In_rePlace = s
+End Function
+
+Function First_In_rePlace( _
+        s As String, _
+        subs As String) _
+        As String
+' procedure Checked by test
+' заменить первое вхождение, а
+' replace хочет заменить все
+
+    Dim s_New As String    ', subs_new As String
+'     subs_new = Replace(subs, ".", vbNullString)
+
+'    s_New = Replace(s, subs, _
+     '            "With " & subs_new & vbNewLine & ".", _
+     '            1, 1, vbTextCompare)
+
+'
+    s_New = Replace(s, subs, ".", _
+            1, 1, vbTextCompare)
+
+    s = s_New
+
+    First_In_rePlace = s
+
+End Function
+
+Function Dic_with_S_Clear_x( _
+        s As String, _
+        x As Long, _
+        o As Object) _
+        As Object
+' procedure NOT checked by test
+' удалить элементы словаря, содержащие строку в s
+' больше x раз
+' gem
+
+    Dim a1 As Variant
+    a1 = Dic_2_ArrayD1(o)
+
+    Dim lCol As Long
+
+    With o
+        For lCol = LBound(a1) To UBound(a1)
+
+            If Сколько_раз(CStr(a1(lCol)), s) > x Then
+
+                o.Remove (a1(lCol))
+
+            End If
+        Next
+    End With
+
+    Set Dic_with_S_Clear_x = o
+
+End Function
+
+Function Dic_Less_Clear_x( _
+        s As String, _
+        lCount As Long, _
+        o As Object) _
+        As Object
+' procedure Checked by test
+' элементы словаря, которые в строке _
+  встречаются _меньше двух раз удалить
+
+    Dim a1 As Variant
+    a1 = Dic_2_ArrayD1(o)
+
+    Dim lCol As Long
+
+    With o
+        For lCol = LBound(a1) To UBound(a1)
+
+            If Сколько_раз(CStr(a1(lCol)), s) < 2 Then
+
+                o.Remove (a1(lCol))
+
+            End If
+        Next
+    End With
+
+    Set Dic_Less_Clear_x = o
+
+End Function
+
+Function Dic_2_ArrayD1( _
+        o As Object) _
+        As Variant
+' procedure Checked by test
+'
+    Dic_2_ArrayD1 = o.Keys
+
+End Function
+
+Function ArrayD1_2_Dic( _
+        a1 As Variant) _
+        As Object
+' procedure Checked by test
+'
+    Dim dic_Temp
+
+    Set dic_Temp = CreateObject("Scripting.Dictionary")
+
+    Dim key As Variant, item As Variant
+
+    Dim y As Long
+
+    With dic_Temp
+
+        For y = LBound(a1) To UBound(a1)
+
+            key = a1(y)
+
+            item = a1(y)
+
+            If Trim(key) <> "." Then
+
+                If .exists(key) = False Then
+
+                    .Add key, item
+
+                End If
+            End If
+        Next
+    End With
+
+    Set ArrayD1_2_Dic = dic_Temp
+
+End Function
+
+Function A1_Parts_Left_Cut_off( _
+        a1_Border As Variant, _
+        a1 As Variant) _
+        As Variant
+' procedure Checked by test
+' пройтись по a1 и усечь слева от крайнеправого в a1
+' какой правее, тот и прав
+
+    Dim lCol As Long, lCol_B As Long
+
+    For lCol = LBound(a1) To UBound(a1)
+        For lCol_B = LBound(a1_Border) To UBound(a1_Border)
+
+            Left_Cut_x a1(lCol), a1_Border(lCol_B)
+
+        Next
+    Next
+
+    A1_Parts_Left_Cut_off = a1
+
+End Function
+
+Function Left_Cut_x( _
+        s As Variant, _
+        separ As Variant)
+' procedure Checked by test
+' отрезать слева от separ
+
+    Dim lPos As Long
+    lPos = InStrRev(s, separ)
+
+    If lPos > 0 Then
+
+        s = Right(s, Len(s) - lPos)
+
+    End If
+End Function
+
+Function a1_Border_Left( _
+        Optional s As String) _
+        As Variant
+' procedure Checked by test
+
+' a1_Border_Left = Array(" ", ":", vbLf)
+    a1_Border_Left = Array(" ", vbLf)
+
+End Function
+
+Function ClipBoard_Text_2_Code( _
+        Optional s As String) _
+        As String
+' procedure checked by test
+'
+
+    Text_2_Clipboard _
+            Text_2_Code( _
+            Clipboard_2_Text)
+
+    MsgBoxEx Clipboard_2_Text, , "In ClipBoard"
+
+End Function
+
+Function Text_2_Code( _
+        str As String) _
+        As String
+' procedure checked by test
+' prepare text to insert in code to variable
+
+    Dim s As String
+    s = str
+
+    s = Chr(34) & _
+            Replace(s, vbCrLf, _
+            Chr(34) & " & vbNewLine & " & Chr(34)) & Chr(34)
+
+    s = Replace(s, Chr(34) & Chr(34), vbNullString)
+
+    If Len(s) > 3 Then
+        If Right$(s, 3) = " & " Then
+            s = Left$(s, Len(s) - 3)
+        End If
+
+        Do
+            s = Replace(s, "&  &", "&")
+        Loop While InStr(s, "&  &") > 1
+    End If
+
+    Text_2_Code = s
+
+
+End Function
+

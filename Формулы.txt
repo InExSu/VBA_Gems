@@ -1,0 +1,385 @@
+Attribute VB_Name = "Формулы"
+Option Explicit
+
+DefBool B
+DefDate T
+DefDbl D
+DefLng L
+DefObj O
+DefStr S
+DefVar V
+
+' Мастер создания формулы =ИНДЕКС( '[Данные тестовые.xlsb]Лист1'!$A$1:$B$16;
+' ПОИСКПОЗ(A3;'[Данные тестовые.xlsb]Лист1'!$D$1:$D$6;0);2)
+
+Public Sub Кнопка_Индекс_ПоисПоз_Touch_1()
+    ' procedure Checked by test опосредованно
+    '
+    ActiveCell.FormulaLocal = "=" & _
+            Формула_Индекс_ПоискПоз_Touch_1(ActiveCell)
+
+    Ячейка_Целиком_Снять
+
+End Sub
+
+
+Public Sub Кнопка_Индекс_ПоисПоз()
+    ' procedure Checked by test опосредованно
+    '
+    ActiveCell.FormulaLocal = "=" & _
+            Формула_Индекс_ПоискПоз(ActiveCell)
+
+    Ячейка_Целиком_Снять
+
+End Sub
+
+Function Формула_Индекс_ПоискПоз(ceLL As Range) _
+        As String
+    ' Тестом НЕ покрыта
+    '
+    Dim s_Поиск_Поз As String
+    s_Поиск_Поз = Формула_ПоискПоз( _
+            cell_LookUp_Get("Укажите ячейку столбца поиска", "ПОИСКПОЗ").EntireColumn, _
+            Application.Intersect(ceLL.CurrentRegion, ceLL.EntireRow))
+
+    Формула_Индекс_ПоискПоз = Формула_Индекс(s_Поиск_Поз, 1)
+
+End Function
+
+Function Формула_Индекс_ПоискПоз_Touch_1(ceLL As Range) _
+        As String
+    ' Тестом НЕ покрыта
+    ' One Touch подбор ПОИСПОЗ
+    ' сканирует все открытые книги и находит первое вхождение из
+    ' диапазона строки
+
+    Формула_Индекс_ПоискПоз_Touch_1 = _
+            Формула_Индекс( _
+            Если_НЕТ_cell_LookUp_Get(Диап_ПоискПоз_Touch_1( _
+            Application.Intersect(ceLL.CurrentRegion, ceLL.EntireRow))), _
+            1)
+
+End Function
+
+Function Если_НЕТ_cell_LookUp_Get(ByVal r As Range) _
+        As Range
+    ' Тестом НЕ покрыто
+    '
+
+    If r Is Nothing Then
+
+        Set Если_НЕТ_cell_LookUp_Get = cell_LookUp_Get( _
+                "Укажите ячейку столбца поиска", _
+                "ПОИСКПОЗ ручной, автомат не справился")
+
+    Else
+
+        Set Если_НЕТ_cell_LookUp_Get = r
+
+    End If
+End Function
+
+Function Диап_ПоискПоз_Touch_1( _
+        ByVal r As Range) _
+        As Range
+    ' Тестом НЕ покрыто
+    '
+
+    Dim r_Temp As Range
+    Dim ceLL As Range
+    Dim r_found As Range
+
+    For Each r_Temp In coll_ranges_All_Open
+        For Each ceLL In r
+
+            Set r_found = r_Temp.Find(ceLL.Value, , , xlWhole)
+
+            If Not r_found Is Nothing Then
+
+                If Уникальность( _
+                        ceLL.Value, coll_ranges_All_Open) Then
+
+                    Set r_found = Nothing
+
+                End If
+            End If
+        Next
+    Next
+
+    Set Диап_ПоискПоз_Touch_1 = r_found
+
+End Function
+
+Function Уникальность( _
+        ByVal str As String, ByVal coll_Ranges As Collection) _
+        As Boolean
+    ' Тестом НЕ покрыто
+    '
+    Dim iCount As Long
+    Dim r As Range
+
+    For Each r In coll_Ranges
+
+        iCount = iCount + Диап_Сколько_Раз(str, r, False, 1)
+
+    Next
+
+    If iCount = 1 Then
+        
+        Уникальность = True
+        
+    End If
+End Function
+
+Function Диап_Сколько_Раз( _
+        ByVal msg As String, _
+        ByVal r As Range, _
+        ByVal bMatchCase As Boolean, _
+        ByVal whole_1_part_2 As Long) _
+        As Long
+    ' Тестом НЕ покрыто
+    ' сколько раз слово встречается в диапазоне
+    ' АртеФакт
+
+    Dim iCount As Long
+    Dim c As Range
+    Dim firstAddress As String
+
+    With r
+
+        Set c = .Find(what:=msg, _
+                LookIn:=xlValues, _
+                lookAt:=whole_1_part_2, _
+                MatchCase:=bMatchCase)
+
+        If Not c Is Nothing Then
+
+            firstAddress = c.address
+
+            Do
+                iCount = iCount + 1
+
+                Set c = .FindNext(c)
+
+                If c Is Nothing Then Exit Do
+
+            Loop While c.address <> firstAddress
+        End If
+    End With
+
+    Диап_Сколько_Раз = iCount
+
+End Function
+
+Function Диап_Разница( _
+        ByVal r_Big As Range, _
+        ByVal r_littLe As Range) _
+        As Range
+
+    ' Тестом НЕ покрыто
+    ' разница диапазонов
+
+End Function
+
+Function coll_ranges_All_Open( _
+        Optional ByVal msg As String) _
+        As Collection
+    ' Тестом НЕ покрыто
+    ' вернуть диапазон всех открытых книг
+    '
+
+    Dim Coll As New Collection
+    Dim wb As Workbook
+    Dim ws As Worksheet
+
+    With Coll
+        For Each wb In Application.Workbooks
+            For Each ws In wb.Worksheets
+                .Add UsedR_Без_Пустых(ws)
+            Next
+        Next
+    End With
+
+    Set coll_ranges_All_Open = Coll
+
+End Function
+
+
+Function ranges_wb( _
+        ByVal wb As Workbook) _
+        As Range
+    ' Тестом НЕ покрыто
+    '
+    Dim r As Range
+    Dim ws As Worksheet
+
+    For Each ws In wb.Worksheets
+
+        Set r = App_Union(r, UsedR_Без_Пустых(ws))
+
+    Next
+
+    Set ranges_wb = r
+
+End Function
+
+Function Формула_Индекс( _
+        ByVal vПоискПоз, _
+        ByVal lColNumb) _
+        As String
+    ' Тестом НЕ покрыто
+    ' =ИНДЕКС('[Данные тестовые.xlsb]Лист2'!B:B;15;1)
+
+    Dim r_Column As Range
+
+    If bDebug Then
+        Set r_Column = ActiveSheet.UsedRange.Cells(1, 1)
+        vПоискПоз = 123456
+    Else
+
+        Set r_Column = cell_LookUp_Get("Укажите ячейку столбца возвращаемых значений", "ИНДЕКС")
+
+        If r_Column Is Nothing Then
+            Exit Function
+        End If
+
+    End If
+
+    Set r_Column = r_Column.EntireColumn
+
+    Формула_Индекс = Формула_Индекс_Текст( _
+            r_Column, vПоискПоз, lColNumb)
+
+End Function
+
+Function Формула_Индекс_Текст( _
+        ByVal r_Column As Range, _
+        ByVal vПоискПоз As Variant, _
+        ByVal lColNumb As Long) As String
+    ' Тестом НЕ покрыто
+    '
+
+    With r_Column
+
+        Формула_Индекс_Текст = "ИНДЕКС('[" & _
+                .Parent.Parent.Name & _
+                "]" & _
+                .Parent.Name & _
+                "'!" & _
+                .address & _
+                ";" & _
+                vПоискПоз & _
+                ";" & _
+                lColNumb & _
+                ")"
+    End With
+End Function
+Function cell_LookUp_Get( _
+        ByVal sPrompt As String, _
+        ByVal sTitle As String) _
+        As Range
+    ' procedure Checked by test опосредованно
+    '
+
+    If bDebug Then
+
+        Set cell_LookUp_Get = ActiveSheet.UsedRange.Cells(1, 1)
+
+    End If
+
+    Dim r As Range
+
+    On Error GoTo cell_LookUp_Get_Error
+
+    Set r = Application.InputBox(sPrompt, sTitle, , , , , , 8)
+
+    Set cell_LookUp_Get = r
+
+cell_LookUp_Get_Error:
+
+End Function
+
+
+Function Формула_ПоискПоз( _
+        ByVal r_Look_Up As Range, _
+        ByVal R_Sour As Range) _
+        As String
+    ' Тестом  покрыто
+    '
+    '    ActiveCell.FormulaR1C1 = _
+         '        "=INDEX( '[Данные тестовые.xlsb]Лист1'!R1C1:R16C2," & Chr(10) & _
+         ' "MATCH(RC[-1],'[Данные тестовые.xlsb]Лист1'!R1C4:R6C4,0),2)"
+
+    ' =ПОИСКПОЗ(A3;'[Данные тестовые.xlsb]Лист1'!$A$1:$A$16;0)
+
+    If r_Look_Up Is Nothing Then Exit Function    '=>
+
+    Dim r_found As Range
+    Set r_found = Диап_Диап_Найти_Вхождение( _
+            R_Sour, r_Look_Up)
+
+    If Not r_found Is Nothing Then
+
+        Формула_ПоискПоз = Формула_ПоискПоз_Текст(r_found, r_Look_Up)
+
+    Else
+
+        MsgBoxEx "В диапазоне " & r_Look_Up.address & _
+                " НЕ нашлось из строки " & R_Sour.address
+
+    End If
+End Function
+
+Function Формула_ПоискПоз_Текст( _
+        ByVal r_found As Range, _
+        ByVal r_Look_Up As Range) _
+        As String
+    ' Тестом НЕ покрыто
+    '
+
+    With r_Look_Up
+
+        Формула_ПоискПоз_Текст = "ПОИСКПОЗ(" & _
+                Address_Relative(r_found) & _
+                ";'[" & _
+                .Parent.Parent.Name & _
+                "]" & _
+                .Parent.Name & _
+                "'!" & _
+                .address & _
+                ";0)"
+    End With
+End Function
+
+Function Address_Relative(ByVal r As Range) _
+        As String
+    ' procedure Checked by test опосредованно
+    '
+    Address_Relative = r.address(RowAbsolute:=False, ColumnAbsolute:=False)
+
+End Function
+
+Function Диап_Диап_Найти_Вхождение( _
+        ByVal rSour As Range, _
+        ByVal rLookUp As Range) _
+        As Range
+    ' procedure Checked by test
+    ' возвращает первое вхождение _
+      ' из ячеек диапазона rSour в диапазоне rLookUp
+
+    Dim ceLL As Range
+
+    With rLookUp
+
+        For Each ceLL In rSour
+
+            If Not .Find(ceLL.Value, , , xlWhole) Is Nothing Then
+
+                Set Диап_Диап_Найти_Вхождение = ceLL
+
+                Exit For
+
+            End If
+        Next
+    End With
+End Function

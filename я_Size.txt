@@ -1,0 +1,118 @@
+Attribute VB_Name = "я_Size"
+Option Explicit
+' https://www.youtube.com/channel/UCQMbRhaPEFD1NoZLhRzQzSA/videos?view=0&shelf_id=0&sort=dd
+' https://inexsu.wordpress.com
+
+'Function Settings(Optional ByVal msg As String)
+'' Тестом НЕ покрыто
+''
+'End Function
+
+'Связи есть - в именованных диапазонах.
+'Если удалить именованные диапазоны, то размер файла сократится с 5262 до 39 кБ.
+'http://www.cyberforum.ru/vba/thread1698671.html
+'
+'Чек-Лист
+' https://www.excel-vba.ru/chto-umeet-excel/kak-umenshit-razmer-fajla/
+' https://www.planetaexcel.ru/techniques/11/114/
+
+'ОбъЕкты типы. Если объектов много их лучше удалять по одному
+' https://programmersforum.ru/showthread.php?p=608451
+
+' Если объектов много их лучше прибить архиватором
+' http://baguzin.ru/wp/excel-tormozit-chto-delat-dubl-2/
+
+' папка printerSettings
+
+' Заменить формулы на значения, оставив формулу, только
+' в верхних ячейках
+
+Function a1_TrimDown(a1 As Variant) _
+         As Variant
+' Тестом НЕ покрыто
+' обрезать пустые элементы массива снизу
+' Gem
+
+    If UBound(a1) > LBound(a1) Then
+
+        Dim lCol As Long
+
+        For lCol = UBound(a1) To LBound(a1) Step -1
+
+            If a1(UBound(a1)) = vbNullString Then
+
+                ReDim Preserve _
+                      a1(LBound(a1) To UBound(a1) - 1)
+
+            Else
+
+                Exit For
+
+            End If
+        Next
+    End If
+
+    a1_TrimDown = a1    'этого ждёт принимающая функция
+
+End Function
+
+Function A1_2_A2(a1 As Variant) _
+         As Variant()
+' procedure Checked by test
+' двумерный массив из одномерного
+
+    Dim a2() As Variant
+    ReDim a2(LBound(a1) To UBound(a1), 1 To 1)
+
+    Dim lCol As Long
+
+    For lCol = LBound(a1) To UBound(a1)
+
+        a2(lCol, 1) = a1(lCol)
+
+    Next
+
+    A1_2_A2 = a2
+
+End Function
+
+Function a1_Books_Open( _
+         Optional ByVal sMsg As String) _
+         As Variant
+' procedure Checked by test
+' массив имён открытых книг
+    Dim a1() As Variant
+    ReDim a1(0)
+
+    Dim wb As Workbook
+    For Each wb In Application.Workbooks
+
+        a1(UBound(a1)) = wb.Name
+
+        ReDim Preserve a1(UBound(a1) + 1)
+
+    Next
+
+    a1_Books_Open = a1
+
+End Function
+
+
+Function a2_Row( _
+         a2() As Variant, _
+         sMsg As String, _
+         lCol As Long) _
+         As Long
+' procedure Checked by test
+' вернуть номер строки найденного значения
+
+    Dim lRow As Long
+
+    For lRow = LBound(a2) To UBound(a2)
+        If a2(lRow, lCol) = sMsg Then
+            a2_Row = lRow
+            Exit For
+        End If
+    Next
+End Function
+

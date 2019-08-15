@@ -1,0 +1,171 @@
+Attribute VB_Name = "IPAdr2Str"
+'Option Explicit
+'
+'' Интернет
+'
+'Sub IPaddress_Change_Wait( _
+'    lSec As Long, _
+'    ipAdr_Orig As String)
+'
+'    ' procedure checked by hand
+'    ' ждать смену айпи адреса
+'
+'    Dim lseсCounter
+'    Dim x As Long
+'
+'    With Application
+'
+'        For x = 1 To lSec
+'
+'            If ipAdr_Orig <> IP_Address_Local_from_External Then
+'
+'                MsgBoxEx "IP Адрес сменился через " _
+'                         & lseсCounter & " sec ", , "IPaddress_Change_Wait", 2
+'
+'                .StatusBar = vbNullString
+'
+'                Exit For
+'
+'            End If
+'
+'            DoEvents
+'
+'            .StatusBar = "Жду  1 сек смену IP адреса ... " & _
+'                         "уже " & lseсCounter & " из " & lSec
+'
+'            lseсCounter = lseсCounter + 1
+'
+'            .Wait Now + TimeValue("0:00:01")
+'
+'        Next
+'
+'        If ipAdr_Orig = IP_Address_Local_from_External Then
+'
+'            MsgBoxEx "IP Адрес НЕ сменился", , "IPaddress_Change_Wait", 2
+'
+'        End If
+'
+'        .StatusBar = vbNullString
+'
+'    End With
+'End Sub
+'
+'Function IP_Address_Local_from_External( _
+'         Optional sSite As String) _
+'         As String
+'    ' вытащить локальный айпи со стороннего сайта
+'
+'    Dim sURL_New As String
+'
+'    If sSite = vbNullString Then
+'
+'        sURL_New = "ifconfig.me"
+'
+'    Else
+'
+'        sURL_New = sSite
+'
+'    End If
+'
+'    If WMIPing(sURL_New) = False Then
+'
+'        Exit Function
+'
+'    End If
+'
+'    sURL_New = "https://" & sURL_New
+'
+'    Dim sPattern As String
+'    sPattern = "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+'
+'    Dim s As String
+'    s = GetHTTPResponse(sURL_New)
+'
+'    If RegExp_Test(s, sPattern) Then
+'
+'        IP_Address_Local_from_External = Регулярка_Взять(s, sPattern)
+'
+'    End If
+'End Function
+'
+'Function URL_able( _
+'         s As String, _
+'         long_How) _
+'         As Boolean
+'    ' procedure NOT checked by test
+'    '
+'
+'End Function
+'
+'
+'Function GetHTTPResponse( _
+'         sURL As String) _
+'         As String
+'
+'    ' вернуть код страницы
+'
+'    Static oXMLHTTP As Object
+'
+'    If oXMLHTTP Is Nothing Then
+'
+'        Set oXMLHTTP = CreateObject("MSXML2.XMLHTTP")
+'
+'    End If
+'
+'    With oXMLHTTP
+'        .Open "GET", sURL, False
+'
+'        ' раскомментируйте следующие строки и подставьте верные IP, логин и пароль
+'        ' если вы сидите за proxy
+'        ' .setProxy 2, "192.168.100.1:3128"
+'        ' .setProxyCredentials "user", "password"
+'
+'        .SEND
+'
+'        GetHTTPResponse = .responseText
+'
+'    End With
+'    '     Set oXMLHTTP = Nothing
+'End Function
+'
+'Function WMIPing( _
+'         strAdr As String) _
+'         As Boolean
+'    ' проверить доступность сайта, ресурса
+'
+'    Dim objPing As Object
+'    Set objPing = GetObject("winmgmts:{impersonationLevel=impersonate}"). _
+'                  ExecQuery("select * from Win32_PingStatus where address = '" & strAdr & "'")
+'
+'    Static objStatus As Object
+'
+'    For Each objStatus In objPing
+'
+'        If IsNull(objStatus.StatusCode) Or objStatus.StatusCode <> 0 Then
+'
+'            WMIPing = False
+'
+'        Else
+'
+'            WMIPing = True
+'
+'        End If
+'    Next
+'End Function
+'
+'Function Ping( _
+'         ComputerName As String) _
+'         As Boolean
+'    ' возвращает TRUE, если пинг прошел
+'    Dim oPingResult As Variant
+'    For Each oPingResult In GetObject("winmgmts://./root/cimv2").ExecQuery _
+'        ("SELECT * FROM Win32_PingStatus WHERE Address = '" & ComputerName & "'")
+'        If IsObject(oPingResult) Then
+'            If oPingResult.StatusCode = 0 Then
+'                Ping = True        'Debug.Print "ResponseTime", oPingResult.ResponseTime
+'                Exit Function
+'            End If
+'        End If
+'    Next
+'End Function
+'

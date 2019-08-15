@@ -1,0 +1,30 @@
+Attribute VB_Name = "InExSu_Test"
+Option Explicit
+' https://www.youtube.com/channel/UCQMbRhaPEFD1NoZLhRzQzSA/videos?view=0&shelf_id=0&sort=dd
+' https://inexsu.wordpress.com
+
+' Public Mock As New Mock
+
+Option Private Module
+
+'@TestModule
+'@Folder("Tests")
+
+Private Assert As Object
+Private Fakes As Object
+
+'@ModuleInitialize
+Public Sub ModuleInitialize()
+    'this method runs once per module.
+    Set Assert = CreateObject("Rubberduck.AssertClass")
+    Set Fakes = CreateObject("Rubberduck.FakesProvider")
+End Sub
+
+'@ModuleCleanup
+Public Sub ModuleCleanup()
+    'this method runs once per module.
+    Set Assert = Nothing
+    Set Fakes = Nothing
+End Sub
+
+

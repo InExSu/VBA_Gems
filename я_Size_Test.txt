@@ -1,0 +1,642 @@
+Attribute VB_Name = "я_Size_Test"
+Option Explicit
+' https://www.youtube.com/channel/UCQMbRhaPEFD1NoZLhRzQzSA/videos?view=0&shelf_id=0&sort=dd
+' https://inexsu.wordpress.com
+
+'Public Mock As New Mock
+
+Private Table_Main As New Table_Main
+
+Option Private Module
+
+'@TestModule
+'@Folder("Tests")
+
+Private Assert As Object
+Private Fakes As Object
+
+'@ModuleInitialize
+Public Sub ModuleInitialize()
+'this method runs once per module.
+    Set Assert = CreateObject("Rubberduck.AssertClass")
+    Set Fakes = CreateObject("Rubberduck.FakesProvider")
+End Sub
+
+'@ModuleCleanup
+Public Sub ModuleCleanup()
+'this method runs once per module.
+    Set Assert = Nothing
+    Set Fakes = Nothing
+End Sub
+
+
+'
+'
+''@TestMethod
+'
+'Public Sub R_Invert_X_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim r As Range
+'
+'    Set r = Mock.G_Range
+'
+'    R_Invert_X r
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+'
+''@TestMethod
+'
+'Public Sub A2_Row_Copy_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim a2_Sour() As Variant
+'
+'    Dim lRow_Sour As Long
+'
+'    Dim a2_Dest() As Variant
+'
+'    Dim lRow_Dest As Long
+'
+'    a2_Sour = Mock.G_a2(9, 9)
+'
+'    lRow_Sour = Mock.Rand_Between( _
+'            LBound(a2_Sour), UBound(a2_Sour))
+'
+'    a2_Dest = Mock.G_a2(9, 9)
+'
+'    lRow_Dest = Mock.Rand_Between( _
+'            LBound(a2_Dest), UBound(a2_Dest))
+'
+'    A2_Row_Copy a2_Sour(), lRow_Sour, a2_Dest(), lRow_Dest
+'
+'    If a2_Dest(lRow_Dest, UBound(a2_Dest, 2)) <> _
+'            a2_Sour(lRow_Sour, UBound(a2_Sour, 2)) Then _
+'            Err.Raise 567, "", ""
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub a2_Invert_Rows_TestMethod()
+'
+''On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim a2() As Variant
+'
+'    Dim lCol As Long
+'
+'    a2 = Mock.G_a2
+'
+'    lCol = Mock.Rand_Between( _
+'            LBound(a2, 2), UBound(a2, 2))
+'
+'    Dim varReturn() As Variant
+'
+'    varReturn = a2_Invert_Rows(a2(), lCol)
+'
+'    If varReturn(UBound(a2), lCol) <> _
+'            a2(LBound(a2), lCol) _
+'            Then Err.Raise 567, "a2_Invert_Rows(a2(),lCol)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub cell_2_a2_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim cell As Range
+'
+'    Set cell = Mock.G_Range.Cells(1, 1)
+'
+'    Dim varReturn() As Variant
+'
+'    varReturn = cell_2_a2(cell)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "cell_2_a2(cell)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+'
+''@TestMethod
+'
+'Public Sub A1_2_a1_Row_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim a1 As Variant
+'
+'    Dim a2() As Variant
+'
+'    Dim lRow As Long
+'
+'    Dim lCol As Long
+'
+'    a1 = Mock.G_a1
+'
+'    a2 = Mock.G_a2
+'
+'    lRow = Mock.Rand_Between(LBound(a2), UBound(a2))
+'
+'    lCol = Mock.Rand_Between(LBound(a2, 2), UBound(a2, 2))
+'
+'    Table_Main.A1_2_a1_Row a1, a2(), lRow, lCol
+'
+'    If a2(lRow, lCol) <> a1(LBound(a1)) Then Err.Raise 567, "A1_2_a1_Row(a1,a2(),lRow,lCol)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Create_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Table_Main.Create
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub A2_Rows_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim varReturn As Long
+'
+'    varReturn = Table_Main.A2_Rows
+'
+'    If varReturn = 0 Then Err.Raise 567, "A2_Rows(sMsg)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub a1_ParaMeter_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim sMsg As String
+'
+'    sMsg = Mock.G_S
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = Table_Main.a1_ParaMeter(sMsg)
+'
+'    If UBound(varReturn) < 1 Then Err.Raise 567, "a1_ParaMeter(sMsg)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub a1_Headers_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim sMsg As Long
+'
+'    sMsg = 0
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = Table_Main.a1_Headers(sMsg)
+'
+'    If varReturn <> "Книга" Then Err.Raise 567, "a1_Headers(sMsg)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub App_WorkSheets_Count_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim varReturn As Long
+'
+'    varReturn = Table_Main.App_WorkSheets_Count
+'
+'    If varReturn = 0 Then Err.Raise 567, "App_WorkSheets_Count(sMsg)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub a2_Row_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim a2() As Variant
+'
+'    Dim sMsg As String
+'
+'    Dim lCol As Long
+'
+'    a2 = Mock.G_a2
+'
+'    sMsg = Mock.G_S
+'
+'    lCol = UBound(a2, 2)
+'
+'    a2(UBound(a2), lCol) = sMsg
+'
+'    Dim varReturn As Long
+'
+'    varReturn = a2_Row(a2(), sMsg, lCol)
+'
+'    If varReturn <> UBound(a2) _
+'            Then Err.Raise 567, "a2_Row(a2(),sMsg,lCol)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub a1_2_a2_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim a1 As Variant
+'
+'    a1 = Mock.G_a1
+'
+'    Dim varReturn() As Variant
+'
+'    varReturn = a1_2_a2(a1)
+'
+'    If UBound(varReturn) <> UBound(a1) _
+'            Then Err.Raise 567, "a1_2_a2(a1)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub a1_TrimDown_TestMethod()
+'
+'' On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim a1 As Variant
+'
+'    a1 = Mock.G_a1(0, 19)
+'
+'    a1(UBound(a1)) = vbNullString
+'    a1(UBound(a1) - 1) = 1
+'
+'    a1_TrimDown a1
+'
+'    If a1(UBound(a1)) = vbNullString Then _
+'            Err.Raise 567, "", ""
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub a1_Books_Open_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim sMsg As String
+'
+'    sMsg = Mock.G_S
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = a1_Books_Open(sMsg)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "a1_Books_Open(sMsg)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub r_2_a2_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim r As Range
+'
+'    Dim varReturn() As Variant
+'
+'    Set r = Mock.G_Range.Cells
+'
+'    varReturn = r_2_a2(r)
+'
+'    If IsArray(varReturn) = False Then Err.Raise 567, "r_2_a2(r)"
+'
+'    Set r = Mock.G_Range.Cells(1, 1)
+'
+'    varReturn = r_2_a2(r)
+'
+'    If IsArray(varReturn) = False Then Err.Raise 567, "r_2_a2(r)"
+'
+'    r.Formula = "=1/0"
+'
+'    varReturn = r_2_a2(r)
+'
+'    If varReturn(1, 1) <> "=1/0" Then Err.Raise 567, "r_2_a2(r)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+'
+''@TestMethod
+'
+'Public Sub a2_Replace_Left_X_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim a2() As Variant
+'
+'    Dim lCol As Long
+'
+'    Dim sFind As String
+'
+'    Dim sRepl As String
+'
+'    With Mock
+'
+'        a2 = .G_a2
+'
+'        lCol = .Rand_Between(LBound(a2, 2), UBound(a2, 2))
+'
+'        sFind = "="
+'
+'        sRepl = vbNullString
+'
+'        a2(LBound(a2), LBound(a2, 2)) = "=13"
+'
+'        .a2_Replace_Left_X a2(), lCol, sFind, sRepl
+'
+'        If InStr(a2(LBound(a2), LBound(a2, 2)), "=") > 0 Then _
+'                Err.Raise 567, "", ""
+'
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'    End With
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub

@@ -1,0 +1,98 @@
+Attribute VB_Name = "Дубликаты_показать"
+Option Explicit
+
+Function Дубликаты_Показать_Буфер(ByVal ceLL As Range) _
+        As String
+
+    ' procedure Checked by test опосредованно
+
+    Dim str As String
+
+    str = Строка_из_Словаря(vbCrLf, _
+            Словарь_Повторы_из_Массива( _
+            Массив_Столбец_Диапазон_Ячейка(ceLL)))
+
+    Text_2_Clipboard _
+            Строку_Показать(str)
+
+    Дубликаты_Показать_Буфер = str
+
+End Function
+
+Function Строку_Показать(ByVal msg As String) _
+        As String
+    ' procedure Checked by test опосредованно
+
+    '     If Len(msg) = 0 Then msg = "Повторов НЕТ !"
+
+    MsgBox msg, vbOKOnly, "Повторы. Скопированы в буфер обмена. Показаны не все"
+
+    Строку_Показать = msg
+
+End Function
+
+Function Массив_Столбец_Диапазон_Ячейка(ByVal ceLL As Range) _
+        As Variant()
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+    
+    On Error GoTo Массив_Столбец_Диапазон_Ячейка_Error
+
+    Массив_Столбец_Диапазон_Ячейка = Диап_Усечь(ceLL.Parent.Columns(ceLL.Column)).Value
+
+    On Error GoTo 0
+    Exit Function
+
+Массив_Столбец_Диапазон_Ячейка_Error:
+    'Err.Raise Err.Number, " in procedure Массив_Столбец_Диапазон_Ячейка of Module Дубликаты_показать", " (" & Err.Description & ")"
+    End
+
+End Function
+
+Function Строка_из_Словаря(ByVal separ As String, ByVal dic As Object) _
+        As String
+    ' procedure Checked by test опосредованно
+    ' АртеФакт
+
+    Строка_из_Словаря = Join(dic.Keys, separ)
+
+End Function
+
+Function Словарь_Повторы_из_Массива(a2() As Variant) _
+        As Object
+    ' procedure Checked by test опосредованно
+    ' выявить дубликаты текущего столбца
+    ' АртеФакт
+
+    Dim dic As Object
+    Dim dic_Повторы As Object
+
+    Set dic = CreateObject("Scripting.Dictionary")
+    Set dic_Повторы = CreateObject("Scripting.Dictionary")
+
+    Dim y As Long, str As String
+
+    With dic
+
+        For y = LBound(a2) To UBound(a2)
+
+            str = a2(y, 1)
+
+            If .exists(str) Then
+
+                If dic_Повторы.exists(str) = False Then
+
+                    dic_Повторы.Add str, y
+
+                End If
+            Else
+
+                .Add str, y
+
+            End If
+        Next
+    End With
+
+    Set Словарь_Повторы_из_Массива = dic_Повторы
+
+End Function

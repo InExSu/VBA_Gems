@@ -1,0 +1,398 @@
+Attribute VB_Name = "Массив_Дин_Test"
+Option Explicit
+
+' нужно оставить
+Public Массив_Дин As New Массив_Дин
+
+Public Type Таблица_Строки
+    Столбец() As Variant
+End Type
+
+'Option Private Module
+'
+''@TestModule
+''@Folder("Tests")
+'
+'Private Assert As Object
+'Private Fakes As Object
+'
+''@ModuleInitialize
+'Public Sub ModuleInitialize()
+'    'this method runs once per module.
+'    Set Assert = CreateObject("Rubberduck.AssertClass")
+'    Set Fakes = CreateObject("Rubberduck.FakesProvider")
+'End Sub
+'
+''@ModuleCleanup
+'Public Sub ModuleCleanup()
+'    'this method runs once per module.
+'    Set Assert = Nothing
+'    Set Fakes = Nothing
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Создать_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Long
+'
+'    Dim var_1 As Long
+'
+'    var_0 = Mock.G_Long
+'
+'    var_1 = Mock.G_Long
+'
+'    Массив_Дин.Создать var_0, var_1
+'
+'    If Массив_Дин.Строк <> var_0 Then _
+'            Err.Raise 567, "", ""
+'    If Массив_Дин.Столбцов <> var_1 Then _
+'            Err.Raise 567, "", ""
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub в_Ячейку_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Long
+'
+'    Dim var_1 As Long
+'
+'    Dim var_2 As Variant
+'
+'    With Mock
+'
+'        var_0 = .G_Long
+'
+'        var_1 = .G_Long
+'
+'        var_2 = .G_Variant
+'
+'        Dim a2_dyn As New Массив_Дин
+'        Set a2_dyn = Массив_Дин.G_Массив_Дин(9, 9)
+'
+'    End With    'Mock
+'
+'    With a2_dyn
+'
+'        .в_Ячейку var_0, var_1, var_2
+'
+'        If .Ячейка(var_0, var_1) <> var_2 Then Err.Raise 567, "в_Ячейку(var_0,var_1,var_2)"
+'
+'    End With
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Ячейка_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Long
+'
+'    Dim var_1 As Long
+'
+'    With Mock
+'
+'        var_0 = .G_Long
+'
+'        var_1 = .G_Long
+'
+'        Dim varReturn As Variant
+'
+'        Dim a2_dyn As New Массив_Дин
+'        Set a2_dyn = Массив_Дин.G_Массив_Дин(9, 9)
+'
+'        Dim str As String
+'        str = .G_S
+'
+'    End With    'Mock
+'
+'    With a2_dyn
+'
+'        .в_Ячейку var_0, var_1, str
+'
+'        varReturn = .Ячейка(var_0, var_1)
+'
+'    End With
+'
+'    If varReturn <> str Then Err.Raise 567, "Ячейка(var_0,var_1)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Строки_Колво_Изменить_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Long
+'
+'    var_0 = Mock.G_Long
+'
+'    Dim a2_dyn As New Массив_Дин
+'    Set a2_dyn = Массив_Дин.G_Массив_Дин(9, 9)
+'
+'    a2_dyn.Строки_Колво_Изменить 11
+'
+'    If a2_dyn.Строк <> 11 Then _
+'            Err.Raise 567, "", ""
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Столбцы_Колво_Изменить_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim var_0 As Long
+'
+'    var_0 = Mock.G_Long
+'
+'    Dim a2_dyn As New Массив_Дин
+'    Set a2_dyn = Массив_Дин.G_Массив_Дин(9, 9)
+'
+'    a2_dyn.Столбцы_Колво_Изменить 11
+'
+'    If a2_dyn.Столбцов <> 11 Then _
+'            Err.Raise 567, "", ""
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Статик_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Variant
+'
+'    var_0 = Mock.G_Variant
+'
+'    Dim varReturn() As Variant
+'
+'    Dim a2_dyn As New Массив_Дин
+'    Set a2_dyn = Массив_Дин.G_Массив_Дин(9, 9)
+'
+'    varReturn = a2_dyn.Статик(var_0)
+'
+'    If UBound(varReturn) <> 9 Then Err.Raise 567, "Статик(var_0)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Заполнить_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim a2_dyn As New Массив_Дин
+'    Set a2_dyn = Массив_Дин.G_Массив_Дин(9, 9)
+'
+'    a2_dyn.Заполнить
+'
+'    If a2_dyn.Ячейка(9, 9) <> "99" Then Err.Raise 567, "Заполнить(var_0)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Усечь_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim a2_dyn As New Массив_Дин
+'    Set a2_dyn = Массив_Дин.G_Массив_Дин(9, 9)
+'
+'    a2_dyn.Усечь 7, 7
+'
+'    If a2_dyn.Строк <> 7 Then Err.Raise 567, "Усечь(var_0,var_1)"
+'    If a2_dyn.Столбцов <> 7 Then Err.Raise 567, "Усечь(var_0,var_1)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Строк_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim a2_dyn As New Массив_Дин
+'    Set a2_dyn = Массив_Дин.G_Массив_Дин(9, 9)
+'
+'    If a2_dyn.Строк <> 9 Then Err.Raise 567, "Строк(var_0)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Столбцов_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    BDebug = True
+'
+'    Settings
+'
+'    Dim var_0 As Variant
+'
+'    var_0 = Mock.G_Variant
+'
+'    Dim varReturn As Long
+'
+'    varReturn = Массив_Дин.Столбцов(var_0)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Столбцов(var_0)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'

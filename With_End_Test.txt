@@ -1,0 +1,1539 @@
+Attribute VB_Name = "With_End_Test"
+Option Explicit
+'
+'Option Private Module
+'
+''@TestModule
+''@Folder("Tests")
+'
+'Private Assert As Object
+'Private Fakes As Object
+'
+''@ModuleInitialize
+'Public Sub ModuleInitialize()
+''this method runs once per module.
+'    Set Assert = CreateObject("Rubberduck.AssertClass")
+'    Set Fakes = CreateObject("Rubberduck.FakesProvider")
+'End Sub
+'
+''@ModuleCleanup
+'Public Sub ModuleCleanup()
+''this method runs once per module.
+'    Set Assert = Nothing
+'    Set Fakes = Nothing
+'End Sub
+'
+''@TestInitialize
+'Public Sub TestInitialize()
+''this method runs before every test in the module.
+'End Sub
+'
+''@TestCleanup
+'Public Sub TestCleanup()
+''this method runs after every test in the module.
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Pos_Near_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim s As String
+'
+'    Dim lStart As Long
+'
+'    Dim varReturn As Long
+'
+'    lStart = 1
+'
+'    s = " :"
+'
+'    varReturn = Pos_Near(s, lStart)
+'
+'    If varReturn <> 2 Then Err.Raise 567, "Pos_Near(s,lStart)"
+'
+'    s = " " & vbCrLf & ":"
+'
+'    varReturn = Pos_Near(s, lStart)
+'
+'    If varReturn <> 2 Then Err.Raise 567, "Pos_Near(s,lStart)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub A1_Equal_No_Fill_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim a1 As Variant
+'
+'    a1 = Mock.G_a1
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = A1_Equal_No_Fill(a1)
+'
+'    If UBound(varReturn) <> UBound(a1) Then Err.Raise 567, "A1_Equal_No_Fill(a1)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub a1_pos_s_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim a1 As Variant
+'
+'    Dim s As String
+'
+'    a1 = Mock.G_a1(1, 3)
+'    a1(1) = "a"
+'    a1(2) = "b"
+'    a1(3) = "c"
+'
+'    s = Join(a1, vbNullString)
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = A1_Pos_s(a1, s, 1)
+'
+'    If varReturn(3) <> 3 Then Err.Raise 567, "a1_pos_s(a1,s)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub A1_reDim_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim a1 As Variant
+'
+'    Dim lCol As Long
+'
+'    a1 = Mock.G_a1(1, 2)
+'
+'    Dim a1_len_old As Long
+'    a1_len_old = a1_NO_Brack_Len(a1)
+'
+'    lCol = -1
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = A1_reDim(a1, lCol)
+'
+'    If a1_NO_Brack_Len(varReturn) <> a1_len_old + lCol _
+'            Then Err.Raise 567, "A1_reDim(a1,lCol)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Other_rePlace_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim s As String
+'
+'    Dim subs As String
+'
+'    Dim sTemp As String
+'
+'    subs = "ws."
+'
+'    s = subs & subs
+'
+'    sTemp = Mock.G_S
+'
+'    Dim varReturn As String
+'
+'    varReturn = Other_rePlace(subs, s, sTemp)
+'
+'    If varReturn <> ".." _
+'            Then Err.Raise 567, "Other_rePlace(s,subs,stemp)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Pos_Char_last_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim s As String
+'
+'    Dim subs As String
+'
+'    Dim varReturn As Long
+'
+'    subs = "a"
+'
+'    s = subs & subs
+'
+'    varReturn = Pos_Char_last(s, subs)
+'
+'    If varReturn <> Len(s) Then Err.Raise 567, "Pos_Char_last(s,subs"
+'
+'    subs = "ab"
+'
+'    s = subs & subs
+'
+'    varReturn = Pos_Char_last(s, subs)
+'
+'    If varReturn <> Len(s) Then Err.Raise 567, "Pos_Char_last(s,subs)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Add_End_With_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim s As String
+'
+'    Dim subs As String
+'
+'    Dim sTemp As String
+'
+'    s = "ws.o"
+'
+'    subs = "ws."
+'
+'    sTemp = Mock.G_S
+'
+'    Dim varReturn As String
+'
+'    varReturn = Add_End_With(subs, s, sTemp)
+'
+'    If varReturn <> s & vbNewLine & "End With 'ws" _
+'            Then Err.Raise 567, "Add_End_With(s,subs,stemp)"
+'
+'    subs = "NOT IN s"
+'
+'    varReturn = Add_End_With(subs, s, sTemp)
+'
+'    If varReturn <> s & vbNewLine & "End With '" & subs _
+'            Then Err.Raise 567, "Add_End_With(s,subs,stemp)"
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub S_Insert_TestMethod()
+'
+''On Error GoTo TestFail
+'
+'    Dim s As String
+'
+'    Dim subs As String
+'
+'    Dim lPos As Long
+'
+'    Dim varReturn As String
+'
+'    s = "a"
+'
+'    subs = "b"
+'
+'    lPos = 0
+'
+'    varReturn = S_Insert(s, subs, lPos)
+'
+'    If varReturn <> subs & s Then Err.Raise 567, "S_Insert(s,subs,lPos)"
+'
+'    lPos = 1
+'
+'    varReturn = S_Insert(s, subs, lPos)
+'
+'    If varReturn <> "ba" Then Err.Raise 567, "S_Insert(s,subs,lPos)"
+'
+'    s = "ac"
+'
+'    subs = "b"
+'
+'    lPos = 2
+'
+'    varReturn = S_Insert(s, subs, lPos)
+'
+'    If varReturn <> "abc" Then Err.Raise 567, "S_Insert(s,subs,lPos)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Last_In_rePlace_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim s As String
+'
+'    Dim subs As String
+'
+'    Dim sTemp As String
+'
+'    Dim varReturn As String
+'
+'    sTemp = Mock.G_S
+'
+'    s = "ws.a:ws.b"
+'    subs = "ws."
+'    varReturn = Last_In_rePlace(subs, s, sTemp)
+'    If varReturn <> "ws.a:.b" Then Err.Raise 567, "Last_In_rePlace(s,subs,stemp)"
+'
+'    s = "ws.a:ws.b"
+'    subs = "Z"
+'    varReturn = Last_In_rePlace(subs, s, sTemp)
+'    If varReturn <> s Then Err.Raise 567, "Last_In_rePlace(s,subs,stemp)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub First_In_rePlace_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim s As String
+'
+'    Dim subs As String
+'
+'    s = "ws.c" & vbNewLine & "ws.c"
+'
+'    subs = "ws."
+'
+'    Dim varReturn As String
+'
+'    varReturn = First_In_rePlace(s, subs)
+'
+'    If varReturn <> ".c" & vbNewLine & "ws.c" _
+'            Then Err.Raise 567, "First_In_rePlace(s,subs)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Dic_Less_Clear_x_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim s As String
+'
+'    Dim lCount As Long
+'
+'    Dim o As Object
+'
+'    Dim varReturn As Object
+'
+'    s = "w1q2q2"
+'
+'    lCount = 2
+'
+'    Dim a1 As Variant
+'    a1 = Array("w1", "q2")
+'
+'    Set o = ArrayD1_2_Dic(a1)
+'
+'
+'    Set varReturn = Dic_Less_Clear_x(s, lCount, o)
+'
+'    If varReturn.Count <> 1 Then Err.Raise 567, "Dic_Less_Clear_x(s,lCount,o)"
+'
+'
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub Dic_2_ArrayD1_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim o As Object
+'
+'    Set o = ArrayD1_2_Dic(Mock.G_a1)
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = Dic_2_ArrayD1(o)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Dic_2_ArrayD1(o)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub ArrayD1_2_Dic_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim a1 As Variant
+'
+'    a1 = Mock.G_a1
+'
+'    Dim varReturn As Object
+'
+'    Set varReturn = ArrayD1_2_Dic(a1)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "ArrayD1_2_Dic(a1)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub A1_Parts_Left_Cut_off_TestMethod()
+'
+''On Error GoTo TestFail
+'
+'    Dim a1 As Variant
+'
+'    a1 = Mock.G_a1(1, 3)
+'
+'    a1(1) = " ws.cells"
+'    a1(2) = " ws.cells"
+'    a1(3) = vbCrLf & "ws.cells"
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = A1_Parts_Left_Cut_off( _
+'            a1_Border_Left, a1)
+'
+'    If Mid(varReturn(1), 1, 1) <> "w" Then Err.Raise 567, "A1_Parts_Left_Cut_off(a1_Border,a1)"
+'    If Mid(varReturn(2), 1, 1) <> "w" Then Err.Raise 567, "A1_Parts_Left_Cut_off(a1_Border,a1)"
+'    If Mid(varReturn(3), 1, 1) <> "w" Then Err.Raise 567, "A1_Parts_Left_Cut_off(a1_Border,a1)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub a1_Border_Left_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim s As String
+'
+'    s = Mock.G_S
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = a1_Border_Left(s)
+'
+'    If varReturn(0) <> " " Then Err.Raise 567, "a1_Border_Left(s)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub With_End_Min_TestMethod()
+'
+''On Error GoTo TestFail
+'
+'    Dim s As String
+'    Dim Ret As String
+'
+'    Dim s0 As String
+'
+'    s = " Mock.s1" & vbNewLine & _
+'            "Mock.s2"
+'
+'    Ret = With_End_Min(s)
+'
+'    If UCase(Ret) <> _
+'            UCase(" With Mock" & vbNewLine & _
+'            ".s1" & vbNewLine & _
+'            ".s2" & vbNewLine & _
+'            "End With 'Mock") _
+'            Then Err.Raise 567, "With_End_Min(s)"
+'
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub Left_Cut_x_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim s As Variant, separ As Variant, str As Variant
+'
+'    separ = " "
+'
+'    str = ".w"
+'
+'    s = separ & str: Left_Cut_x s, separ
+'
+'    If s <> str Then _
+'            Err.Raise 567, "", ""
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub a1_NO_Brack_Len_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim lLen As Long
+'    lLen = Mock.G_Long
+'
+'    Dim a1 As Variant
+'
+'    a1 = Mock.G_a1(1, lLen)
+'
+'    Dim varReturn As Long
+'
+'    varReturn = a1_NO_Brack_Len(a1)
+'
+'    If varReturn <> lLen _
+'            Then Err.Raise 567, "a1_NO_Brack_Len(a1)"
+'
+'    lLen = 0
+'    a1 = Mock.G_a1(-1, -1)
+'    varReturn = a1_NO_Brack_Len(a1)
+'
+'    If varReturn <> 1 _
+'            Then Err.Raise 567, "a1_NO_Brack_Len(a1)"
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub A1_Add_on_Right_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim s As String
+'
+'    Dim a1 As Variant
+'
+'    s = Mock.G_S
+'
+'    a1 = Mock.G_a1
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = A1_Add_on_Right(s, a1)
+'
+'    If InStr(varReturn(UBound(varReturn)), s) < 1 _
+'            Then Err.Raise 567, "A1_Add_on_Right(s,a1)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Add_With_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim subs As String, subs01 As String, subs02 As String
+'
+'    Dim s As String, s01 As String, sOld As String
+'
+'    Dim varReturn As String
+'
+'    subs01 = "a": subs02 = ".b"
+'    subs = subs01 & subs02
+'
+'    s01 = "z" & vbNewLine
+'
+'    s = s01 & subs
+'
+'    sOld = s
+'
+'    varReturn = Add_With(subs01, s)
+'
+'    If varReturn <> s01 & "With " & subs01 & _
+'            vbNewLine & subs Then Err.Raise 567, "Add_With(subs,s)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub A1_Code_S_End_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = A1_Code_S_End
+'
+'    If varReturn(0) <> vbLf Then Err.Raise 567, "A1_Code_S_End(s)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub A1_Pos_s_Rev_TestMethod()
+'
+''On Error GoTo TestFail
+'
+'    Dim a1 As Variant
+'
+'    Dim s As String
+'
+'    Dim lStart As Long
+'
+'    a1 = Mock.G_a1(1, 3)
+'    a1(1) = "a"
+'    a1(2) = "b"
+'    a1(3) = "c"
+'
+'    s = Join((a1), vbNullString)
+'
+'    s = s & s
+'
+'    lStart = Len(Join((a1), vbNullString))
+'
+'    Dim varReturn As Variant
+'
+'    varReturn = A1_Pos_s_Rev(a1, s, lStart)
+'
+'    If varReturn(1) <> 1 Then Err.Raise 567, "A1_Pos_s_Rev(a1,s,lStart)"
+'    If varReturn(3) <> 3 Then Err.Raise 567, "A1_Pos_s_Rev(a1,s,lStart)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Left_Closest_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim s As String
+'
+'    Dim lPos As Long
+'
+'    Dim a1 As Variant
+'
+'    a1 = Mock.G_a1(1, 3)
+'    a1(1) = "a"
+'    a1(2) = "b"
+'    a1(3) = "c"
+'
+'    s = Join((a1), vbNullString)
+'
+'    s = s & s
+'
+'    lPos = Len(Join((a1), vbNullString))
+'
+'    Dim varReturn As Long
+'
+'    varReturn = Left_Closest(s, lPos, a1)
+'
+'    If varReturn <> 3 Then Err.Raise 567, "Left_Closest(s,lPos,a1)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Position_02_s_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim s As String
+'
+'    Dim subs As String
+'
+'    subs = Mock.G_S
+'
+'    s = subs & subs
+'
+'    Dim varReturn As Long
+'
+'    varReturn = Position_02_s(s, subs)
+'
+'    If varReturn < 2 Then Err.Raise 567, "Position_02_s(s,subs)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Replace_Good_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim s As String
+'
+'    Dim sFind As String
+'
+'    Dim sRepl As String
+'
+'    Dim lStart As Long
+'
+'    Dim lCount As Long
+'
+'    Dim vbCompare As Long
+'
+'    sFind = "b"
+'
+'    sRepl = "c"
+'
+'    s = sRepl & sFind
+'
+'    lStart = 2
+'
+'    lCount = -1
+'
+'    vbCompare = vbTextCompare
+'
+'    Dim varReturn As String
+'
+'    varReturn = Replace_GOod(s, sFind, sRepl, lStart, lCount, vbCompare)
+'
+'    If varReturn <> sRepl & sRepl Then Err.Raise 567, "Replace_Good(s,sFind,sRepl,lStart,lCount,vbCompare)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+'
+''@TestMethod
+'
+'Public Sub S_not_First_Replace_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim subs As String
+'
+'    Dim sRepl As String
+'
+'    Dim s As String
+'
+'    subs = "."
+'
+'    sRepl = "Z"
+'
+'    s = ".."
+'
+'    Dim varReturn As String
+'
+'    varReturn = S_not_First_Replace(subs, sRepl, s)
+'
+'    If varReturn <> ".Z" Then Err.Raise 567, "S_not_First_Replace(subs,sRepl,s)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Wave_First_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim s As String
+'
+'    s = " 1.2" & vbNewLine & "1.2"
+'
+'    Dim varReturn As String
+'
+'    varReturn = Wave_First(s)
+'
+'    If varReturn <> " With 1" & vbNewLine & _
+'            ".2" & vbNewLine & _
+'            ".2" & vbNewLine & _
+'            "End With '1" Then Err.Raise 567, "Wave_First(s)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub ArrayD2_2_ArrayD1_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    With Mock
+'
+'        bDebug = True
+'
+'        Settings
+'
+'        Dim lCol As Long
+'
+'        Dim a2() As Variant
+'
+'        lCol = 1
+'
+'        a2 = .G_a2(3, 2, 1)
+'
+'        Dim varReturn As Variant
+'
+'        varReturn = ArrayD2_2_ArrayD1(lCol, a2())
+'
+'        If varReturn(UBound(a2)) <> a2(UBound(a2), lCol) Then Err.Raise 567, "ArrayD2_2_ArrayD1(lCol,a2())"
+'
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'    End With    'Mock
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub A2_Hit_In_Code_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    With Mock
+'
+'        bDebug = True
+'
+'        Settings
+'
+'        Dim s As String
+'
+'        Dim a2() As Variant
+'
+'        a2 = .G_a2(3, 2)
+'
+'        a2(1, 1) = "a"
+'        a2(2, 1) = "b"
+'        a2(3, 1) = "c"
+'
+'        s = "aaccbbaaaccb"
+'
+'        Dim varReturn() As Variant
+'
+'        varReturn = A2_Hit_In_Code(s, a2())
+'
+'        If varReturn(2, 2) <> 3 Then Err.Raise 567, "A2_Hit_In_Code(s,a2())"
+'
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'    End With    'Mock
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub A2_Row_w_Max_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    With Mock
+'
+'        bDebug = True
+'
+'        Settings
+'
+'        Dim a2() As Variant
+'
+'        Dim lCol As Long
+'
+'        a2 = .G_a2(3, 2)
+'        a2(1, 2) = 1
+'        a2(2, 2) = 3
+'        a2(3, 2) = 2
+'
+'        lCol = 2
+'
+'        Dim varReturn As Long
+'
+'        varReturn = A2_Row_w_Max(a2(), lCol)
+'
+'        If varReturn <> 2 Then Err.Raise 567, "A2_Row_w_Max(a2(),lCol)"
+'
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'    End With    'Mock
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Hit_Max_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    With Mock
+'
+'        bDebug = True
+'
+'        Settings
+'
+'        Dim a2() As Variant
+'
+'        a2 = .G_a2(3, 2)
+'        a2(1, 1) = "a": a2(1, 2) = 1
+'        a2(2, 1) = "b": a2(2, 2) = 6
+'        a2(3, 1) = "ñ": a2(3, 2) = 1
+'
+'        Dim varReturn As String
+'
+'        varReturn = Hit_Max(a2())
+'
+'        If varReturn <> "b" Then Err.Raise 567, "Hit_Max(a2())"
+'
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'    End With    'Mock
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub Wave_First_Action_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    With Mock
+'
+'        bDebug = True
+'
+'        Settings
+'
+'        Dim s As String
+'
+'        Dim subs As String
+'
+'        s = " a.b"
+'
+'        subs = "a."
+'
+'        Dim varReturn As Variant
+'
+'        varReturn = Wave_First_Action(s, subs)
+'
+'        If varReturn <> " With a" & vbNewLine & _
+'                ".b" & vbNewLine & "End With 'a" _
+'                Then Err.Raise 567, "Wave_First_Action(s,subs)"
+'
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'    End With    'Mock
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+'
+''@TestMethod
+'
+'Public Sub A2_ReDim_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    With Mock
+'
+'        bDebug = True
+'
+'        Settings
+'
+'        Dim a2() As Variant
+'
+'        Dim lCol As Long
+'
+'        a2 = .G_a2
+'
+'        Dim uBound_a2_2 As Long
+'        uBound_a2_2 = UBound(a2, 2)
+'
+'        lCol = .G_Long
+'
+'        Dim varReturn() As Variant
+'
+'        varReturn = A2_ReDim(lCol, a2())
+'
+'        If UBound(varReturn, 2) <> uBound_a2_2 + lCol _
+'                Then Err.Raise 567, "A2_ReDim(a2(),lCol)"
+'
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'    End With    'Mock
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Wave_pOp_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    With Mock
+'
+'        bDebug = True
+'
+'        Settings
+'
+'        Dim s As String
+'
+'        s = "With a1" & _
+'                ".b2.b1" & vbNewLine & _
+'                ".b2.b2" & vbNewLine & _
+'                "End With ' 01"
+'
+'        Dim varReturn As String
+'
+'        varReturn = Wave_pOp(s)
+'
+'        If varReturn <> "With a1" & _
+'                "With b2" & _
+'                ".b1" & vbNewLine & _
+'                ".b2" & vbNewLine & _
+'                "End With ' b2" & _
+'                "End With ' 01" _
+'                Then Err.Raise 567, "Wave_pOp(s)"
+'
+'TestExit:
+'
+'            .wb.Close False
+'
+'            Exit Sub
+'
+'TestFail:
+'
+'            .wb.Close False
+'
+'        End With    'Mock
+'
+'        Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'    End Sub
+'
+'
+'
+'
+'    '@TestMethod
+'
+'Public Sub text_2_Code_TestMethod()
+'
+'    On Error GoTo TestFail
+'    Dim varReturn As String
+'
+'    Dim s As String
+'
+'    s = "a" & vbNewLine
+'
+'    varReturn = Text_2_Code(s)
+'
+'    If varReturn <> Chr(34) & "a" & Chr(34) & " & vbNewLine" _
+'            Then Err.Raise 567, "text_2_Code(s)"
+'
+'    s = "a" & vbNewLine & "b"
+'
+'    varReturn = Text_2_Code(s)
+'
+'    If varReturn <> Chr(34) & "a" & Chr(34) & _
+'            " & vbNewLine & " & _
+'            Chr(34) & "b" & Chr(34) _
+'            Then Err.Raise 567, "text_2_Code(s)"
+'TestExit:
+'    With Mock
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'    End With    'Mock
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub ClipBoard_Text_2_Code_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    Dim s As String, varReturn As String
+'
+'    With Mock
+'
+'        s = "a" & vbNewLine & "b"
+'
+'        Text_2_Clipboard s
+'
+'        ClipBoard_Text_2_Code
+'
+'        varReturn = Clipboard_2_Text
+'
+'        If varReturn <> Chr(34) & "a" & Chr(34) & _
+'                " & vbNewLine & " & _
+'                Chr(34) & "b" & Chr(34) _
+'                Then Err.Raise 567, "text_2_Code(s)"
+'TestExit:
+'
+'        .wb.Close False
+'
+'        Exit Sub
+'
+'TestFail:
+'
+'        .wb.Close False
+'
+'
+'    End With    'Mock
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'

@@ -1,0 +1,351 @@
+Attribute VB_Name = "Строки_Удалить"
+Option Explicit
+
+Option Compare Text
+
+' Удаление строк, начинающихся с "Страница *" в столбце А
+
+Sub FuzzyDel()
+
+    TestData
+
+    ZVI_DelRows ActiveSheet.Range("A:A"), "Страница *", 2
+
+End Sub
+
+'====================================================================================
+
+' Sub         : ZVI_DelRows( Rng, DelValue [, DelRowsCount=1] )
+
+' Rng         : Range or the 1st upper cell in the column to be seached
+
+' DelValue    : Value which rows will be deleted
+
+' DelRowsCount: Amount of rows to be deleted with each found one
+
+'-------------+-----------------------------------------------------------------------
+
+' VBA call    : ZVI_DelRows ActiveSheet.Range("A2"), 0
+
+' examples    : ZVI_DelRows ActiveSheet.Range("B1"), Empty
+
+'             : ZVI_DelRows ActiveSheet.Range("B2"), False
+
+'             : ZVI_DelRows ActiveSheet.Range("A7:A20"), 0
+
+'             : ZVI_DelRows ActiveSheet.Range("A5"), "Страница*"
+
+'             : ZVI_DelRows ActiveSheet.Range("A:A"), "Страница #*"
+
+'             : ZVI_DelRows ActiveSheet.Range("A5"), "Страница*", 2
+
+'-------------+-----------------------------------------------------------------------
+
+' Created     : ZVI:2009:12:26 http://www.sql.ru/forum/actualthread.aspx?tid=722758
+
+' Ver2        : ZVI:2011-04-02 http://www.planetaexcel.ru/forum.php?thread_id=26246
+
+' Ver3        : ZVI:2011-04-03 http://www.planetaexcel.ru/forum.php?thread_id=26246
+
+' Ver4        : ZVI:2011-04-05 Save formatting of the bottom rows (for some cases)
+
+' Ver5        : ZVI:2012-06-17 Fuzzy matching symbol "*" in DelValue is supported,
+
+'             :                Rng is limited by UsedRange
+
+' Ver6        : ZVI:2012-06-19 Fuzzy matching symbols in DelValue: "*","#","?"
+
+'             :                Optional DelRowsCount argument is supported
+
+'-------------+-----------------------------------------------------------------------
+
+' RU comment  : Rng - первая ячейка (будут обработаны и все ниже) или диапазон ячеек;
+
+'             : DelValue - значение в диапазоне Rng для строк, которые будут удалены;
+
+'             :[DelRowsCount] = 1 - кол-во удаляемых строк вместе с каждой найденной.
+
+'-------------------------------------------------------------------------------------
+
+Public Sub ZVI_DelRows(ByVal rng As Range, DelValue, Optional DelRowsCount& = 1)
+
+' строки удалить, если ячейки в столбце содержат, со звёздочками
+
+    Dim sh As Worksheet, a(), b(), r&, c&, rs&, cs&, i&, j&, k&, asu
+
+    Set sh = rng.Parent
+
+    With sh.UsedRange
+
+        Set rng = Intersect(rng, .Columns)
+
+        If rng Is Nothing Then Exit Sub
+
+        c = rng.Column - .Column + 1
+
+        j = rng.Row - .Row
+
+        rs = rng.Columns(1).Cells.Count
+
+        If rs = 1 Then rs = .Rows.Count - j
+
+        cs = .Columns.Count + 1
+
+        Set rng = .Resize(rs, cs).Offset(j)
+
+    End With
+
+    If rs = 1 Then
+
+        ReDim a(1 To 1, 1 To 1)
+
+        a(1, 1) = rng.Columns(c).Value
+
+    Else
+
+        a = rng.Columns(c).Value
+
+    End If
+
+    ReDim b(1 To rs, 1 To 1)
+
+    If VarType(DelValue) = vbString Then
+
+        k = InStr(DelValue, "*")
+
+        If k = 0 Then k = InStr(DelValue, "#")
+
+        If k = 0 Then k = InStr(DelValue, "?")
+
+    End If
+
+    j = 0
+
+    If k Then
+
+        For r = 1 To rs
+
+            If j > 0 Then
+
+                j = j - 1
+
+            Else
+
+                If VarType(a(r, 1)) = vbString Then
+
+                    If a(r, 1) Like DelValue Then j = DelRowsCount - 1 Else b(r, 1) = 1: i = i + 1
+
+                Else
+
+                    b(r, 1) = 1: i = i + 1
+
+                End If
+            End If
+        Next
+
+    Else
+
+        For r = 1 To rs
+
+            If j > 0 Then
+
+                j = j - 1
+
+            Else
+
+                If IsError(a(r, 1)) = False Then
+
+                    If a(r, 1) = DelValue Then j = DelRowsCount - 1 Else b(r, 1) = 1: i = i + 1
+
+                End If
+            End If
+        Next
+    End If
+
+    If i < rs Then
+
+        With Application
+
+            .EnableEvents = False
+
+            asu = .ScreenUpdating
+
+            If asu Then .ScreenUpdating = False
+
+        End With
+
+        With rng
+
+            .Columns(cs).Value = b
+
+            .Sort .Cells(1, cs), 1, Header:=xlNo
+
+            .Columns(cs).ClearContents
+
+            .Resize(rs - i).Offset(i).EntireRow.Delete
+
+        End With
+
+        With Application
+
+            If asu Then .ScreenUpdating = asu
+
+            .EnableEvents = True
+
+        End With
+    End If
+End Sub
+
+' Заполнение тестовыми данными столбца А нового листа
+
+Private Sub TestData()
+
+    Dim a(), i&, r&
+
+    ' Тестовые данные
+
+    With ActiveWorkbook.Sheets.Add
+
+        ReDim a(1 To .Rows.Count, 1 To 1)
+
+        For r = 1 To UBound(a)
+
+            If r Mod 10 = 0 Then
+
+                i = i + 1
+
+                a(r, 1) = "Страница " & i
+
+            ElseIf r Mod 3 = 0 Then
+
+                a(r, 1) = r
+
+            Else
+
+                a(r, 1) = "Текст" & r
+
+            End If
+
+        Next
+
+        .Columns("A").Value = a()
+
+    End With
+
+End Sub
+
+'
+Public Sub ActiveSheet_Rows_Empty_Delete(Optional ByVal msg As String)
+' procedure Checked by test опосредованно
+'
+    Строки_Пустые_Удалить ActiveSheet
+
+End Sub
+
+Public Sub Строки_Пустые_Удалить_ActiveSheet(Optional ByVal msg As String)
+
+    Строки_Пустые_Удалить ActiveSheet
+
+End Sub
+
+Function Строки_Пустые_Удалить(ws As Worksheet)
+
+    Строки_Удалить_Различием ws, _
+            Массив_Признаков_Строк_Пустых_Вставить(ws, Столбец_Правее_Крайнего(ws), _
+            Массив_Признаков_ПустыхСтрок(ws))
+
+End Function
+
+Function Массив_Признаков_ПустыхСтрок(ByVal ws As Worksheet) _
+        As Variant()
+
+    Dim arr_2d() As Variant
+
+    ' 27.3.19 15:55 @Todo: Для больших массивов вызывает overflow
+
+    arr_2d = ws.UsedRange.Value
+
+    Dim arr_1d() As Variant
+
+    ReDim arr_1d(LBound(arr_2d) To UBound(arr_2d), 1 To 1)
+
+    Dim y As Long, x As Long
+
+    For y = LBound(arr_2d) To UBound(arr_2d)
+
+        For x = LBound(arr_2d, 2) To UBound(arr_2d, 2)
+
+            If arr_2d(y, x) <> Empty Then
+
+                arr_1d(y, 1) = 1    'Строка не пустая
+
+                Exit For
+
+            End If
+
+        Next
+
+    Next
+
+    If IsArray(arr_1d) Then Массив_Признаков_ПустыхСтрок = arr_1d
+
+End Function
+
+Function Столбец_Правее_Крайнего(ByVal ws As Worksheet) As Long
+
+    With ws
+
+        Столбец_Правее_Крайнего = .UsedRange.Columns.Count + .UsedRange.Column + 1
+
+    End With
+
+End Function
+
+Function Массив_Признаков_Строк_Пустых_Вставить(ws As Worksheet, ByVal Col_1d As Long, arr_1d() As Variant) As Variant
+
+    With ws
+
+        .Cells(.UsedRange.Row, Col_1d).Resize(UBound(arr_1d)) = arr_1d
+
+    End With
+
+End Function
+
+Function Строки_Удалить_Различием(ws As Worksheet, _
+        Optional ByVal msg As String)
+
+    Dim rng As Range, rng_1d As Range    ' , Col_1d As Long
+
+    Set rng_1d = ws.Cells.Columns(Столбец_Правый_Крайний(ws))
+
+    With rng_1d
+
+        Set rng = .Find(1, , , xlWhole)
+
+        If Not rng Is Nothing Then
+
+            If WorksheetFunction.CountBlank( _
+                    Application.Intersect( _
+                    ws.UsedRange, rng_1d)) > 0 Then
+
+                .ColumnDifferences(rng).EntireRow.Delete
+
+            End If
+        End If
+
+        .Clear
+
+    End With
+
+End Function
+
+Function Столбец_Правый_Крайний(ByVal ws As Worksheet) As Long
+
+    With ws.UsedRange
+
+        Столбец_Правый_Крайний = .Column + .Columns.Count - 1
+
+    End With
+End Function
+
+

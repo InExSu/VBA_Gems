@@ -1,0 +1,1131 @@
+Attribute VB_Name = "Test_generation_from_code"
+Option Explicit
+' InExSu 18.05.2019 15:50
+'26.01.2019 23:12:41
+' ' https://www.youtube.com/channel/UCQMbRhaPEFa1NoZLhRzQzSA/videos?view=0&shelf_id=0&sort=dd
+' https://inexsu.wordpress.com
+
+Public Const VAR_PREF As String = "var_"
+Public Const ARRAY_SIGN As String = "{}"
+
+'Test generation from code
+
+Public Type String_Cut
+    ' для вырезки парных символов
+    str As String
+    symb As String
+    Position_01 As Long
+    Position_02 As Long
+End Type
+
+Public Module_Test_code_Global As String    ' коды функций
+Public Module_Test_code As String    ' код одной функции
+Public Proc_Call_Bracket As String    ' вызов функции, аргументы в скобках
+Public Proc_Return_Type As String    'тип возвращаемый процедурой
+
+
+Public Sub Code_All_2_Units_Tests(Optional msg As String) _
+    ' procedure Checked by test опосредованно
+' создать юнит тесты для процедур не покрытых тестами,
+' без фразы тестом Покрыто в теле процедуры.
+' МетаПрограммирование = код, который пишет код.
+
+    Var_Public_Clear _
+            MsgBoxEx_Unit_Show( _
+            to_ClipBoard( _
+            Array_walk( _
+            Array_Comments_delete( _
+            Split_by(vbCrLf, _
+                     Тестом_Покрыт_Очистить( _
+                     in_Quotes_remove( _
+                     UnderScore_Replace( _
+                     as_Replace( _
+                     Paste_from_clipboard( _
+                     Settings))))))))))
+End Sub
+
+Function MsgBoxEx_Unit_Show( _
+         Optional s As String) _
+         As String
+' procedure NOT checked by test
+'
+    MsgBoxEx Trim(Module_Test_code_Global), , "Unit In ClipBoard", 2
+
+End Function
+Function Array_walk(a1 As Variant)    ' As Variant
+' procedure Checked by test опосредованно
+
+' формирует строку Module_Test_code_Global, которая
+' пойдёт в буфер обмена
+
+    Dim x As Long
+    For x = LBound(a1) To UBound(a1)
+        'all func "Proc_" also write to var Module_Test_code
+
+        If Like_Proc_Declare(CStr(a1(x))) Then
+
+            vbCrLF_2 Module_Test_code_Global, _
+                     Code_Local_2_Global( _
+                     With_End_Unit_Test_Code( _
+                     Костыль_As_Lic( _
+                     Replace_AsBrackets_2_BracketsAs( _
+                     Var_Insert( _
+                     Variables_Search( _
+                     RubberDuck_Sign( _
+                     Proc_Bottom( _
+                     Code_Comments_Delete( _
+                     Proc_Call(Proc_Call_Bracket_Make( _
+                               String_Proc_Call( _
+                               String_Args( _
+                               Code_Add_Var_Declare( _
+                               Array_As(Arg_is_One( _
+                                        Comma_wo_As_to_Variant( _
+                                        Args_S( _
+                                        Code_S_first( _
+                                        Brackets_Round_2_Curly( _
+                                        Proc_Top(Proc_Declare( _
+                                                 Proc_Return_Type_Get( _
+                                                 Module_Test_code_Trim( _
+                                                 Proc_Name(CStr(a1(x) _
+                                                                ))))))))))))))))))))))))))
+        End If
+    Next
+End Function
+
+Function With_End_Unit_Test_Code( _
+         s As String) _
+         As String
+' procedure NOT checked by test
+' для скорости обработки тестов RubberDuck
+
+'    Module_Test_code = Replace(Module_Test_code, _
+     "Mock.", ".")
+
+    Module_Test_code = With_End_Min(Module_Test_code)
+
+End Function
+
+Function Костыль_As_Lic(Optional msg As String)
+' procedure Checked by test опосредованно
+' Не хватило сил разобраться с:
+' если процедура без аргументов, то в тесте появляется строка:
+' Dim varReturn () As lic Function
+' Заменяю часть строки
+
+    Module_Test_code = Replace(Module_Test_code, _
+                               " () As lic ", " As Variant ' ")
+
+    ' {} As Variant
+    Module_Test_code = Replace(Module_Test_code, _
+                               "{} As Variant", " ' ")
+End Function
+
+Function vbCrLF_2(msg As String, Optional msg2 As String)
+' procedure Checked by test опосредованно
+
+' сначал делаю одинарными
+' затем двойными
+
+    Module_Test_code_Global = Symb_1_2( _
+                              Symb_2_1(msg, vbCrLf), vbCrLf)
+
+End Function
+
+Function Symb_1_2(msg As String, symb As String) _
+         As String
+' procedure Checked by test опосредованно
+' удвоить символ
+
+    Dim symb2 As String
+
+    symb2 = symb & symb
+
+    Symb_1_2 = Replace(msg, symb, symb2)
+
+End Function
+
+Function Symb_2_1(msg As String, symb) _
+         As String
+
+' procedure Checked by test опосредованно
+
+' устраняет подряд идущие символы
+
+    Dim symb2 As String
+
+    symb2 = symb & symb
+
+    Do While InStr(msg, symb2) > 0
+
+        msg = Replace(msg, symb2, symb)
+
+    Loop
+
+    Symb_2_1 = msg
+
+End Function
+
+Function Replace_AsBrackets_2_BracketsAs(Optional msg As String)
+' procedure Checked by test опосредованно
+' костыль
+    Module_Test_code = Replace(Module_Test_code, " As () ", " () As ")
+
+End Function
+
+Function Var_Insert(msg As String)
+
+' procedure Checked by test опосредованно
+'
+    Dim assign As String
+
+    If IsObjectName(Proc_Return_Type) Then
+
+        assign = "Set varReturn = "
+
+    Else
+
+        assign = "varReturn = "
+
+    End If
+
+    If Trim$(Proc_Return_Type) = vbNullString Then
+
+        Module_Test_code = Replace(Module_Test_code, "TestExit:", _
+                                   msg & vbCrLf & _
+                                   Bracket_Remove(Proc_Call_Bracket) & _
+                                   vbCrLf & _
+                                   "TestExit:")
+    Else    ' Function
+
+        If Proc_Return_Type = vbNullString Then
+
+            Module_Test_code = Replace(Module_Test_code, "TestExit:", _
+                                       msg & vbCrLf & _
+                                       Bracket_Remove(Proc_Call_Bracket) & _
+                                       vbCrLf & _
+                                       "'if varReturn <> 0 Then Err.Raise 567, " & Chr(34) & Proc_Call_Bracket & Chr(34) & vbCrLf & _
+                                       "TestExit:")
+        Else
+
+            Module_Test_code = Replace(Module_Test_code, "TestExit:", _
+                                       msg & vbCrLf & _
+                                       "Dim varReturn As" & " " & Proc_Return_Type & vbCrLf & _
+                                       assign & _
+                                       Proc_Call_Bracket & _
+                                       vbCrLf & _
+                                       "'if varReturn <> 0 Then Err.Raise 567, " & Chr(34) & Proc_Call_Bracket & Chr(34) & vbCrLf & _
+                                       "TestExit:")
+        End If
+    End If
+End Function
+
+
+Function Variables_Search(Optional msg As String) _
+         As String
+' procedure Checked by test опосредованно
+' создать строки, которые генерируют значения в переменные
+
+    If InStr(Module_Test_code, vbCrLf) < 1 Then
+
+        Exit Function
+
+    End If
+
+    Dim code_Var_Gen As String
+
+    Dim a1 As Variant
+    a1 = Split(Module_Test_code, vbCrLf)
+
+    Dim x As Long: For x = LBound(a1) To UBound(a1)
+
+        If InStr(UCase(a1(x)), " AS ") > 0 Then
+
+            code_Var_Gen = code_Var_Gen & _
+                           Variable_Generate(CStr(a1(x))) & vbCrLf
+
+        End If
+    Next
+
+    Variables_Search = code_Var_Gen
+
+End Function
+
+Function Variable_Generate(str_w_As As String) _
+         As String
+' procedure Checked by test опосредованно
+'
+
+    Dim var_Name As String
+    var_Name = extract_Between(str_w_As, "Dim ", " As ")
+
+    If InStr(var_Name, "()") > 1 Then
+
+        var_Name = Replace(var_Name, "()", vbNullString)
+
+        If InStr(var_Name, "a1") > 0 Then
+
+            Variable_Generate = var_Name & " = " & "Mock.G_a1"
+
+        ElseIf InStr(var_Name, "a2") > 0 Then
+
+            Variable_Generate = var_Name & " = " & "Mock.G_a2"
+
+        Else
+
+            Variable_Generate = var_Name & " = " & "Mock.G_ArrayX"
+
+        End If
+
+    Else
+        ' не массив
+        Variable_Generate = nonArray_VarGen(str_w_As)
+
+    End If
+End Function
+
+Function nonArray_VarGen(msg As String) _
+         As String
+
+' procedure Checked by test опосредованно
+' из строки объявления переменной не массива
+' "Dim var_2 As String"
+' создать строку инициализации переменной генератором
+' var_2 = Mock.G_S
+' для объектных переменных нужно добавить Set
+    Dim var_Name As String
+    var_Name = extract_Between(msg, "Dim ", " As ")
+
+    Dim data_Type As String
+    data_Type = Right_After(msg, " As ")
+
+    If IsObjectName(data_Type) Then
+
+        var_Name = "Set " & var_Name
+
+    Else
+
+    End If
+
+    If UCase(Left$(var_Name, 2)) = "A1" Then
+
+        nonArray_VarGen = var_Name & " = Mock.G_" & "a1"
+
+    Else
+
+        nonArray_VarGen = var_Name & " = Mock.G_" & data_Type
+
+    End If
+End Function
+
+Function IsObjectName(msg As String) _
+         As Boolean
+' procedure Checked by test опосредованно
+
+    msg = Trim$(LCase(msg))
+
+    Dim a1() As Variant    ' список объектов
+    a1 = Array("range", "shape", "worksheet", "workbook", "массив_дин", "collection", "object")
+
+    Dim x As Long: For x = LBound(a1) To UBound(a1)
+
+        If InStr(msg, a1(x)) > 0 Then
+
+            IsObjectName = True
+
+            Exit For
+
+        End If
+    Next
+End Function
+
+Function Right_After(str_Long As String, str_short As String) _
+         As String
+' procedure Checked by test опосредованно
+' искать справа на лево
+' вернуть справа от найденной подстроки
+' из "12_56_56789" и "56" вернуть "789"
+
+    Dim pos_short As Long
+
+    pos_short = InStrRev(str_Long, str_short)
+
+    If pos_short < 1 Then Exit Function    '=>
+
+    Dim short_Symb_Last_Pos As Long
+
+    short_Symb_Last_Pos = pos_short + Len(str_short) - 1
+
+    Right_After = Right$(str_Long, Len(str_Long) - short_Symb_Last_Pos)
+
+End Function
+
+Function Var_Public_Clear(Optional msg As String)
+
+' procedure Checked by test опосредованно
+' VBA забывает обнулять глобальные переменные
+    Module_Test_code = vbNullString
+    Module_Test_code_Global = vbNullString
+
+End Function
+
+Function to_ClipBoard(Optional msg As String)
+' Тестом покрыта
+    Text_2_Clipboard Module_Test_code_Global
+End Function
+
+Function RubberDuck_Sign(Optional msg As String)
+' Тестом покрыта
+    Module_Test_code = "'@TestMethod" & _
+                       Module_Test_code
+End Function
+
+Function Code_Local_2_Global(Optional msg As String)    ' Тестом покрыта
+
+' наращиваю строку с юниттестами
+
+    Module_Test_code_Global = Module_Test_code_Global _
+                              & vbCrLf & Module_Test_code
+
+    Module_Test_code = vbNullString
+
+End Function
+
+Function Proc_Bottom(Optional msg As String)
+' Тестом покрыта
+' процедура пришивает низ
+
+    Dim str As String
+    str = "TestExit:" & vbCrLf & _
+          "Mock.wb.Close False" & vbCrLf & _
+          "Exit Sub" & vbCrLf & _
+          "TestFail:" & vbCrLf & _
+          "Mock.wb.Close False" & vbCrLf & _
+          "Assert.Fail ""Test error: #"" & Err.Number & "" - "" & Err.Description" & vbCrLf & _
+          "End Sub" & vbCrLf
+
+    Module_Test_code = Module_Test_code & vbCrLf & str
+
+End Function
+
+Function Code_Comments_Delete(Optional msg As String)
+' Тестом покрыта
+' очистить комментарии
+
+    Module_Test_code = Comments_delete(Module_Test_code)
+
+End Function
+
+Function Proc_Call(str As String)
+' Тестом покрыта
+
+' Module_Test_code = Module_Test_code & vbCrLf & _
+  str
+'хочу избавиться от вызова процедуры с неинициализированными параметрами
+    Module_Test_code = Module_Test_code & vbCrLf & _
+                       "'" & str                          'эту строку должна удалить процедура очистки комментов
+End Function
+
+Function Bracket_Remove(msg As String) _
+         As String
+' procedure Checked by test опосредованно
+' убрать одиночные скобки
+' "из Settings_01(var_0a1(),var_1a2(),var_2)" сделать
+' "Settings_01 var_0a1(),var_1a2(),var_2"
+
+    msg = Replace(msg, "()", "BrackBrack")
+    msg = Replace(msg, "(", " ")
+    msg = Replace(msg, ")", " ")
+    msg = Replace(msg, "BrackBrack", "()")
+
+    Bracket_Remove = msg
+End Function
+
+Function Proc_Call_Bracket_Make(msg As String) _
+         As String
+' procedure Checked by test опосредованно
+'
+    Proc_Call_Bracket = Replace(msg, " ", "(") & _
+                        ")"
+
+    Proc_Call_Bracket_Make = msg
+
+End Function
+
+Function String_Proc_Call(str As String) _
+         As Variant  ' Тестом покрыта
+'получает из String_Args
+
+' ToDo: удалить процедуру
+    String_Proc_Call = Proc_Name(Module_Test_code) & _
+                       " " & str
+End Function
+
+Function String_Args(Optional msg As String) _
+         As String  ' Тестом покрыта
+
+' создать подстроку аргументов для вызова процедуры
+
+    If InStr(Module_Test_code, vbCrLf) < 1 Then
+
+        Exit Function
+
+    End If
+
+    Dim a1 As Variant
+    a1 = Split(Module_Test_code, vbCrLf)
+
+    Dim x As Long, sArgs As String
+
+    ' пропускаю первую строку ибо там " As "
+
+    For x = LBound(a1) + 1 To UBound(a1)
+
+        If InStr(a1(x), " As ") > 0 Then
+
+            sArgs = sArgs & Var_Name_from_Declare(a1(x)) & ","
+
+        End If
+    Next
+
+    String_Args = Symb_Right_Cut(sArgs, ",")    'Comma_Right_Delete
+
+End Function
+
+Function Var_Name_from_Declare( _
+         str As Variant) _
+         As String  ' Тестом  покрыта
+' вернуть имя переменной из объявления переменной
+
+    Dim sTemp As String
+
+    sTemp = extract_Between( _
+            CStr(str), "Dim ", " As ")
+
+    If sTemp = Empty Then
+
+        Var_Name_from_Declare = str
+
+    Else
+
+        Var_Name_from_Declare = sTemp
+
+    End If
+End Function
+
+Function Code_Add_Var_Declare(a1 As Variant)
+' Тестом покрыта
+' add variable declaration lines to call the
+' function being tested
+' ищет в массиве ячейку " As ", берёт
+' из следующей ячейки тип переменной и
+' дописывает строку с объявлением переменной
+    Dim x As Long, var_Count As Long
+
+    Dim arg As String    'текущая переменная
+
+    For x = LBound(a1) To UBound(a1)
+
+        If a1(x) = "As" Then
+
+            If InStr(a1(x - 1), ARRAY_SIGN) > 0 Then
+
+                Dim aX As String
+
+                ' запомнить в имение переменной размерность массива
+                ' для подстановки подходящего генератора
+
+                arg = a1(x - 1)
+                arg = Replace(arg, "_", vbNullString)
+
+                If Left$(arg, 2) = "a1" Then aX = "a1"
+                If Left$(arg, 2) = "a2" Then aX = "a2"
+
+                ' InExSu 12.05.2019 00:34
+                '                Module_Test_code = Module_Test_code & _
+                                 '                        vbCrLf & _
+                                 '                        "Dim var_" & var_Count & aX & "()" & " As " & _
+                                 '                        Replace(a1(x + 1), ",", vbNullString)
+                ' пусть переменные называются как в оригинале
+
+                Module_Test_code = Module_Test_code & _
+                                   vbCrLf & _
+                                   "Dim " & Replace(a1(x - 1), "{}", "()") & " As " & _
+                                   Replace(a1(x + 1), ",", vbNullString)
+
+            Else
+
+                ' InExSu 12.05.2019 00:34
+                '                Module_Test_code = Module_Test_code & _
+                                 '                        vbCrLf & _
+                                 '                        "Dim var_" & var_Count & " As " & _
+                                 '                        Replace(a1(x + 1), ",", vbNullString)
+                ' пусть переменные называются как в оригинале
+
+                Module_Test_code = Module_Test_code & _
+                                   vbCrLf & _
+                                   "Dim " & a1(x - 1) & " As " & _
+                                   Replace(a1(x + 1), ",", vbNullString)
+            End If
+
+            var_Count = var_Count + 1
+
+        End If
+    Next
+End Function
+
+Function Array_As(str As String) _
+         As Variant  ' Тестом покрыта
+
+    If InStr(str, " ") > 0 Then
+
+        Array_As = Split(str)
+
+    Else
+
+        Dim a1(0 To 0)    ' Split Returns a zero-based
+
+        Array_As = a1
+
+    End If
+End Function
+
+Function Arg_is_One(str As String) _
+         As String  ' Тестом покрыта
+' если между скобок один аргумент, то сделать его Variant
+
+    Arg_is_One = str
+
+    If Len(str) > 0 And _
+       InStr(str, ",") = 0 And _
+       InStr(UCase(str), " AS ") = 0 Then _
+       Arg_is_One = str & " As Variant"
+End Function
+
+Function Comma_wo_As_to_Variant(str As String) _
+         As String  ' Тестом покрыта
+' если между скобками есть запятые, но нет As, принудительно объявить необъявленные переменные как Variant
+' if there are commas between brackets, but no As, force declare undeclared variables as Variant
+
+'    Dim sTemp As String
+'    sTemp = str
+'
+'    If InStr(str, ",") > 0 And _
+     '       InStr(str, " As ") = 0 Then
+'
+'        sTemp = Replace(str, ",", " As Variant,")
+'        sTemp = sTemp & " As Variant"
+'
+'    ElseIf InStr(str, ",") = 0 And _
+     '           InStr(str, " As ") > 0 Then
+'        ' не въехал
+'    End If
+'
+'    Comma_wo_As_to_Variant = sTemp
+
+    If InStr(str, ",") > 0 Then
+
+        'InExSu ToDo 12.05.2019:
+        'Comma_wo_As_to_Variant = Join( _
+         Arg_Type_Array(str))
+
+        Comma_wo_As_to_Variant = Join( _
+                                 Arg_Type_Array(str), ",")
+    Else
+
+        If InStr(UCase(str), " AS ") < 1 Then
+
+            Comma_wo_As_to_Variant = str & " As Variant"
+
+        Else
+
+            Comma_wo_As_to_Variant = str
+
+        End If
+    End If
+End Function
+
+Function Arg_Type_Array(msg As String) _
+         As Variant
+' procedure Checked by test опосредованно
+'
+    Dim a1 As Variant
+    a1 = Split(msg, ",")
+
+    Dim x As Long: For x = LBound(a1) To UBound(a1)
+
+        a1(x) = Arg_Type_S(CStr(a1(x)))
+
+    Next
+
+    Arg_Type_Array = a1
+
+End Function
+
+Function Arg_Type_S(msg As String) _
+         As String
+' procedure Checked by test опосредованно
+' если в строке нет As приваивает As Variant
+
+    If InStr(UCase(msg), " AS ") < 1 Then
+
+        Arg_Type_S = msg & " As Variant"
+
+    Else
+
+        Arg_Type_S = msg
+
+    End If
+End Function
+
+Function Args_S(str As String) _
+         As Variant  ' Тестом покрыта
+' procedure argument string, in braces
+' get a string from Code_S_first
+
+    Args_S = extract_Between(str, "(", ")")
+
+End Function
+
+Function Code_S_first(Optional msg As String) _
+         As String  ' Тестом покрыта
+' The first line contains a declaration of procedure.
+
+    If Left$(Module_Test_code, 1) <> "'" Then _
+       Err.Raise 567, "Code_S_first", "Left$(Module_Test_code, 1) <> "    '"
+
+    Dim a1 As Variant
+    a1 = Split(Module_Test_code, vbCrLf)
+
+    Code_S_first = a1(LBound(a1))
+End Function
+
+Function Brackets_Round_2_Curly(Optional msg As String) _
+         As Variant
+' procedure Checked by test опосредованно
+' скобки круглые заменить на фигурные
+
+    Module_Test_code = Replace(Module_Test_code, "() ", ARRAY_SIGN & " ")
+
+End Function
+
+Function Proc_Top(Optional msg As String) _
+         As Variant  ' Тестом покрыта
+
+    Module_Test_code = Module_Test_code & vbCrLf & _
+                       "On Error GoTo TestFail"    ' & vbCrLf & _
+                                                   "With Mock" & vbCrLf & _
+                                                   "bDebug = True" & vbCrLf & _
+                                                   "Settings" & vbCrLf
+
+End Function
+
+Function Proc_Declare(str As String) _
+         As String  ' Тестом покрыта
+' delaring test-unit
+    Dim sTemp As String
+    sTemp = Replace("Public Sub Proc_Name_TestMethod()", _
+                    "Proc_Name", str)
+    Module_Test_code = Module_Test_code & sTemp
+End Function
+
+Function Proc_Name(str As String) _
+         As String  ' Тестом покрыта
+
+    Module_Test_code = "'" & Trim$(str) & vbCrLf
+
+    ' The first line will be a commented line from the source code.
+    ' из неё и беру имя
+    ' return from the string the name of the procedure
+
+    If InStr(1, str, "Function ", vbTextCompare) > 0 Then
+        Proc_Name = extract_Between(str, "Function ", "(")
+    Else: If InStr(1, str, "Sub ", vbTextCompare) > 0 _
+             Then Proc_Name = extract_Between(str, "Sub ", "(")
+    End If
+End Function
+
+Function Like_Proc_Declare(msg As String) _
+         As Boolean  ' Тестом покрыта
+    If Trim$(UCase$(msg)) Like UCase$("*Function *(*") _
+       Or _
+       Trim$(UCase$(msg)) Like UCase$("*Sub *(*") Then _
+       Like_Proc_Declare = True
+End Function
+
+Function Array_Comments_delete(a1 As Variant) _
+         As Variant  '   Тестом покрыта
+
+    Dim x As Long
+    For x = LBound(a1) To UBound(a1)
+
+        a1(x) = Comments_delete(CStr(a1(x)))
+
+    Next
+
+    Array_Comments_delete = a1
+
+End Function
+
+Function Comments_delete(str As String) _
+         As Variant  ' Тестом  покрыта
+
+    If Сколько_раз(vbCrLf, str) = 0 Then
+
+        Comments_delete = Part_Left(str, _
+                                    Apostrophe_Position(str))
+    Else
+        ' заменить разбиение строк подчеркиваниями
+        ' загнать в массив по сплит через vbCrLf
+        ' в массиве удалить комментарии
+        ' собрать через джойн
+        Comments_delete = Array_2_S( _
+                          Array_Comments_delete( _
+                          String_2_Array( _
+                          UnderScore_Replace(str), vbCrLf)), _
+                          vbCrLf)
+
+    End If
+End Function
+
+Function Right_After_Left(str_Long As String, _
+                          str_short As String) _
+                          As String
+' procedure Checked by test опосредованно
+' искать слева на право
+' из строки "12_12_34" и "12 "вернуь "_12_34"
+
+    Dim pos_short As Long
+
+    pos_short = InStr(str_Long, str_short)
+
+    If pos_short < 1 Then Exit Function    '=>
+
+    Dim short_Symb_Last_Pos As Long
+
+    short_Symb_Last_Pos = pos_short + Len(str_short) - 1
+
+    Right_After_Left = Right$(str_Long, Len(str_Long) - short_Symb_Last_Pos)
+
+End Function
+
+Function Array_2_S(a1 As Variant, symb As String) _
+         As Variant  ' Тестом покрыта
+
+    Array_2_S = Join(a1, symb)
+
+End Function
+
+Function String_2_Array(str As String, symb As String) _
+         As Variant  ' Тестом покрыта
+
+    String_2_Array = Split(str, symb)
+
+End Function
+
+Function Part_Left(str As String, _
+                   place As Long) _
+                   As String                                        ' Тестом покрыта
+    If place > 0 Then
+        Part_Left = Left$(str, place - 1)
+    Else
+        Part_Left = str
+    End If
+End Function
+
+Function Apostrophe_Position(str As String) _
+         As Long  ' Тестом покрыта
+
+    Apostrophe_Position = InStr(str, "'")
+
+End Function
+
+Function Split_by(symb As String, _
+                  str As String) _
+                  As Variant                     '   Тестом покрыта
+
+    Split_by = Split(str, symb)
+
+End Function
+
+'Function Split_by_vbrclf(str As String) _
+ '        As Variant    '   Тестом покрыта
+'
+'    Split_by_vbrclf = Split(str, vbCrLf)
+'
+'End Function
+
+Function in_Quotes_remove(str As String) _
+         As String  ' Тестом покрыта
+'удалить - заключённые в кавычки
+    Dim x As Long
+    For x = 1 To Len(str)    'чтобы не сваливаться в бесконечный цикл
+
+        If Сколько_раз(Chr$(34), str) < 2 Then _
+           Exit For
+
+        str = Symb_Pair_Remove(str, Chr$(34))
+
+    Next
+
+    in_Quotes_remove = str
+End Function
+
+Function Symb_Pair_Remove(str As String, _
+                          symb As String) _
+                          As String                                                      ' Тестом покрыта
+' найти два ближайших одинаовых символа и удалить их и между ними
+    Symb_Pair_Remove = Cut_BeTween( _
+                       Position_02( _
+                       Position_01(str, symb)))                          'между Position_01 и Position_01 передаю String_Cut
+End Function
+
+Function Cut_BeTween(a1SC As String_Cut) _
+         As String   ' Тестом покрыта
+' вырезить из строки середину
+    With a1SC
+        Cut_BeTween = Side_Left(.str, .Position_01 - 1) & _
+                      Side_Right(.str, Len(.str) - .Position_02)
+    End With
+End Function
+
+Function Side_Left(str As String, iPos As Long) _
+         As String  ' Тестом покрыта
+
+    If iPos < 0 Then _
+       Exit Function
+
+    Side_Left = Left$(str, iPos)
+End Function
+
+Function Side_Right(str As String, iPos As Long) _
+         As String  ' Тестом покрыта
+
+    If iPos < 0 Then _
+       Exit Function
+
+    Side_Right = Right$(str, iPos)
+End Function
+
+Function Cut_Edges(a1SC As String_Cut) _
+         As String  ' Тестом покрыта
+' не пригодилась :-)
+' строка края обрезать
+    With a1SC
+        If .Position_01 > 0 And .Position_02 > 0 Then
+            Cut_Edges = Cut_Right( _
+                        Cut_Left(.str, .Position_01), _
+                        .Position_02)
+        Else
+            Cut_Edges = .str
+        End If
+    End With
+End Function
+
+Function Position_01(str As String, _
+                     symb As String) _
+                     As String_Cut                                            ' Тестом покрыта
+    Dim a1SC As String_Cut
+    With a1SC
+        .str = str
+        .symb = symb
+        .Position_01 = InStr(str, symb)
+    End With
+    Position_01 = a1SC
+End Function
+
+Function Position_02(a1SC As String_Cut) _
+         As String_Cut    ' Тестом покрыта
+    With a1SC
+        If .Position_01 > 0 Then _
+           .Position_02 = InStr(.Position_01 + 1, .str, .symb)
+    End With
+    Position_02 = a1SC
+End Function
+
+Function Cut_Left(str As String, iPos As Long) _
+         As String  ' Тестом покрыта
+'string cut from left
+    Cut_Left = Right$(str, Len(str) - iPos)
+End Function
+
+Function Cut_Right(str As String, iPos As Long) _
+         As String  ' Тестом покрыта
+' string cut from Right
+' строку отрезать обрезать справа
+    Cut_Right = Left$(str, Len(str) - iPos)
+End Function
+
+Function Proc_Return_Type_Get(msg As String) _
+         As String
+' procedure Checked by test опосредованно
+' запомнить тип возвращаемый функцией в паблик переменную
+
+    Dim str As String
+
+    str = extract_Between_Right(Module_Test_code, ") As ", "()")
+
+    If str = vbNullString Then    'возвращает не массив. Узнаю есть ли возврат вообще.
+
+        Proc_Return_Type = Trim$(" " & Right_After( _
+                                 wo_Brackets(Module_Test_code), ") As "))
+
+    Else
+
+        Proc_Return_Type = "()" & " " & str    ' пробел чтобы сработало автозавершение кода
+
+    End If
+
+    Proc_Return_Type_Get = msg
+
+End Function
+
+Function wo_Brackets(msg As String) _
+         As String
+' procedure Checked by test опосредованно
+' скобки сплошные () удалить
+
+    wo_Brackets = Replace(Module_Test_code, "()", vbNullString)
+
+End Function
+Function extract_Between_Right(msg As String, _
+                               str_Left As String, _
+                               str_Right As String) _
+                               As String
+' procedure Checked by test опосредованно
+' вытащить между str_Left и str_Right
+    Dim pos_Left As Long
+    pos_Left = InStrRev(msg, str_Left) + Len(str_Left)
+
+    Dim pos_Right As Long
+    pos_Right = InStrRev(msg, str_Right)
+
+    If pos_Left < 1 Then Exit Function
+    If pos_Right < 1 Then Exit Function
+
+    If pos_Left >= pos_Right Then Exit Function
+
+    extract_Between_Right = Mid(msg, pos_Left, pos_Right - pos_Left)
+
+End Function
+
+Function Module_Test_code_Trim(Optional msg As String) _
+         As String
+' procedure Checked by test опосредованно
+
+    Module_Test_code = WorksheetFunction.Trim(Module_Test_code)
+
+    Module_Test_code_Trim = msg
+
+End Function
+
+Function Тестом_Покрыт_Очистить(msg As String) _
+         As String
+' procedure Checked by test
+' сделать, чтобы очищались процедуры с признаком тестирования
+
+    Тестом_Покрыт_Очистить = msg
+
+    Exit Function
+
+    msg = Replace(msg, vbCrLf, Chr(23))
+
+    msg = Строку_с_Краями_Заменить( _
+          msg, "Function ", "естом Покрыт", _
+          vbNullString, True, False)
+
+    msg = Строку_с_Краями_Заменить( _
+          msg, "Sub ", "естом Покрыт", _
+          vbNullString, True, False)
+
+    Тестом_Покрыт_Очистить = Replace(msg, Chr(23), vbCrLf)
+
+End Function
+
+Function Строку_с_Краями_Заменить(str As String, _
+                                  sLeft As String, sRight As String, _
+                                  sReplace As String, _
+                                  Optional bCaseIgnore As Boolean = True, _
+                                  Optional bMultiline As Boolean = True) _
+                                  As String
+' Заменить подстроку между краёв, вместе с краями, например:
+' края 1 и 3. Сделать из "9 123 7 143 8" -> "9  7  8"
+' Тестом НЕ покрыто
+' непредсказуемо обрабатывает строки с vbcrlf
+' в тестах обрабатывает, вживую не обрабатывает
+
+    Dim new_Pattern As String
+    new_Pattern = sLeft & ".+?" & sRight
+
+    If RegExp_Test(str, new_Pattern) Then
+
+        Строку_с_Краями_Заменить = RegExp_RePlace(str, new_Pattern, sReplace, _
+                                                    True, bCaseIgnore, bMultiline)
+
+    Else
+
+        Строку_с_Краями_Заменить = str
+
+    End If
+End Function
+
+Function UnderScore_Replace(str As String) _
+         As String  ' procedure Checked by test
+    UnderScore_Replace = Replace( _
+                         str, _
+                         " _" & vbCrLf, Chr$(32))
+End Function
+
+Function as_Replace(msg As String) _
+         As String
+' procedure Checked by test опосредованно
+'
+    as_Replace = Replace(msg, " as ", " As ", , , vbTextCompare)
+
+End Function
+
+Function Paste_from_clipboard(Optional msg As String) _
+         As String  ' procedure Checked by test опосредованно
+    Paste_from_clipboard = Clipboard_2_Text
+End Function
+
+Function Code_Example_w_Vars(Optional msg As String) _
+         As String    ' procedure Checked by test опосредованно
+    Code_Example_w_Vars = _
+    "Function " & vbCrLf & _
+                          "var_0 " & vbCrLf & _
+                          "Function " & vbCrLf & _
+                          "var_1" & vbCrLf
+End Function
+
+Function Code_Example(Optional msg As String) _
+         As String  ' ' procedure Checked by test опосредованно
+
+    Code_Example = "Function f01(a1() as variant, msg As String, msg01 As String, r01 As Range, r02 As Range, l01 As Longm ws as WorkSheet ) _" & vbCrLf & _
+                   "       As Boolean '    Тестом покрыта" & vbCrLf & _
+                   "End Function" & vbCrLf & _
+                   vbNullString & vbCrLf
+End Function
+
+Function Строка_Между_Заменить(str As String, _
+                               sLeft As String, sRight As String, _
+                               sReplace As String, _
+                               Optional bCaseIgnore As Boolean = True, _
+                               Optional bMultiline As Boolean = True) _
+                               As String
+' Тестом НЕ покрыто
+' bGlobal должен быть True
+' заменить между двумя последовательностями, во всей строке
+
+    Dim new_Pattern As String
+    new_Pattern = sLeft & ".+?" & sRight
+
+    Dim new_Replace As String
+    new_Replace = sLeft & sReplace & sRight
+
+    If RegExp_Test(str, new_Pattern) Then
+
+        Строка_Между_Заменить = RegExp_RePlace(str, new_Pattern, new_Replace, _
+                                                 True, bCaseIgnore, bMultiline)
+
+    End If
+End Function

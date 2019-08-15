@@ -1,0 +1,133 @@
+Attribute VB_Name = "Диапазон_Размножить"
+Option Explicit
+
+' размножить диапазон вниз на почти весь лист
+
+Private cell_Act As Range
+Private a2_Sour() As Variant
+Private a2_New() As Variant
+Private Rows_Future As Long
+Private R_Sour As Range
+
+
+Public Sub Диапазон_Размножить_Вниз(Optional ByVal r As Range)
+    ' procedure Checked by test опосредованно
+
+    If r Is Nothing Then Set r = Selection
+
+    Массив_Назначения_Вставить_на_Лист _
+            Массив_Назначения_Заполнить( _
+            Массив_Назначения( _
+            Строк_Колво( _
+            Массив_Источник( _
+            Диап(r _
+                 )))))
+End Sub
+
+Function Массив_Назначения_Вставить_на_Лист(Optional ByVal msg As String) _
+       As Variant    ' procedure Checked by test опосредованно
+
+    R_Sour.Resize(UBound(a2_New), UBound(a2_New, 2)).Value = a2_New
+
+End Function
+
+Function Массив_Назначения_Заполнить(Optional ByVal msg As String) _
+       As Variant    ' procedure Checked by test опосредованно
+
+    Dim y_Sour As Long
+    y_Sour = 1
+
+    Dim y As Long, x As Long
+
+    For y = LBound(a2_New) To UBound(a2_New)
+
+        For x = LBound(a2_New, 2) To UBound(a2_New, 2)
+
+            a2_New(y, x) = a2_Sour(y_Sour, x)
+
+        Next
+
+        y_Sour = y_Sour + 1
+
+        If y_Sour > UBound(a2_Sour) Then
+
+            DoEvents
+
+            y_Sour = 1
+
+            ProgressBar_Turbo vbNullString, y, UBound(a2_New)
+
+        End If
+    Next
+
+    Application.StatusBar = vbNullString
+
+End Function
+
+Function Массив_Назначения(Optional ByVal msg As String) _
+       As Variant    ' procedure Checked by test опосредованно
+
+    ReDim a2_New(1 To Rows_Future, _
+               1 To UBound(a2_Sour, 2))
+
+End Function
+
+Function Строк_Колво(Optional ByVal msg As String) _
+       As Variant    ' procedure Checked by test опосредованно
+
+    Rows_Future = Application.InputBox( _
+                  "Строк количество: ", "Введите > 0", 104857, , , , , 1)
+
+    If Rows_Future < 1 Then End
+
+End Function
+
+Function Массив_Источник(ByVal r As Range) _
+       As Variant    ' procedure Checked by test опосредованно
+
+    a2_Sour = r.FormulaLocal
+
+End Function
+
+Function Диап(ByVal r As Range) _
+       As Range
+    ' procedure Checked by test опосредованно
+    '
+    Set R_Sour = r
+
+    Set Диап = R_Sour
+
+End Function
+
+'Public Sub ProgressBar_Turbo(ByVal txt As String, _
+'                             ByVal i As Long, _
+'                             ByVal max As Long)
+'    ' dim Турбо as long 'в начало модуля
+'    Dim Турбо As Long
+'    Турбо = Len(CStr(max)) * Len(CStr(max))
+'
+'    If BDebug Then
+'        Application.StatusBar = Right$(txt, 123) & " прогресс: " & Format$(i, "# ### ###") & _
+'                              " из " & Format$(max, "# ### ###") & ": " & _
+'                                Format$(i / max, "Percent")
+'
+'    Else
+'
+'        If Турбо = Int((Турбо * Rnd) + 1) Then
+'            Application.StatusBar = txt & " прогресс: " & Format$(i, "# ### ###") & _
+'                                  " из " & Format$(max, "# ### ###") & ": " & _
+'                                    Format$(i / max, "Percent")
+'            With Application
+'
+'                If Second(Time) > 5 Then
+'
+'                    If .ScreenUpdating = False Then .ScreenUpdating = True
+'                    DoEvents
+'                Else
+'
+'                    If .ScreenUpdating = True Then .ScreenUpdating = False
+'                End If
+'            End With
+'        End If
+'    End If
+'End Sub

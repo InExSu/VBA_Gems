@@ -1,0 +1,269 @@
+Attribute VB_Name = "Формулы_Test"
+'Option Explicit
+'
+'Option Private Module
+'
+''@TestModule
+''@Folder("Tests")
+'
+'Private Assert As Object
+'Private Fakes As Object
+'
+''@ModuleInitialize
+'Public Sub ModuleInitialize()
+'    'this method runs once per module.
+'    Set Assert = CreateObject("Rubberduck.AssertClass")
+'    Set Fakes = CreateObject("Rubberduck.FakesProvider")
+'End Sub
+'
+''@ModuleCleanup
+'Public Sub ModuleCleanup()
+'    'this method runs once per module.
+'    Set Assert = Nothing
+'    Set Fakes = Nothing
+'End Sub
+'
+''@TestInitialize
+'Public Sub TestInitialize()
+'    'this method runs before every test in the module.
+'End Sub
+'
+''@TestCleanup
+'Public Sub TestCleanup()
+'    'this method runs after every test in the module.
+'End Sub
+'
+'' === InExSu
+'
+''@TestMethod
+'
+'Public Sub Формула_ПоискПоз_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim ws_Sour As Worksheet
+'    Dim ws_LookUp As Worksheet
+'
+'    Dim r_Look_Up As Range
+'    Dim r_Sour As Range
+'
+'    With Mock
+'
+'        Set ws_Sour = .G_Worksheet
+'        Set ws_LookUp = .G_Worksheet
+'
+'        With ws_Sour
+'            .Cells.Clear
+'            .Cells(1, 1) = "z"
+'        End With
+'
+'        With ws_LookUp
+'            .Cells.Clear
+'            .Cells(1, 1) = "w"
+'            .Cells(2, 1) = "z"
+'        End With
+'
+'
+'        Set r_Sour = ws_Sour.UsedRange
+'        Set r_Look_Up = ws_LookUp.UsedRange
+'
+'    End With
+'
+'    Dim varReturn As String
+'    varReturn = Формула_ПоискПоз(r_Look_Up, r_Sour)
+'
+'    If varReturn <> "ПОИСКПОЗ(A1;'[" & _
+'            r_Look_Up.Parent.Parent.Name & _
+'            "]Лист1'!$A$1:$A$2;0)" Then Err.Raise 567, "", ""
+'
+'TestExit:
+'
+'    ws_Sour.Parent.Close False
+'    ws_LookUp.Parent.Close False
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    ws_Sour.Parent.Close False
+'    ws_LookUp.Parent.Close False
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Диап_Диап_Найти_Вхождение_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim ws_Sour As Worksheet
+'    Dim ws_LookUp As Worksheet
+'
+'    Dim rSour As Range
+'    Dim rLookUp As Range
+'
+'    With Mock
+'
+'        Set ws_Sour = .G_Worksheet
+'        Set ws_LookUp = .G_Worksheet
+'
+'        With ws_Sour
+'            .Cells.Clear
+'            .Cells(1, 1) = "z"
+'        End With
+'
+'        With ws_LookUp
+'            .Cells.Clear
+'            .Cells(1, 1) = "w"
+'            .Cells(2, 1) = "z"
+'        End With
+'
+'
+'        Set rSour = ws_Sour.UsedRange
+'        Set rLookUp = ws_LookUp.UsedRange
+'
+'    End With
+'
+'    Dim varReturn As Range
+'
+'    Set varReturn = Диап_Диап_Найти_Вхождение(rSour, rLookUp)
+'
+'    If varReturn.Value <> rSour.Value Then Err.Raise 567, "Диап_Диап_Найти_Вхождение(rSour,rLookUp)"
+'
+'TestExit:
+'
+'    ws_Sour.Parent.Close False
+'    ws_LookUp.Parent.Close False
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    ws_Sour.Parent.Close False
+'    ws_LookUp.Parent.Close False
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Формула_Индекс_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim sПоискПоз As Variant
+'
+'    Dim lColNumb As Variant
+'
+'    sПоискПоз = 123456
+'
+'    lColNumb = 1
+'
+'    Dim varReturn As String
+'
+'    varReturn = Формула_Индекс(sПоискПоз, lColNumb)
+'
+'    If varReturn <> "ИНДЕКС('[" & ActiveWorkbook.Name & _
+'            "]" & ActiveSheet.Name & "'!$A$1;123456;1)" Then Err.Raise 567, "Формула_Индекс(sПоискПоз,lColNumb)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'
+''@TestMethod
+'
+'Public Sub Диап_Сколько_Раз_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim msg As String
+'
+'    Dim r As Range
+'
+'    Dim bMatchCase As Boolean
+'
+'    Dim whole_1_part_2 As Long
+'
+'    msg = Mock.G_S_Latin
+'
+'    Set r = Mock.G_Range
+'
+'    bMatchCase = 0
+'
+'    whole_1_part_2 = 1
+'
+'    Dim varReturn As Long
+'
+'    If r.Find(msg) Is Nothing Then
+'
+'        varReturn = Диап_Сколько_Раз(msg, r, bMatchCase, whole_1_part_2)
+'
+'    End If
+'
+'    If varReturn <> 0 Then Err.Raise 567, "Диап_Сколько_Раз(msg,r,bMatchCase,whole_1_part_2)"
+'
+'    With r
+'        .Clear
+'        .Cells(1, 1).Value = msg
+'        .Cells(1, 2).Value = msg
+'    End With
+'
+'    varReturn = Диап_Сколько_Раз(msg, r, bMatchCase, whole_1_part_2)
+'    If varReturn <> 2 Then Err.Raise 567, "Диап_Сколько_Раз(msg,r,bMatchCase,whole_1_part_2)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'

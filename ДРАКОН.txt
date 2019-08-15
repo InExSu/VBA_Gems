@@ -1,0 +1,84 @@
+Attribute VB_Name = "ДРАКОН"
+Option Explicit
+
+Function TextBox_withConnector_Add( _
+        Optional s As String) _
+        As Shape
+    ' procedure Checked by test опосредованно
+    '
+    Connector_Add(ActiveSheet).ConnectorFormat.BeginConnect _
+            TextBox_Add(ActiveSheet), 3
+
+End Function
+
+Function Connector_Add( _
+        ws As Worksheet) _
+        As Shape
+    ' procedure Checked by test опосредованно
+    '
+    Dim shp As Shape
+    Set shp = ws.Shapes.AddConnector( _
+            msoConnectorCurve, _
+            0, 0, ActiveCell.Left + 20, ActiveCell.Left + 120)    'лень разбираться
+
+    shp.Line.EndArrowheadStyle = msoArrowheadOpen
+
+    Set Connector_Add = shp
+
+End Function
+
+Function TextBox_Add( _
+        ws As Worksheet) _
+        As Shape
+    ' procedure Checked by test опосредованно
+    '
+    Dim shp As Shape
+    Set shp = ws.Shapes.AddTextbox( _
+            msoTextOrientationHorizontal, _
+            ActiveCell.Left, ActiveCell.Top, 130, 60)
+
+    shp.Shadow.Type = msoShadow21
+    shp.TextFrame2.AutoSize = msoAutoSizeShapeToFitText
+
+    Set TextBox_Add = shp
+
+End Function
+
+
+Sub Icon_Question()
+    '
+    ' Макрос1 Макрос
+    '
+    '
+    Dim sh_Ttinity As Shape
+
+    Dim sh_Connectror_Yes As Shape
+    Dim sh_Connectror_No As Shape
+
+    With ActiveSheet.Shapes
+
+        Set sh_Ttinity = .AddShape(msoShapeIsoscelesTriangle, _
+                ActiveCell.Left, ActiveCell.Top, 92.4, 67.8)
+
+        Set sh_Connectror_Yes = .AddConnector(msoConnectorCurve, _
+                ActiveCell.Left, ActiveCell.Top, ActiveCell.Left + 50, ActiveCell.Top + 150)
+        sh_Connectror_Yes.Line.EndArrowheadStyle = msoArrowheadOpen
+
+        sh_Connectror_Yes.ConnectorFormat.BeginConnect sh_Ttinity, 3
+
+        Set sh_Connectror_No = .AddConnector(msoConnectorCurve, _
+                ActiveCell.Left + 100, ActiveCell.Top, ActiveCell.Left + 50, ActiveCell.Top + 250)
+
+        sh_Connectror_No.Line.EndArrowheadStyle = msoArrowheadOpen
+
+        sh_Connectror_No.ConnectorFormat.BeginConnect sh_Ttinity, 5
+
+
+        sh_Connectror_No.Title = "Нет"
+        sh_Connectror_No.AlternativeText = "Нет"
+
+        sh_Connectror_Yes.Title = "Да"
+        sh_Connectror_Yes.AlternativeText = "Да"
+
+    End With
+End Sub

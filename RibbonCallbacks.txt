@@ -1,0 +1,229 @@
+Attribute VB_Name = "RibbonCallbacks"
+Option Explicit    'Потребовать явного объявления всех переменных в файле
+
+'btn_01 (компонент: button, атрибут: onAction), 2007
+Public Sub Ribbon_БуферОбмена_в_Матрёшку_c_Функциями(control As IRibbonControl)
+    БуферОбмена_в_Матрёшку_c_Функциями
+End Sub
+
+'btn_02 (компонент: button, атрибут: onAction), 2007
+Public Sub Ribbon_Юнит_Тест_Шаблон_из_Строки(control As IRibbonControl)
+    Юнит_Тесты_Шаблоны_из_Буфера
+End Sub
+
+'btn_03 (компонент: button, атрибут: onAction), 2007
+Public Sub Ribbon_GitHUb(control As IRibbonControl)
+    GitHub
+End Sub
+
+Public Sub Ribbon_КонфиденцПесонал(control As IRibbonControl)
+    КонфиденцПесонал "oFF", True    ' с оповещением
+End Sub
+
+Public Sub Ribbon_Юнит_Тесты_для_Кода_в_Буфере(control As IRibbonControl)
+    Юнит_Тесты_для_Кода_в_Буфере
+End Sub
+
+'btn_Цикл_d_Имя_Функции (компонент: button, атрибут: onAction), 2007
+Public Sub Ribbon_Строку_Цикла_в_Имя_Функции(control As IRibbonControl)
+    Строку_Цикла_в_Имя_Функции , True
+End Sub
+
+'btn_Code_All (компонент: button, атрибут: onAction), 2007
+Public Sub Ribbon_Code_All_2_Units_Tests(control As IRibbonControl)
+    Code_All_2_Units_Tests
+End Sub
+
+'Кнопку_Вставить (компонент: button, атрибут: onAction), 2007
+Public Sub Ribbon_Кнопку_Вставить(control As IRibbonControl)
+    Кнопку_Вставить "InExSu", "Squadra_Unita"
+End Sub
+
+Public Sub Ribbon_Книги_Другие_Закрыть_без_Сохранения(control As IRibbonControl)
+    Книги_Другие_Закрыть_без_Сохранения
+End Sub
+
+'btn_Выделенное_Размножить_Вниз (компонент: button, атрибут: onAction), 2007
+Public Sub Ribbon_Выделенное_Размножить_Вниз(control As IRibbonControl)
+    Диапазон_Размножить_Вниз Selection
+End Sub
+
+'btn_Строки_Пустые_Удалить (компонент: button, атрибут: onAction), 2007
+Public Sub Ribbon_Строки_Пустые_Удалить_ActiveSheet(control As IRibbonControl)
+    Строки_Пустые_Удалить_ActiveSheet
+End Sub
+
+' Листs_Ярлыки_Вкладки_Показать
+Public Sub Ribbon_Листы_Ярлыки_Вкладки_Показать(control As IRibbonControl)
+' скрытое показать
+    Листы_Ярлыки_Вкладки_Показать
+
+End Sub
+
+Public Sub Ribbon_Windows_Vertical(control As IRibbonControl)
+
+    Windows_Vertical
+
+End Sub
+
+Public Sub Ribbon_Windows_Horizontal(control As IRibbonControl)
+
+    Windows_Horizontal
+
+End Sub
+
+Public Sub Ribbon_Цвет_1C_Вставить(control As IRibbonControl)
+
+' Paste_Theme_Original
+
+End Sub
+
+Public Sub Ribbon_Листы_Сортировать_по_Алфавиту(control As IRibbonControl)
+
+    Листы_Сортировать_по_Алфавиту ActiveWorkbook
+
+End Sub
+
+' R_Trim_Clean
+Public Sub Ribbon_R_Trim_Clean(control As IRibbonControl)
+
+    R_Trim_Clean Selection
+
+End Sub
+
+Public Sub Ribbon_R_Operator(control As IRibbonControl)
+
+    R_Operator
+
+End Sub
+
+Public Sub Ribbon_About(control As IRibbonControl)
+
+    uf_About.Show
+
+End Sub
+
+Public Sub Ribbon_BackUp(control As IRibbonControl)
+
+    ЭтаКнига.Копия_Дата_Время ActiveWorkbook, , True
+
+End Sub
+
+Public Sub Ribbon_ThisWorkBook_Close(control As IRibbonControl)
+
+    ThisWorkbook.Close False
+
+End Sub
+
+Public Sub Ribbon_Книга_Защита_Снять(control As IRibbonControl)
+
+    СнятьЗащитуКниги ActiveWorkbook
+
+End Sub
+
+Public Sub Ribbon_ЛистЫ_ЗащитЫ_Снять(control As IRibbonControl)
+
+    СнятьЗащитуСоВсехЛистов ActiveWorkbook
+
+End Sub
+
+Public Sub Ribbon_Лист_Защиту_Снять(control As IRibbonControl)
+
+    СнятьЗащитуЛиста ActiveSheet
+
+End Sub
+
+
+Public Sub Ribbon_Дубликаты_Показать_Буфер(control As IRibbonControl)
+
+    Дубликаты_Показать_Буфер ActiveCell
+
+End Sub
+
+'btn_Книга (компонент: button, атрибут: onAction), 2007
+Sub Ribbon_Книга_Формула_Обрамить(control As IRibbonControl)
+
+    Книга_Формула_Обрамить "IFERROR("
+
+End Sub
+
+'btn_Листы_Выделенные (компонент: button, атрибут: onAction), 2007
+Sub Ribbon_Листы_Выделенные_Формула_Обрамить(control As IRibbonControl)
+
+    Листы_Выбранные_Формула_Обрамить "IFERROR("
+
+End Sub
+
+'btn_Диап_Выделенный (компонент: button, атрибут: onAction), 2007
+Sub Ribbon_Диап_Выделенный_Формула_Обрамить(control As IRibbonControl)
+
+    Диап_Формула_Обрамить Selection, "IFERROR("
+
+End Sub
+
+Sub Ribbon_Столбец_Ширина_по_Ячейкам_Выделенным(control As IRibbonControl)
+
+    Столбец_Ширина_по_Ячейкам_Выделенным Selection
+
+End Sub
+
+Sub Ribbon_XLAM_UnView(control As IRibbonControl)
+
+    MsgBox "14.04.2019 20:16:02"
+
+End Sub
+
+Sub Ribbon_Random_Generator(control As IRibbonControl)
+
+    Random_Generator
+
+End Sub
+
+Sub Ribbon_ДубликатыРазнымиЦветами(control As IRibbonControl)
+
+    ДубликатыРазнымиЦветами Selection
+
+End Sub
+
+Sub Ribbon_Кнопка_Индекс_ПоисПоз(control As IRibbonControl)
+
+    Кнопка_Индекс_ПоисПоз
+
+End Sub
+
+Sub Ribbon_Кнопка_Индекс_ПоисПоз_Touch_1(control As IRibbonControl)
+
+    Кнопка_Индекс_ПоисПоз_Touch_1
+
+End Sub
+
+Sub Ribbon_ЗОЖ(control As IRibbonControl)
+
+    UserForm_BookSize.Show
+
+End Sub
+
+Sub Ribbon_R_Invert_X(control As IRibbonControl)
+
+    R_Invert_X Selection
+
+End Sub
+
+Sub Ribbon_TextBox_withConnector_Add(control As IRibbonControl)
+
+    TextBox_withConnector_Add
+
+End Sub
+
+Sub Ribbon_With_Statement(control As IRibbonControl)
+
+    With_End_Min_Show
+
+End Sub
+
+Sub Ribbon_ClipBoard_Text_2_Code(control As IRibbonControl)
+
+    ClipBoard_Quot_2_Chr_Simple
+
+End Sub
+

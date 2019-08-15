@@ -1,0 +1,317 @@
+Attribute VB_Name = "Массив_a1_Сортир_Быстр"
+Option Explicit
+
+Function a1_Sort_Q_Asc(a1() As Variant)
+' procedure Checked by test
+' массив одномерный сортировка быстрая по возрастанию. InExSu
+' InExSu 01.06.2019 08:43 - неоптимизированная версия начала работаь без ошибок
+
+    If a1_Len(a1) <= 1 Then
+        Exit Function
+    End If
+
+    If a1_Len(a1) = 2 Then
+
+        a1_2_Ascending a1
+
+        Exit Function
+
+    End If
+
+    Dim a1_Less() As Variant
+    Dim a1_More() As Variant
+
+    Dim pivot As Variant
+    pivot = a1_pivot_Rand(a1)
+
+    Dim var As Variant
+
+    For Each var In a1
+
+        If var <= pivot Then
+
+            a1_Add a1_Less, var
+
+        Else
+
+            a1_Add a1_More, var
+
+        End If
+    Next
+
+    ' рекурсия
+    a1_Sort_Q_Asc a1_Less
+    a1_Sort_Q_Asc a1_More
+
+    a1 = a1_Merge_2( _
+            a1_Less, a1_More)
+
+End Function
+
+Function a1_2_Ascending(a1() As Variant)
+
+' procedure Checked by test
+' сортировать массив одномерный двухэлементный по возрастанию
+
+    If a1_Len(a1) <= 1 Then
+        Exit Function
+    End If
+
+    'Print StrComp(1, 9), StrComp(9, 1), StrComp(1, 1)
+    '                    -1               1                        0
+    '    If StrComp( _
+         '            a1(LBound(a1)), a1(UBound(a1))) = 1 Then
+    
+    If a1(LBound(a1)) > a1(UBound(a1)) Then
+
+        a1_Rows_Swap a1, _
+                LBound(a1), UBound(a1)
+
+    End If
+End Function
+
+Function a1_Rows_Swap(a1() As Variant, _
+        ByVal row_Sour As Long, _
+        ByVal row_Dest As Long)
+' procedure Checked by test
+'
+    Dim var As Variant
+
+    var = a1(row_Sour)
+
+    a1(row_Sour) = a1(row_Dest)
+
+    a1(row_Dest) = var
+
+End Function
+
+Function a1_Merge_2(a1_1() As Variant, _
+        a1_2() As Variant) _
+        As Variant()
+' procedure Checked by test
+' массивы 2 соединить/объединить/ добавить a1_2 к a1_1
+' АртеФакт
+
+    If isAx(a1_1) = False Then
+        a1_Merge_2 = a1_2
+        Exit Function
+    End If
+
+    If isAx(a1_2) = False Then
+        a1_Merge_2 = a1_1
+        Exit Function
+    End If
+
+    Dim row_End As Long
+    row_End = UBound(a1_1)
+
+    Dim uBound_New As Long
+    uBound_New = UBound(a1_1) + a1_Len(a1_2)
+
+    ReDim Preserve a1_1( _
+            LBound(a1_1) To uBound_New)
+
+    Dim increm As Long
+    increm = 0
+
+    Dim x As Long
+
+    For x = row_End + 1 To UBound(a1_1)
+
+        a1_1(x) = a1_2(LBound(a1_2) + increm)
+
+        increm = increm + 1
+
+    Next
+
+    a1_Merge_2 = a1_1
+
+End Function
+
+Function Option_Base() _
+        As Long
+' procedure Checked by test
+'
+    Option_Base = LBound(Array(vbNullString))
+
+End Function
+
+Function a1_Add(a1() As Variant, _
+        ByVal var As Variant)
+' procedure Checked by test
+' добавить значение к концу массива
+
+    If isAx(a1) = False Then
+
+        ReDim a1(Option_Base To Option_Base)
+
+    Else
+
+        ReDim Preserve a1(LBound(a1) To UBound(a1) + 1)
+
+    End If
+
+    a1(UBound(a1)) = var
+
+End Function
+
+Function a1_Len(a1() As Variant) _
+        As Long
+' procedure Checked by test
+'
+    If isAx(a1) Then
+
+        a1_Len = UBound(a1) - LBound(a1) + 1
+
+    End If
+End Function
+
+Function a1_pivot_Rand(a1() As Variant) _
+        As Variant
+' procedure Checked by test
+' элемент опорный случайный вернуть
+
+    With WorksheetFunction
+
+        a1_pivot_Rand = a1( _
+                .RandBetween( _
+                LBound(a1), UBound(a1)))
+
+    End With
+End Function
+
+Function isAx(d As Variant) _
+        As Boolean   ' Тестом покрыта
+' раньше называл isDx
+' isarray массив ли, проверить массив по взрослому, массивли
+
+    With Err
+        .Clear
+
+        On Error Resume Next
+
+        If LBound(d) > -1 Then
+
+            If .Number = 0 Then
+
+                isAx = True
+
+            End If
+        End If
+    End With
+End Function
+
+' ====
+Function a1_Sort_Q_desC(a1() As Variant)
+' procedure Checked by test
+' массив сортировка быстрая по убываниЮ.
+' InExSu 01.06.2019 08:43 - на основе a1_Sort_Q_Asc
+
+    If a1_Len(a1) <= 1 Then
+        Exit Function
+    End If
+
+    If a1_Len(a1) = 2 Then
+        a1_2_desCending a1
+        Exit Function
+    End If
+
+    Dim a1_Less() As Variant
+    Dim a1_More() As Variant
+
+    Dim pivot As Variant
+    pivot = a1_pivot_Rand(a1)
+
+    Dim var As Variant
+
+    For Each var In a1
+
+        If var <= pivot Then
+
+            a1_Add a1_Less, var
+
+        Else
+
+            a1_Add a1_More, var
+
+        End If
+    Next
+
+    a1_Sort_Q_desC a1_Less
+    a1_Sort_Q_desC a1_More
+
+    a1 = a1_Merge_2(a1_More, a1_Less)
+
+End Function
+
+Function a1_2_desCending(a1() As Variant)
+' procedure Checked by test
+' сортировать массив одномерный двухэлементный по убываниЮ
+' и текстовые тоже
+
+    If a1_Len(a1) <= 1 Then
+        Exit Function
+    End If
+
+    'Print StrComp(1, 9), StrComp(9, 1), StrComp(1, 1)
+    '                    -1               1                        0
+    '    If StrComp( _
+         '            a1(LBound(a1)), a1(UBound(a1))) = -1 Then
+
+    If a1(LBound(a1)) < a1(UBound(a1)) Then
+
+        a1_Rows_Swap a1, _
+                LBound(a1), UBound(a1)
+
+    End If
+End Function
+
+' ==
+
+Function a1_isSorted_Asc(a1() As Variant) _
+        As Boolean
+' procedure Checked by test
+' отсортирован ли массив одномерный по возрастанию ?
+
+    Dim Status As Boolean: Status = True
+
+    Dim x As Long
+
+    For x = LBound(a1) To UBound(a1) - 1
+
+        If a1(x) > a1(x + 1) Then
+
+            Status = False
+
+            Exit For
+
+        End If
+    Next
+
+    a1_isSorted_Asc = Status
+
+End Function
+
+Function a1_isSorted_desC(a1() As Variant) _
+        As Boolean
+' procedure Checked by test
+' отсортирован ли массив одномерный по убываниЮ ?
+
+    Dim Status As Boolean: Status = True
+
+    Dim x As Long
+
+    For x = LBound(a1) To UBound(a1) - 1
+
+        If a1(x) < a1(x + 1) Then
+
+            Status = False
+
+            Exit For
+
+        End If
+    Next
+
+    a1_isSorted_desC = Status
+
+End Function

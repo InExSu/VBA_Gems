@@ -1,0 +1,203 @@
+Attribute VB_Name = "Reg_–егул€р_Test"
+Option Explicit
+' https://www.youtube.com/channel/UCQMbRhaPEFD1NoZLhRzQzSA/videos?view=0&shelf_id=0&sort=dd
+' https://inexsu.wordpress.com
+
+' Public Mock As New Mock
+
+Option Private Module
+
+'@TestModule
+'@Folder("Tests")
+
+Private Assert As Object
+Private Fakes As Object
+
+'@ModuleInitialize
+Public Sub ModuleInitialize()
+    'this method runs once per module.
+    Set Assert = CreateObject("Rubberduck.AssertClass")
+    Set Fakes = CreateObject("Rubberduck.FakesProvider")
+End Sub
+
+'@ModuleCleanup
+Public Sub ModuleCleanup()
+    'this method runs once per module.
+    Set Assert = Nothing
+    Set Fakes = Nothing
+End Sub
+'
+'
+'    '@TestMethod
+'
+'    Public Sub RegExp_Get_TestMethod()
+'
+'        'On Error GoTo TestFail
+'
+'        Dim str As String
+'
+'        Dim Pattern As String
+'
+'        Dim Globa1 As Boolean
+'
+'        Dim IgnoreCase As Boolean
+'
+'        Dim Multiline As Boolean
+'
+'        Dim varReturn As Object
+'
+'        With Mock
+'
+'            IgnoreCase = .G_Boolean
+'            Multiline = .G_Boolean
+'            Globa1 = False
+'
+'            str = "a1b1a1b"
+'
+'            Pattern = "a"
+'
+'            Set varReturn = RegExp_Get(str, Pattern, Globa1, IgnoreCase, Multiline)
+'
+'            If varReturn.Count < 1 Then _
+'               Err.Raise 567, "RegExp_Get(str,Pattern,Globa1,IgnoreCase,Multiline)"
+'
+'            Globa1 = True
+'
+'            Pattern = "\D"
+'
+'            Set varReturn = RegExp_Get(str, Pattern, Globa1, IgnoreCase, Multiline)
+'
+'            If varReturn.Count < 2 Then _
+'               Err.Raise 567, "RegExp_Get(str,Pattern,Globa1,IgnoreCase,Multiline)"
+'
+'TestExit:
+'
+'            .wb.Close False
+'
+'            Exit Sub
+'
+'TestFail:
+'
+'            .wb.Close False
+'
+'        End With    'Mock
+'        Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'    End Sub
+'
+'    '@TestMethod
+'
+'    Public Sub a2_2_s_TestMethod()
+'
+'        On Error GoTo TestFail
+'
+'        Dim a2() As Variant
+'
+'        With Mock
+'
+'            a2 = .G_a2
+'
+'            Dim varReturn As String
+'
+'            varReturn = a2_2_s(a2())
+'
+'            'if varReturn <> 0 Then Err.Raise 567, "a2_2_s(a2())"
+'
+'TestExit:
+'
+'            .wb.Close False
+'
+'            Exit Sub
+'
+'TestFail:
+'
+'            .wb.Close False
+'
+'
+'        End With    'Mock
+'        Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'    End Sub
+'
+'
+'    '@TestMethod
+'
+'    Public Sub O_2_Dic_TestMethod()
+'
+'        'On Error GoTo TestFail
+'
+'        Dim obj As Object
+'
+'        With Mock
+'
+'            Set obj = RegExp_Get("aabb", "\D")
+'
+'            Dim varReturn As Object
+'
+'            Set varReturn = O_2_Dic(obj)
+'
+'            If varReturn.Count <> 2 Then Err.Raise 567, "O_2_Dic(obj)"
+'
+'TestExit:
+'
+'            .wb.Close False
+'
+'            Exit Sub
+'
+'TestFail:
+'
+'            .wb.Close False
+'
+'
+'        End With    'Mock
+'        Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'    End Sub
+'
+'
+'    '@TestMethod
+'
+'    Public Sub R_2_A1_Uniq_TestMethod()
+'
+'        On Error GoTo TestFail
+'
+'        Dim r As Range
+'
+'        Dim sPattern As String
+'
+'        With Mock
+'
+'            Set r = .G_Range
+'
+'            With r
+'                .Parent.Cells.Clear
+'                .Cells(1, 1) = "a"
+'                .Cells(2, 1) = "a"
+'            End With
+'
+'            sPattern = "\w"
+'
+'            Dim varReturn As Variant
+'
+'            varReturn = R_2_A1_Uniq(r, sPattern)
+'
+'            If LBound(varReturn) <> 0 Then _
+'               Err.Raise 567, "R_2_A1_Uniq(r,sPattern)"
+'
+'TestExit:
+'
+'            .wb.Close False
+'
+'            Exit Sub
+'
+'TestFail:
+'
+'            .wb.Close False
+'
+'
+'        End With    'Mock
+'        Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'    End Sub
+'
+'

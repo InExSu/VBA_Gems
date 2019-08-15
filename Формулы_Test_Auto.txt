@@ -1,0 +1,687 @@
+Attribute VB_Name = "Формулы_Test_Auto"
+'Option Explicit
+'
+'Option Private Module
+'
+''@TestModule
+''@Folder("Tests")
+'
+'Private Assert As Object
+'Private Fakes As Object
+'
+''@ModuleInitialize
+'Public Sub ModuleInitialize()
+'    'this method runs once per module.
+'    Set Assert = CreateObject("Rubberduck.AssertClass")
+'    Set Fakes = CreateObject("Rubberduck.FakesProvider")
+'End Sub
+'
+''@ModuleCleanup
+'Public Sub ModuleCleanup()
+'    'this method runs once per module.
+'    Set Assert = Nothing
+'    Set Fakes = Nothing
+'End Sub
+'
+''@TestInitialize
+'Public Sub TestInitialize()
+'    'this method runs before every test in the module.
+'End Sub
+'
+''@TestCleanup
+'Public Sub TestCleanup()
+'    'this method runs after every test in the module.
+'End Sub
+'
+'
+'
+'
+''@TestMethod
+'
+'Public Sub Кнопка_Индекс_ПоисПоз_Touch_1_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Кнопка_Индекс_ПоисПоз_Touch_1
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Кнопка_Индекс_ПоисПоз_Touch_1(Dim((As(Variant)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Кнопка_Индекс_ПоисПоз_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Кнопка_Индекс_ПоисПоз
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Кнопка_Индекс_ПоисПоз(Dim((As(Variant)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Формула_Индекс_ПоискПоз_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim cell As Range
+'
+'    Set cell = Mock.G_Range
+'
+'    Dim varReturn As String
+'
+'    varReturn = Формула_Индекс_ПоискПоз(cell)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Формула_Индекс_ПоискПоз(ceLL)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Формула_Индекс_ПоискПоз_Touch_1_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim cell As Range
+'
+'    Set cell = Mock.G_Range
+'
+'    Dim varReturn As String
+'
+'    varReturn = Формула_Индекс_ПоискПоз_Touch_1(cell)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Формула_Индекс_ПоискПоз_Touch_1(ceLL)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Если_НЕТ_cell_LookUp_Get_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim r As Range
+'
+'    Set r = Mock.G_Range
+'
+'    Dim varReturn As Range
+'
+'    Set varReturn = Если_НЕТ_cell_LookUp_Get(r)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Если_НЕТ_cell_LookUp_Get(r)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Диап_ПоискПоз_Touch_1_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim r As Range
+'
+'    Set r = Mock.G_Range
+'
+'    Dim varReturn As Range
+'
+'    Set varReturn = Диап_ПоискПоз_Touch_1(r)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Диап_ПоискПоз_Touch_1(r)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Уникальность_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim str As String
+'
+'    Dim coll_Ranges As New Collection
+'
+'    str = Mock.G_S
+'
+'    Set coll_Ranges = coll_ranges_All_Open
+'
+'    Dim varReturn As Boolean
+'
+'    varReturn = Уникальность(str, coll_Ranges)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Уникальность(str,coll_Ranges)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Диап_Сколько_Раз_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim msg As String
+'
+'    Dim r As Range
+'
+'    Dim bMatchCase As Boolean
+'
+'    Dim whole_1_part_2 As Long
+'
+'    msg = Mock.G_S
+'
+'    Set r = Mock.G_Range
+'
+'    bMatchCase = Mock.G_Boolean
+'
+'    whole_1_part_2 = Mock.G_Long
+'
+'    Dim varReturn As Long
+'
+'    varReturn = Диап_Сколько_Раз(msg, r, bMatchCase, whole_1_part_2)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Диап_Сколько_Раз(msg,r,bMatchCase,whole_1_part_2)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Диап_Разница_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim r_Big As Range
+'
+'    Dim r_littLe As Range
+'
+'    Set r_Big = Mock.G_Range
+'
+'    Set r_littLe = Mock.G_Range
+'
+'    Dim varReturn As Range
+'
+'    Set varReturn = Диап_Разница(r_Big, r_littLe)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Диап_Разница(r_Big,r_littLe)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub coll_ranges_All_Open_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim msg As String
+'
+'    msg = Mock.G_S
+'
+'    Dim varReturn As Collection
+'
+'    Set varReturn = coll_ranges_All_Open(msg)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "coll_ranges_All_Open(msg)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub ranges_wb_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim wb As Workbook
+'
+'    Set wb = Mock.G_Workbook
+'
+'    Dim varReturn As Range
+'
+'    Set varReturn = ranges_wb(wb)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "ranges_wb(wb)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Формула_Индекс_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim vПоискПоз As Variant
+'
+'    Dim lColNumb As Variant
+'
+'    vПоискПоз = Mock.G_Variant
+'
+'    lColNumb = Mock.G_Variant
+'
+'    Dim varReturn As String
+'
+'    varReturn = Формула_Индекс(vПоискПоз, lColNumb)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Формула_Индекс(vПоискПоз,lColNumb)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Формула_Индекс_Текст_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim r_Column As Range
+'
+'    Dim vПоискПоз As Variant
+'
+'    Dim lColNumb As Long
+'
+'    Set r_Column = Mock.G_Range
+'
+'    vПоискПоз = Mock.G_Variant
+'
+'    lColNumb = Mock.G_Long
+'
+'    Dim varReturn As String
+'
+'    varReturn = Формула_Индекс_Текст(r_Column, vПоискПоз, lColNumb)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Формула_Индекс_Текст(r_Column,vПоискПоз,lColNumb)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub cell_LookUp_Get_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim sPrompt As String
+'
+'    Dim sTitle As String
+'
+'    sPrompt = Mock.G_S
+'
+'    sTitle = Mock.G_S
+'
+'    Dim varReturn As Range
+'
+'    Set varReturn = cell_LookUp_Get(sPrompt, sTitle)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "cell_LookUp_Get(sPrompt,sTitle)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Формула_ПоискПоз_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim r_Look_Up As Range
+'
+'    Dim r_Sour As Range
+'
+'    Set r_Look_Up = Mock.G_Range
+'
+'    Set r_Sour = Mock.G_Range
+'
+'    Dim varReturn As String
+'
+'    varReturn = Формула_ПоискПоз(r_Look_Up, r_Sour)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Формула_ПоискПоз(r_Look_Up,r_Sour)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Формула_ПоискПоз_Текст_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim r_found As Range
+'
+'    Dim r_Look_Up As Range
+'
+'    Set r_found = Mock.G_Range
+'
+'    Set r_Look_Up = Mock.G_Range
+'
+'    Dim varReturn As String
+'
+'    varReturn = Формула_ПоискПоз_Текст(r_found, r_Look_Up)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Формула_ПоискПоз_Текст(r_found,r_Look_Up)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Address_Relative_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim r As Range
+'
+'    Set r = Mock.G_Range
+'
+'    Dim varReturn As String
+'
+'    varReturn = Address_Relative(r)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Address_Relative(r)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+''@TestMethod
+'
+'Public Sub Диап_Диап_Найти_Вхождение_TestMethod()
+'
+'    On Error GoTo TestFail
+'
+'    bDebug = True
+'
+'    Settings
+'
+'    Dim rSour As Range
+'
+'    Dim rLookUp As Range
+'
+'    Set rSour = Mock.G_Range
+'
+'    Set rLookUp = Mock.G_Range
+'
+'    Dim varReturn As Range
+'
+'    Set varReturn = Диап_Диап_Найти_Вхождение(rSour, rLookUp)
+'
+'    'if varReturn <> 0 Then Err.Raise 567, "Диап_Диап_Найти_Вхождение(rSour,rLookUp)"
+'
+'TestExit:
+'
+'    Mock.wb.Close False
+'
+'    Exit Sub
+'
+'TestFail:
+'
+'    Mock.wb.Close False
+'
+'    Assert.Fail "Test error: #" & Err.Number & " - " & Err.Description
+'
+'End Sub
+'
+'

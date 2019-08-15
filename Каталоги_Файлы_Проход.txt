@@ -1,0 +1,117 @@
+Attribute VB_Name = "Каталоги_Файлы_Проход"
+' (к примеру, обнаруживались не только файлы .txt, но и .TXT и .Txt),
+
+Option Explicit
+
+Option Compare Text    'если требуется, чтобы поиск не зависел от регистра символов в маске файла
+' (к примеру, обнаруживались не только файлы .txt, но и .TXT и .Txt),
+ 
+
+Public Sub Файлы_Каталога_RUN()
+ 
+    Файлы_Каталога "d:\CloudMailRu\+PME\ФриЛанс\КОНСОРТ\", _
+                   "*.xls*", 0
+End Sub
+ 
+Public Sub Файлы_Каталога(ByVal Folder As String, _
+                          ByVal sMask As String, ByVal Глубина_Вложенных_Каталогов As Long)
+    Dim Coll   As Collection
+ 
+    Folder = ThisWorkbook.Path
+    If Dir(Folder, vbDirectory) = vbNullString Then
+        '        MsgBox "Не найдена папка «" & folder & "»", vbCritical, "Нет папки ПЛАТЕЖИ"
+        Err.Raise 567, "Файлы_Каталога", "Не найдена папка «" & Folder & "»"
+ 
+        Exit Sub        ' выход, если папка не найдена
+    End If
+ 
+    Set Coll = FilenamesCollection(Folder, sMask, _
+                                   Глубина_Вложенных_Каталогов)    ' получаем список файлов XLS из папки
+ 
+    If Coll.Count = 0 Then
+        '        MsgBox "В папке «" & Split(folder, "\")(UBound(Split(folder, "\")) - 1) & "» нет ни одного подходящего файла!", _
+                 '               vbCritical, "Файлы для обработки не найдены"
+        Err.Raise 567, "Файлы_Каталога", "В папке «" & Split(Folder, "\")(UBound(Split(Folder, "\")) - 1) & "» нет ни одного подходящего файла!"
+ 
+        Exit Sub                ' выход, если нет файлов
+    End If
+ 
+    ' перебираем все найденные файлы
+    Dim sFile  As Variant
+ 
+    For Each sFile In Coll
+ 
+        Проход_по_Листам sFile
+    Next
+End Sub
+ 
+Private Sub Проход_по_Листам(ByVal sFile As Variant)
+ 
+    Dim wb As Workbook, ws As Worksheet
+    Set wb = Workbooks.Open(filename:=sFile, ReadOnly:=True)
+ 
+    For Each ws In wb.Worksheets
+ 
+    Next
+End Sub
+ 
+Function FilenamesCollection(ByVal folderPath As String, Optional ByVal mask As String = vbNullString, _
+                             Optional ByVal searchDeep As Long = 999) As Collection
+    ' © EducatedFool  excelvba.ru/code/FilenamesCollection
+    ' Получает в качестве параметра путь к папке FolderPath,
+    ' маску имени искомых файлов Mask (будут отобраны только файлы с такой маской/расширением)
+    ' и глубину поиска SearchDeep в подпапках (если SearchDeep=1, то подпапки не просматриваются).
+    ' Возвращает коллекцию, содержащую полные пути найденных файлов
+    ' (применяется рекурсивный вызов процедуры GetAllFileNamesUsingFSO)
+ 
+    Set FilenamesCollection = New Collection    ' создаём пустую коллекцию
+ 
+    Dim fso    As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")    ' создаём экземпляр FileSystemObject
+ 
+    GetAllFileNamesUsingFSO _
+            folderPath, mask, fso, FilenamesCollection, searchDeep    ' поиск
+ 
+    Set fso = Nothing: Application.StatusBar = False    ' очистка строки состояния Excel
+End Function
+ 
+Function GetAllFileNamesUsingFSO(ByVal folderPath As String, ByVal mask As String, ByRef fso, _
+                                 ByRef FileNamesColl As Collection, ByVal searchDeep As Long)
+    ' перебирает все файлы и подпапки в папке FolderPath, используя объект FSO
+    ' перебор папок осуществляется в том случае, если SearchDeep > 1
+    ' добавляет пути найденных файлов в коллекцию FileNamesColl
+    'Тип проверь
+    Dim curfold As Object
+ 
+    Set curfold = fso.GetFolder(folderPath)
+ 
+    If Not curfold Is Nothing Then    ' если удалось получить доступ к папке
+ 
+        ' раскомментируйте эту строку для вывода пути к просматриваемой
+        ' в текущий момент папке в строку состояния Excel
+        ' Application.StatusBar = "Поиск в папке: " & FolderPath
+ 
+        'Проверь тип
+        Dim fil As Object
+        For Each fil In curfold.Files    ' перебираем все файлы в папке FolderPath
+            If fil.Name Like "*" & mask Then _
+               FileNamesColl.Add fil.Path
+        Next
+        searchDeep = searchDeep - 1    ' уменьшаем глубину поиска в подпапках
+ 
+        'Проверь тип
+ 
+        Dim sfol As Object
+        If searchDeep Then    ' если надо искать глубже
+            For Each sfol In curfold.SubFolders    ' перебираем все подпапки в папке FolderPath
+                GetAllFileNamesUsingFSO _
+                        sfol.Path, mask, fso, FileNamesColl, searchDeep
+            Next
+        End If
+ 
+        Set fil = Nothing
+ 
+        Set curfold = Nothing    ' очищаем переменные
+    End If
+End Function
+

@@ -1,0 +1,239 @@
+Attribute VB_Name = "Reg_Регуляр"
+Option Explicit
+' Шаблоны паттерны регулярных выражений
+'1 - адреса электронной почты;
+'2 - номера сотовых телефонов;
+'3 - номера автомобилей;
+'4 - IP-адреса;
+'5 - URL.
+'    arrRegExp = Array("", _
+     '        "\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,6}\b", _
+     '        "(\+7|8)[- ]?\(?\d{3}\)?([- ]?\d){7}\b", _
+     '        "\s[АВЕКМНОРСТУХ]\d{3}[АВЕКМНОРСТУХ]{2}\d{2,3}\b", _
+     '        "\b((25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.){3}(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})(\s|$)", _
+     '        "https?:\/\/(\w*:\w*@)?[-\w.]+(:\d+)?(\/([-\w\/_.]*(\?\S+)?)?)?")
+'
+
+Function R_2_A1_Uniq( _
+         r As Range, _
+         sPattern As String) _
+         As Variant
+    ' checked by test
+    ' range to array unique
+    ' диапазон в массив уникальных регулярными
+
+    R_2_A1_Uniq = RegExp_Unique( _
+                  R_2_S(r), sPattern)
+
+End Function
+
+Function RegExp_Unique( _
+         s As String, _
+         sPattern As String) _
+         As Variant
+    ' из строки вернуть уникальные вхождения по паттерну
+    '
+    If RegExp_Test(s, sPattern) Then
+
+        RegExp_Unique = O_2_Dic( _
+                        RegExp_Get( _
+                        s, sPattern)). _
+                        Keys
+
+    End If
+End Function
+
+Function O_2_Dic( _
+         obj As Object) _
+         As Object
+    ' Test.Covered
+    '
+    Static oDic As Object
+    If oDic Is Nothing Then Set oDic = CreateObject("Scripting.Dictionary")
+
+    Dim v As Variant
+    Dim s As String
+
+    With oDic
+
+        For Each v In obj
+
+            s = v.Value
+
+            If .exists(s) = False Then
+
+                .Add s, s
+
+            End If
+        Next
+    End With
+
+    Set O_2_Dic = oDic
+
+End Function
+
+Function RegExp_Test( _
+         ByVal sText As String, _
+         sPattern As String, _
+         Optional bGlobal As Boolean = True, _
+         Optional bCaseIgnore As Boolean = True, _
+         Optional bMultiline As Boolean = True) _
+         As Boolean
+
+    sText = Replace(sText, Chr(10), " ")
+
+    Static RegEx As Object
+    If RegEx Is Nothing Then _
+       Set RegEx = CreateObject("VBScript.RegExp")
+
+    With RegEx
+        .Pattern = sPattern
+        .Global = bGlobal
+        .IgnoreCase = bCaseIgnore
+        .Multiline = bMultiline
+
+        If .Test(sText) Then
+
+            RegExp_Test = True
+
+        End If
+    End With
+End Function
+
+
+Function RegExp_RePlace(str As String, _
+                        sPattern As String, _
+                        sReplace As String, _
+                        Optional sGloba1 As Boolean = True, _
+                        Optional bIgnoreCase As Boolean = True, _
+                        Optional bMultiline As Boolean = True) _
+                        As String
+
+    Static RegEx As Object
+    If RegEx Is Nothing Then Set RegEx = CreateObject("VBScript.RegExp")
+    With RegEx
+
+        .Global = sGloba1    ' ВСЕ совпадения или только первое
+        .IgnoreCase = bIgnoreCase    'Учитываем ли регистр?
+        .Multiline = bMultiline    'Может ли паттерн попадать на разрывы строк?
+        .Pattern = sPattern    'Выражение
+
+        RegExp_RePlace = .Replace(str, sReplace)    'Поиск и замена
+
+    End With
+End Function
+
+Function RegExp_Get( _
+         ByVal str As String, _
+         Pattern As String, _
+         Optional Globa1 As Boolean = True, _
+         Optional IgnoreCase As Boolean = True, _
+         Optional Multiline As Boolean = True) _
+         As Object
+
+    ' и опыт, сын ошибок
+    ' str = Replace(str, Chr(10), " ")
+
+    'Ищем все совпадения по регулярному выражению
+
+    Static RegEx As Object
+    If RegEx Is Nothing Then _
+       Set RegEx = CreateObject("VBScript.RegExp")
+
+    With RegEx
+
+        'Нужны все совпадения или только первое?
+        .Global = Globa1
+        'Регистр неважен?
+        .IgnoreCase = IgnoreCase
+        'Игнорировать переносы строк?
+        .Multiline = Multiline
+
+        'Регулярка
+        .Pattern = Pattern
+
+        Set RegExp_Get = .Execute(str)
+
+    End With
+End Function
+
+Function a2_2_s( _
+         a2() As Variant) _
+         As String
+    ' procedure NOT checked by test
+    ' array to string
+
+    Dim s As String
+
+    Dim v As Variant
+
+    For Each v In a2
+
+        s = s & v
+
+    Next
+
+    a2_2_s = s
+
+End Function
+
+Function R_2_S( _
+         r As Range) _
+         As String
+    ' procedure NOT checked by test
+    ' range to string
+    R_2_S = a2_2_s( _
+            r_2_a2(r))
+
+End Function
+
+Function рег_Паттерн_Неделя_День(Optional msg As String) _
+         As String
+    ' procedure Checked by test опосредованно
+
+    рег_Паттерн_Неделя_День = "[а-я]{5,11}"
+
+End Function
+
+Function рег_Паттерн_Месяц(Optional msg As String) _
+         As String
+    ' procedure Checked by test опосредованно
+
+    рег_Паттерн_Месяц = "[а-я]{3,8}"
+
+End Function
+
+'Function a1v_2_s( _
+ '         a1v As Variant) _
+ '         As String
+'    ' procedure NOT checked by test
+'    '
+'    'Dim a1s() As String
+'    ReDim a1s(LBound(a1v) To UBound(a1v))
+'
+'    Dim lCol As Long
+'
+'    For lCol = LBound(a1s) To UBound(a1s)
+'        a1s(lCol) = a1v(lCol)
+'    Next
+'
+'    a1v_2_s = a1s
+'
+'End Function
+
+'Function Массив_Уникальных_из_Диапазона( _
+'         r As Range, _
+'         sPatt As String) _
+'         As Variant
+'
+'    Dim s As String
+'    s = Диапазон_в_Строку(r)
+'
+'    Массив_Уникальных_из_Диапазона = _
+'    Объект_в_Словарь( _
+'    Регулярка_Взять(s, sPatt, _
+'                    Регулярка_Тест(s, sPatt))). _
+'                    key
+'
+'End Function
+

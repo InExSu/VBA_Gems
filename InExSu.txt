@@ -1,0 +1,31 @@
+Attribute VB_Name = "InExSu"
+Option Explicit
+' https://www.youtube.com/channel/UCQMbRhaPEFD1NoZLhRzQzSA/videos?view=0&shelf_id=0&sort=dd
+' https://inexsu.wordpress.com
+
+' Если нет моего "Код в Тест"
+'DefBool B
+'DefLng L
+'DefDate D
+'DefStr S
+'DefObj O
+'DefVar V
+
+Public Date_End As Date
+Public Make_Xlam_UnView As Boolean
+
+Public bDebug As Boolean
+
+Sub Squadra_Unita()
+    ' Тестом НЕ покрыта
+    '
+Debug.Assert False
+
+End Sub
+
+
+Function Settings()
+    ' Тестом НЕ покрыто
+    '
+
+End Function
